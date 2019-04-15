@@ -27,6 +27,7 @@ void makeSentinel(void);
 void printInput(void);
 void testLinkedList(void);
 void toMainMenu(void);
+int isMenuSelectionValid(char upperBound, char selection);
 
 
 /**  Variable Declarations ********* **/
@@ -58,9 +59,23 @@ int main(int argc, const char * argv[]) {
 void toMainMenu(void){
   printf("%s", MAIN_MENU_TEXT);
   grabLine();
-  if(inputSize!=1){
-    
+  if(inputSize != 1 ||
+     !isMenuSelectionValid('6',inputSentinel->next->value)){
+    printf("%s", INVALID_INPUT);
+    clearLine();
+    toMainMenu();
   }
+}
+
+/**
+ A function to check whether input is valid for menu selections.
+ Takes in an int, which represents the upper bound for valid selection.
+ **/
+int isMenuSelectionValid(char upperBound, char selection){
+  if(selection < '1' || selection > upperBound){
+    return 0;
+  }
+  return 1;
 }
 
 /**
