@@ -28,7 +28,10 @@ void printInput(void);
 void testLinkedList(void);
 void toMainMenu(void);
 int isMenuSelectionValid(char upperBound, char selection);
-
+void toAddDataMenu(void);
+void toEditDataMenu(void);
+void toDeleteDataMenu(void);
+void toViewDataMenu(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -47,8 +50,6 @@ int main(int argc, const char * argv[]) {
     return -1;
   }
   toMainMenu();
-  
-  
   free(inputSentinel);
   return 0;
 }
@@ -58,21 +59,191 @@ int main(int argc, const char * argv[]) {
  **/
 void toMainMenu(void){
   printf("%s", MAIN_MENU_TEXT);
+  clearLine();
   grabLine();
   if(inputSize != 1 ||
      !isMenuSelectionValid('6',inputSentinel->next->value)){
     printf("%s", INVALID_INPUT);
-    clearLine();
     toMainMenu();
   }
+  switch (inputSentinel->next->value) {
+    case '1':
+      toAddDataMenu();
+      break;
+    case '2':
+      toEditDataMenu();
+      break;
+    case '3':
+      toDeleteDataMenu();
+      break;
+    case '4':
+      toViewDataMenu();
+      break;
+    case '5':
+      //todo: use command line environ
+      break;
+    case '6':
+      return;
+    default:
+      printf("Unexpected Error, try again.\n");
+      break;
+  }
+  toMainMenu();
 }
+
+/**
+ A function to display the add data menu and handle user selection.
+ **/
+void toAddDataMenu(void){
+  printf("%s", ADD_DATA_MENU_TEXT);
+  clearLine();
+  grabLine();
+  if(inputSize != 1 ||
+     !isMenuSelectionValid('6',inputSentinel->next->value)){
+    printf("%s", INVALID_INPUT);
+    toAddDataMenu();
+  }
+  switch (inputSentinel->next->value) {
+    case '1':
+      //todo: add student
+      break;
+    case '2':
+      //todo: add class
+      break;
+    case '3':
+      //todo: add assignment
+      break;
+    case '4':
+      //todo: add grade
+      break;
+    case '5':
+      //todo: enroll student
+      break;
+    case '6':
+      return;
+    default:
+      printf("Unexpected Error, try again.\n");
+      break;
+  }
+  toAddDataMenu();
+}
+
+/**
+ A function to display the delete data menu and handle user selection.
+ **/
+void toDeleteDataMenu(void){
+  printf("%s", DELETE_DATA_MENU_TEXT);
+  clearLine();
+  grabLine();
+  if(inputSize != 1 ||
+     !isMenuSelectionValid('6',inputSentinel->next->value)){
+    printf("%s", INVALID_INPUT);
+    toDeleteDataMenu();
+  }
+  switch (inputSentinel->next->value) {
+    case '1':
+      //todo: delete student
+      break;
+    case '2':
+      //todo: delete class
+      break;
+    case '3':
+      //todo: delete assignment
+      break;
+    case '4':
+      //todo: delete grade
+      break;
+    case '5':
+      //todo: drop student
+      break;
+    case '6':
+      return;
+    default:
+      printf("Unexpected Error, try again.\n");
+      break;
+  }
+  toDeleteDataMenu();
+}
+
+/**
+ A function to display the view data menu and handle user selection.
+ **/
+void toViewDataMenu(void){
+  printf("%s", VIEW_DATA_MENU_TEXT);
+  clearLine();
+  grabLine();
+  if(inputSize != 1 ||
+     !isMenuSelectionValid('6',inputSentinel->next->value)){
+    printf("%s", INVALID_INPUT);
+    toViewDataMenu();
+  }
+  switch (inputSentinel->next->value) {
+    case '1':
+      //todo: view students
+      break;
+    case '2':
+      //todo: view classes
+      break;
+    case '3':
+      //todo: view assignments
+      break;
+    case '4':
+      //todo: view grades
+      break;
+    case '5':
+      //todo: view enrollment
+      break;
+    case '6':
+      return;
+    default:
+      printf("Unexpected Error, try again.\n");
+      break;
+  }
+  toViewDataMenu();
+}
+
+
+/**
+ A function to display the edit data menu and handle user selection.
+ **/
+void toEditDataMenu(void){
+  printf("%s", EDIT_DATA_MENU_TEXT);
+  clearLine();
+  grabLine();
+  if(inputSize != 1 ||
+     !isMenuSelectionValid('5',inputSentinel->next->value)){
+    printf("%s", INVALID_INPUT);
+    toEditDataMenu();
+  }
+  switch (inputSentinel->next->value) {
+    case '1':
+      //todo: edit student
+      break;
+    case '2':
+      //todo: edit class
+      break;
+    case '3':
+      //todo: edit assignment
+      break;
+    case '4':
+      //todo: edit grade
+      break;
+    case '5':
+      return;
+    default:
+      printf("Unexpected Error, try again.\n");
+      break;
+  }
+  toEditDataMenu();
+}
+
 
 /**
  A function to check whether input is valid for menu selections.
  Takes in an int, which represents the upper bound for valid selection.
  **/
 int isMenuSelectionValid(char upperBound, char selection){
-  if(selection < '1' || selection > upperBound){
+  if(selection < '1' || upperBound < selection){
     return 0;
   }
   return 1;
@@ -118,6 +289,9 @@ int grabLine(void){
  and to free the memory of the linked list nodes.
  **/
 int clearLine(void){
+  if(inputSize == 0){
+    return 1;
+  }
   Input_c *toClear = inputSentinel->previous;
   while(toClear != inputSentinel){
     Input_c *nextClear = toClear->previous;
