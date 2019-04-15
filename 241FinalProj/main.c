@@ -25,7 +25,7 @@ int clearLine(void);
 void addInputC(Input_c *toAdd);
 void makeSentinel(void);
 void printInput(void);
-
+void testLinkedList(void);
 
 
 /**  Variable Declarations ********* **/
@@ -38,17 +38,7 @@ int inputSize;
  Insertion point into program.
  **/
 int main(int argc, const char * argv[]) {
-
   makeSentinel();
-  printf("input something\n");
-  grabLine();
-  printInput();
-  clearLine();
-  printInput();
-  printf("input something\n");
-  grabLine();
-  printInput();
-  clearLine();
   if(argc > 1){
     //todo implement cli
     printf("greater than 1 argc");
@@ -67,14 +57,11 @@ void printInput(void){
   if(inputSize == 0){
     printf("Input size is 0.\n");
     if(inputSentinel->next != NULL || inputSentinel->previous != NULL){
-      printf("Error: input size is 0, but input pointers not NULL");
+      printf("Error: input size is 0, but input pointers not NULL\n");
     }else{
-      printf("No input in memory.");
+      printf("No input in memory.\n");
     }
     return;
-  }
-  if(inputSentinel->next != NULL || inputSentinel->previous != NULL){
-    printf("Error: NULL pointers in sentinel and inputsize != 0");
   }
   Input_c *toPrint = inputSentinel->next;
   while(toPrint != inputSentinel){
@@ -82,6 +69,7 @@ void printInput(void){
     toPrint = toPrint->next;
   }
   printf("\n");
+  printf("%d\n", inputSize);
 }
 
 /**
@@ -140,9 +128,31 @@ void addInputC(Input_c *toAdd){
  and store a reference to it in the global variable.
  **/
 void makeSentinel(void){
+  inputSize = 0;
   inputSentinel = malloc(sizeof(Input_c));
   inputSentinel->next = NULL;
   inputSentinel->previous = NULL;
   inputSentinel->value = '\0';
 }
 
+/**
+ A function to test the input linked list functions
+ using printf statements.
+ **/
+void testLinkedList(void){
+  printf("input something\n");
+  grabLine();
+  printf("line grabbed\n");
+  printInput();
+  clearLine();
+  printf("memory cleared\n");
+  printInput();
+  printf("input something\n");
+  grabLine();
+  printf("line grabbed\n");
+  printInput();
+  clearLine();
+  printf("line cleared\n");
+  printInput();
+
+}
