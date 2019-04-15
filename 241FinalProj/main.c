@@ -26,6 +26,7 @@ void addInputC(Input_c *toAdd);
 void makeSentinel(void);
 void printInput(void);
 void testLinkedList(void);
+void toMainMenu(void);
 
 
 /**  Variable Declarations ********* **/
@@ -44,10 +45,19 @@ int main(int argc, const char * argv[]) {
     printf("greater than 1 argc");
     return -1;
   }
+  toMainMenu();
   
   
   free(inputSentinel);
   return 0;
+}
+
+/**
+ A function to display the main menu and handle user selection.
+ **/
+void toMainMenu(void){
+  printf("%s", MAIN_MENU_TEXT);
+  
 }
 
 /**
