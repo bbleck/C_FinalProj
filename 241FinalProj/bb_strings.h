@@ -16,94 +16,94 @@ const char DELETE_DATA_MENU_TEXT[] = "1. Delete Student\n2. Delete Class\n3. Del
 const char VIEW_DATA_MENU_TEXT[] = "1. View Students\n2. View Classes\n3. View Assignments\n4. View Grades\n5. View Enrollment\n6. Return to Main Menu\n";
 const char VIEW_GRADES_MENU_TEXT[] = " 1. View Class Average Grade\n2. View Student Average Grades\n3. View Class Assignment Average Grades\n4. View Class Assignment Grades\n5. Return to Main Menu\n";
 
-const char ADD_STUDENT_PROMPTS[3][] = {
+const char ADD_STUDENT_PROMPTS[3][60] = {
   {"Enter First Name"},
   {"Enter Last Name"},
   {"Enter Student SSN"}
 };
-const char ADD_CLASS_PROMPTS[1][] = {
+const char ADD_CLASS_PROMPTS[1][60] = {
   {"Enter Class Title"}
 };
-const char ADD_ASSIGNMENT_PROMPTS[3][] = {
+const char ADD_ASSIGNMENT_PROMPTS[3][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment Title"},
   {"Enter Point Value"}
 };
-const char ADD_GRADE_PROMPTS[4][] = {
+const char ADD_GRADE_PROMPTS[4][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"},
   {"Enter Student SSN"},
   {"Enter Earned Points"}
 };
-const char ENROLL_STUDENT_PROMPTS[2][] = {
+const char ENROLL_STUDENT_PROMPTS[2][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Student SSN"}
 };
-const char EDIT_STUDENT_PROMPTS[3][] = {
+const char EDIT_STUDENT_PROMPTS[3][60] = {
   {"Enter Student SSN"},
   {"Enter New First Name ( or leave blank for no change )"},
   {"Enter New Last Name ( or leave blank for no change )"}
 };
-const char EDIT_CLASS_PROMPTS[2][] = {
+const char EDIT_CLASS_PROMPTS[2][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter New Class Title ( or leave blank for no change )"}
 };
-const char EDIT_ASSIGNMENT_PROMPTS[4][] = {
+const char EDIT_ASSIGNMENT_PROMPTS[4][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"},
   {"Enter New Title (or leave blank for no change)"},
   {"Enter New Point Value (or leave blank for no change)"}
 };
-const char EDIT_GRADE_PROMPTS[4][] = {
+const char EDIT_GRADE_PROMPTS[4][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"},
   {"Enter Student SSN"},
   {"Enter New Earned Points (or leave blank for no change)"}
 };
-const char DELETE_STUDENT_PROMPTS[2][] = {
+const char DELETE_STUDENT_PROMPTS[2][60] = {
   {"Enter SSN"},
   {"Are you sure you wish to delete "}
 };
-const char DELETE_CLASS_PROMPTS[2][] = {
+const char DELETE_CLASS_PROMPTS[2][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Are you sure you wish to delete "}
 };
-const char DELETE_ASSIGNMENT_PROMPTS[3][] = {
+const char DELETE_ASSIGNMENT_PROMPTS[3][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"},
   {"Are you sure you wish to delete "}
 };
-const char DELETE_GRADE_PROMPTS[4][] = {
+const char DELETE_GRADE_PROMPTS[4][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"},
   {"Enter Student SSN"},
   {"Are you sure you wish to delete "}
 };
-const char DROP_STUDENT_PROMPTS[3][] = {
+const char DROP_STUDENT_PROMPTS[3][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Student SSN"},
   {"Are you sure you wish to delete "}
 };
-const char VIEW_ASSIGNMENTS_PROMPTS[1][] = {
+const char VIEW_ASSIGNMENTS_PROMPTS[1][60] = {
   {"Enter Class ID or (-1 for Class List)"}
 };
-const char VIEW_ENROLLMENT_PROMPTS[1][] = {
+const char VIEW_ENROLLMENT_PROMPTS[1][60] = {
   {"Enter Class ID or (-1 for Class List)"}
 };
-const char VIEW_CLASS_AVERAGE_PROMPTS[1][] = {
+const char VIEW_CLASS_AVERAGE_PROMPTS[1][60] = {
   {"Enter Class ID or (-1 for Class List)"}
 };
-const char VIEW_STUDENT_AVERAGE_PROMPTS[1][] = {
+const char VIEW_STUDENT_AVERAGE_PROMPTS[1][60] = {
   {"Enter Student SSN"}
 };
-const char VIEW_CLASS_ASSIGNMENT_AVERAGE_PROMPTS[1][] = {
+const char VIEW_CLASS_ASSIGNMENT_AVERAGE_PROMPTS[1][60] = {
   {"Enter Class ID or (-1 for Class List)"}
 };
-const char VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[2][] = {
+const char VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[2][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"}
 };
-const char VIEW_GRADES_PROMPTS[2][] = {
+const char VIEW_GRADES_PROMPTS[2][60] = {
   {"Enter Class ID or (-1 for Class List)"},
   {"Enter Assignment ID or (-1 for Assignment List)"}
 };
