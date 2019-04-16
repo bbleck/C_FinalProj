@@ -38,6 +38,8 @@ void retrieveName(char* name);
 int isValidSSNInput(void);
 int isValidClassTitle(void);
 void toAddClass(void);
+void toAddAssignment(void);
+
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -210,6 +212,13 @@ void toAddClass(void){
     }
   }
   printf("Class title: %s\n", title);
+}
+
+/**
+ A function that will add an assignment to database.
+ **/
+void toAddAssignment(void){
+  
 }
 
 /**
