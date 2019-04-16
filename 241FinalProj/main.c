@@ -32,6 +32,10 @@ void toAddDataMenu(void);
 void toEditDataMenu(void);
 void toDeleteDataMenu(void);
 void toViewDataMenu(void);
+void toAddStudent(void);
+int isValidNameInput(void);
+void retrieveName(char* name);
+int isValidSSNInput(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -52,6 +56,20 @@ int main(int argc, const char * argv[]) {
   toMainMenu();
   free(inputSentinel);
   return 0;
+}
+
+/**
+ A function that puts a name stored in linked list memory into value at pointer parameter.
+ **/
+void retrieveName(char* name){
+  int counter = 0;
+  Input_c *tempNode = inputSentinel->next;
+  while(tempNode != inputSentinel){
+    name[counter] = tempNode->value;
+    counter++;
+    tempNode = tempNode->next;
+  }
+  name[counter] = '\0';
 }
 
 /**
@@ -105,7 +123,7 @@ void toAddDataMenu(void){
   }
   switch (inputSentinel->next->value) {
     case '1':
-      //todo: add student
+      toAddStudent();
       break;
     case '2':
       //todo: add class
@@ -126,6 +144,67 @@ void toAddDataMenu(void){
       break;
   }
   toAddDataMenu();
+}
+
+/**
+ A function that will add a student
+ **/
+void toAddStudent(void){
+  char first[31];
+  char last[31];
+  char ssnStr[10];
+  int ssn = 0;
+  first[30] = '\0';
+  last[30] = '\0';
+  printf("Add Student\n");
+  while(1){
+    printf("%s", ADD_STUDENT_PROMPTS[0]);
+    clearLine();
+    grabLine();
+    if(isValidNameInput()){
+      retrieveName(first);
+      break;
+    }
+  }
+  while(1){
+    printf("%s", ADD_STUDENT_PROMPTS[1]);
+    clearLine();
+    grabLine();
+    if(isValidNameInput()){
+      retrieveName(last);
+      break;
+    }
+  }
+  while(1){
+    printf("%s", ADD_STUDENT_PROMPTS[2]);
+    clearLine();
+    grabLine();
+    if(isValidSSNInput()){
+      retrieveName(ssnStr);
+      ssn = atoi(ssnStr);
+      break;
+    }
+  }
+  printf("first name: %s\n", first);
+  printf("last name: %s\n", last);
+  printf("ssn: %d\n", ssn);
+  
+}
+
+/**
+ tests input to see if it is a valid name
+ **/
+int isValidNameInput(void){
+  //todo: implement validation
+  return 1;
+}
+
+/**
+ A function to test whether ssn input is valid.
+ **/
+int isValidSSNInput(void){
+  //todo: implement validation
+  return 1;
 }
 
 /**
