@@ -36,6 +36,8 @@ void toAddStudent(void);
 int isValidNameInput(void);
 void retrieveName(char* name);
 int isValidSSNInput(void);
+int isValidClassTitle(void);
+void toAddClass(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -126,7 +128,7 @@ void toAddDataMenu(void){
       toAddStudent();
       break;
     case '2':
-      //todo: add class
+      toAddClass();
       break;
     case '3':
       //todo: add assignment
@@ -185,10 +187,37 @@ void toAddStudent(void){
       break;
     }
   }
-  printf("first name: %s\n", first);
-  printf("last name: %s\n", last);
-  printf("ssn: %d\n", ssn);
+  printf("First name: %s\n", first);
+  printf("Last name: %s\n", last);
+  printf("SSN: %d\n", ssn);
   
+}
+
+/**
+ A function that will add a class to database.
+ **/
+void toAddClass(void){
+  char title[31];
+  title[30] = '\0';
+  printf("Add Class\n");
+  while(1){
+    printf("%s", ADD_CLASS_PROMPTS[0]);
+    clearLine();
+    grabLine();
+    if(isValidClassTitle()){
+      retrieveName(title);
+      break;
+    }
+  }
+  printf("Class title: %s\n", title);
+}
+
+/**
+ A function to test whether class title is valid.
+ **/
+int isValidClassTitle(void){
+  //todo: implement validation
+  return 1;
 }
 
 /**
