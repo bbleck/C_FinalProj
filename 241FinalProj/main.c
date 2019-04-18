@@ -39,6 +39,9 @@ int isValidSSNInput(void);
 int isValidClassTitle(void);
 void toAddClass(void);
 void toAddAssignment(void);
+int storeNameInput (char* nameStorage);
+void getName(const char* prompt, char* name);
+void getSSN(const char* prompt, char* ssn);
 
 
 /**  Variable Declarations ********* **/
@@ -150,6 +153,23 @@ void toAddDataMenu(void){
   toAddDataMenu();
 }
 
+/**
+ A function that takes a string pointer and adds a valid ssn into it.
+ **/
+int storeSSNInput(char* ssnStorage){
+  clearLine();
+  grabLine();
+  if(isValidSSNInput()){
+    retrieveName(ssnStorage);
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+/**
+ A function that takes a string pointer and adds a valid name into it.
+ **/
 int storeNameInput (char* nameStorage){
   clearLine();
   grabLine();
@@ -158,6 +178,32 @@ int storeNameInput (char* nameStorage){
     return 1;
   }else{
     return 0;
+  }
+}
+
+/**
+ A function that prints a prompt to get a name and delegates name
+ retrieval until successful.
+ **/
+void getName(const char* prompt, char* name){
+  while(1){
+    printf("%s", prompt);
+    if(storeNameInput(name)){
+      break;
+    }
+  }
+}
+
+/**
+ A function that prints a prompt to get a ssn and delegates ssn
+ retrieval until successful.
+ **/
+void getSSN(const char* prompt, char* ssn){
+  while(1){
+    printf("%s", prompt);
+    if(storeSSNInput(ssn)){
+      break;
+    }
   }
 }
 
@@ -171,31 +217,13 @@ void toAddStudent(void){
   first[30] = '\0';
   last[30] = '\0';
   printf("Add Student\n");
-  while(1){
-    printf("%s", ADD_STUDENT_PROMPTS[0]);
-    if(storeNameInput(first)){
-      break;
-    }
-  }
-  while(1){
-    printf("%s", ADD_STUDENT_PROMPTS[1]);
-    if(storeNameInput(last)){
-      break;
-    }
-  }
-  while(1){
-    printf("%s", ADD_STUDENT_PROMPTS[2]);
-    clearLine();
-    grabLine();
-    if(isValidSSNInput()){
-      retrieveName(ssnStr);
-      break;
-    }
-  }
+  getName(ADD_STUDENT_PROMPTS[0], first);
+  getName(ADD_STUDENT_PROMPTS[1], last);
+  getSSN(ADD_STUDENT_PROMPTS[2], ssnStr);
   printf("First name: %s\n", first);
   printf("Last name: %s\n", last);
   printf("SSN: %s\n", ssnStr);
-  
+  //get rid of print statements and store data
 }
 
 /**
