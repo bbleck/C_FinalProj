@@ -233,15 +233,16 @@ void toAddClass(void){
   char title[31];
   title[30] = '\0';
   printf("Add Class\n");
-  while(1){
-    printf("%s", ADD_CLASS_PROMPTS[0]);
-    clearLine();
-    grabLine();
-    if(isValidClassTitle()){
-      retrieveName(title);
-      break;
-    }
-  }
+  getName(ADD_CLASS_PROMPTS[0], title);
+//  while(1){
+//    printf("%s", ADD_CLASS_PROMPTS[0]);
+//    clearLine();
+//    grabLine();
+//    if(isValidClassTitle()){
+//      retrieveName(title);
+//      break;
+//    }
+//  }
   printf("Class title: %s\n", title);
 }
 
