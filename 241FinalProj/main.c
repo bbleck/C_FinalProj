@@ -68,7 +68,7 @@ int main(int argc, const char * argv[]) {
 void retrieveName(char* name){
   int counter = 0;
   Input_c *tempNode = inputSentinel->next;
-  while(tempNode != inputSentinel){
+  while(tempNode != inputSentinel && counter < 30){
     name[counter] = tempNode->value;
     counter++;
     tempNode = tempNode->next;
@@ -150,6 +150,17 @@ void toAddDataMenu(void){
   toAddDataMenu();
 }
 
+int storeNameInput (char* nameStorage){
+  clearLine();
+  grabLine();
+  if(inputSize != 0){
+    retrieveName(nameStorage);
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
 /**
  A function that will add a student
  **/
@@ -162,19 +173,13 @@ void toAddStudent(void){
   printf("Add Student\n");
   while(1){
     printf("%s", ADD_STUDENT_PROMPTS[0]);
-    clearLine();
-    grabLine();
-    if(isValidNameInput()){
-      retrieveName(first);
+    if(storeNameInput(first)){
       break;
     }
   }
   while(1){
     printf("%s", ADD_STUDENT_PROMPTS[1]);
-    clearLine();
-    grabLine();
-    if(isValidNameInput()){
-      retrieveName(last);
+    if(storeNameInput(last)){
       break;
     }
   }
@@ -239,7 +244,17 @@ int isValidNameInput(void){
  A function to test whether ssn input is valid.
  **/
 int isValidSSNInput(void){
-  //todo: implement validation
+  int i = 0;
+  Input_c *temp = inputSentinel->next;
+  if(inputSize != 9){
+    return 0;
+  }
+  for(i = 0; i < 9; i++){
+    if(temp->value < '0' || temp->value > '9'){
+      return 0;
+    }
+    temp = temp->next;
+  }
   return 1;
 }
 
