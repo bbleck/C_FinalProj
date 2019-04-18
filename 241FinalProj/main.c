@@ -157,7 +157,6 @@ void toAddStudent(void){
   char first[31];
   char last[31];
   char ssnStr[10];
-  int ssn = 0;
   first[30] = '\0';
   last[30] = '\0';
   printf("Add Student\n");
@@ -185,13 +184,12 @@ void toAddStudent(void){
     grabLine();
     if(isValidSSNInput()){
       retrieveName(ssnStr);
-      ssn = atoi(ssnStr);
       break;
     }
   }
   printf("First name: %s\n", first);
   printf("Last name: %s\n", last);
-  printf("SSN: %d\n", ssn);
+  printf("SSN: %s\n", ssnStr);
   
 }
 
