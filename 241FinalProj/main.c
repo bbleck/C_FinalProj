@@ -138,6 +138,15 @@ void makeCourseSentinel(void);
 void fillCourseList(void);
 void addCourseList(Course_Node *toAdd);
 void writeCourseList(void);
+void toAddGrade(void);
+int isValidIntInput(void);
+int storeIntInput(int* intStorage);
+void getInt(const char* prompt, int* id);
+void makeAssignSentinel(void);
+int clearAssignList(void);
+void fillAssignmentList(void);
+void writeAssignmentList(void);
+void addAssignmentList(Assignment_Node *toAdd);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -184,8 +193,10 @@ void setUpLists(void){
   makeSentinel();
   makeStudentSentinel();
   makeCourseSentinel();
+  makeAssignSentinel();
   fillStudentList();
   fillCourseList();
+  //todo: make sure all sentinels are called and lists filled
 }
 
 /**
@@ -209,6 +220,22 @@ void retrieveName(char* name){
     tempNode = tempNode->next;
   }
 //  name[counter] = '\0';
+}
+
+/**
+ A function that puts an in store in linked list memory into value at a pointer reference.
+ Assumes validation has already been made.
+ **/
+void retrieveInt(int* iPtr){
+  *iPtr = 0;
+  Input_c *tempNode = inputSentinel->next;
+  *iPtr += atoi(&tempNode->value);
+  tempNode = tempNode->next;
+  while(tempNode != inputSentinel){
+    *iPtr *= 10;
+    *iPtr += atoi(&tempNode->value);
+    tempNode = tempNode->next;
+  }
 }
 
 /**
@@ -271,7 +298,7 @@ void toAddDataMenu(void){
       toAddAssignment();
       break;
     case '4':
-      //todo: add grade
+      toAddGrade();
       break;
     case '5':
       //todo: enroll student
@@ -314,6 +341,39 @@ int storeNameInput (char* nameStorage){
 }
 
 /**
+ A function that takes an int pointer and adds a valid int into its value.
+ **/
+int storeIntInput(int* intStorage){
+  clearLine();
+  grabLine();
+  if(!isValidIntInput()){
+    printf("invalid input\n");
+    return 0;
+  }
+  if(inputSize != 0){
+    retrieveInt(intStorage);
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+/**
+ A function to validate that input is only digits.
+ **/
+int isValidIntInput(void){
+  Input_c *temp = inputSentinel->next;
+  while(temp != inputSentinel){
+    if(temp->value < '0' || temp->value > '9'){
+      printf("input is: %c\n", temp->value);
+      return 0;
+    }
+    temp = temp->next;
+  }
+  return 1;
+}
+
+/**
  A function that prints a prompt to get a name and delegates name
  retrieval until successful.
  **/
@@ -321,6 +381,19 @@ void getName(const char* prompt, char* name){
   while(1){
     printf("%s", prompt);
     if(storeNameInput(name)){
+      break;
+    }
+  }
+}
+
+/**
+ A function that prints a prompt to get an ID and delegates ID
+ retrieval until successful.
+ **/
+void getInt(const char* prompt, int* id){
+  while(1){
+    printf("%s", prompt);
+    if(storeIntInput(id)){
       break;
     }
   }
@@ -389,10 +462,30 @@ void toAddClass(void){
 }
 
 /**
+ A function that will add a grade to the database.
+ **/
+void toAddGrade(void){
+  
+}
+
+/**
  A function that will add an assignment to database.
  **/
 void toAddAssignment(void){
-  
+  int assignment_id = rand();
+  int totPts = 0;
+  int courseID = 0;
+  //todo: check for duplicate id, re-randomize if needed
+  char assignment_title[CHAR_INPUT_SIZE];
+  int *pts_total = &totPts;
+  int *course_id = &courseID;
+  Assignment *assignAdd = malloc(sizeof(Assignment));
+  Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
+  printf("Add Assignment\n");
+  getInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
+  getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
+  getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
+  printf("%d, %c, %d, %d", assignment_id, assignment_title[0], courseID, totPts);
 }
 
 /**
@@ -415,16 +508,11 @@ int isValidNameInput(void){
  A function to test whether ssn input is valid.
  **/
 int isValidSSNInput(void){
-  int i = 0;
-  Input_c *temp = inputSentinel->next;
   if(inputSize != 9){
     return 0;
   }
-  for(i = 0; i < 9; i++){
-    if(temp->value < '0' || temp->value > '9'){
-      return 0;
-    }
-    temp = temp->next;
+  if(!isValidIntInput()){
+    return 0;
   }
   return 1;
 }
@@ -663,6 +751,25 @@ void addCourseList(Course_Node *toAdd){
 }
 
 /**
+ A function to add an assignment node onto the end of the assignment linked list.
+ **/
+void addAssignmentList(Assignment_Node *toAdd){
+  if(assignmentSentinel->next == NULL && assignmentSentinel->previous == NULL){
+    assignmentSentinel->next = toAdd;
+    assignmentSentinel->previous = toAdd;
+    toAdd->next = assignmentSentinel;
+    toAdd->previous = assignmentSentinel;
+    assignmentSize = 1;
+  }else{
+    assignmentSentinel->previous->next = toAdd;
+    toAdd->next = assignmentSentinel;
+    toAdd->previous = assignmentSentinel->previous;
+    assignmentSentinel->previous = toAdd;
+    assignmentSize++;
+  }
+}
+
+/**
  A function to write the contents of the student linked list into
  the Student database. Overwrites the Student database.
  **/
@@ -691,6 +798,22 @@ void writeCourseList(void){
   }
   fclose(fp);
 }
+
+/**
+ A functin to write the contents of the assignments linked list into
+ the assignments database.  Overwrites the assignments database.
+ **/
+void writeAssignmentList(void){
+  FILE *fp;
+  Assignment_Node *toAdd = assignmentSentinel->next;
+  fp = fopen(ASSIGNMENTS_DB, "w");
+  while(toAdd != assignmentSentinel && toAdd != NULL){
+    fwrite(toAdd->assignment, sizeof(Assignment), 1, fp);
+    toAdd = toAdd->next;
+  }
+  fclose(fp);
+}
+
 
 /**
  A function to read one student at a time from the Student database,
@@ -741,6 +864,30 @@ void fillCourseList(void){
 }
 
 /**
+ A function to read one assignment at a time from the assignment database,
+ then adds the course to a course node, which is added to the assignment
+ linked list.
+ **/
+void fillAssignmentList(void){
+  FILE *fp;
+  if((fp = fopen(ASSIGNMENTS_DB, "r")) != NULL){
+    //file exists, fill course list
+    fseek(fp, 0, SEEK_SET);
+    while(!feof(fp)){
+      Assignment *assignAdd = malloc(sizeof(Assignment));
+      Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
+      fread(assignAdd, sizeof(Assignment), 1, fp);
+      assignNodeAdd->assignment = assignAdd;
+      //  todo: addAssignList(assignNodeAdd);
+    }
+    fclose(fp);
+  }else{
+    fp = fopen(ASSIGNMENTS_DB, "w");
+    fclose(fp);
+  }
+}
+
+/**
  A function to clear the student list.
  **/
 int clearStudentList(void){
@@ -785,6 +932,28 @@ int clearCourseList(void){
 }
 
 /**
+ A function to clear the assignment linked list.
+ **/
+int clearAssignList(void){
+  if(assignmentSize == 0){
+    return 1;
+  }
+  Assignment_Node *toClear = assignmentSentinel->previous;
+  while(toClear != assignmentSentinel){
+    Assignment_Node *nextClear = toClear->previous;
+    if(toClear->assignment != NULL){
+      free(toClear->assignment);
+    }
+    free(toClear);
+    toClear = nextClear;
+  }
+  assignmentSentinel->next = NULL;
+  assignmentSentinel->previous = NULL;
+  assignmentSize = 0;
+  return 1;
+}
+
+/**
  A helper function to build the input sentinel node
  and store a reference to it in the global variable.
  **/
@@ -816,6 +985,17 @@ void makeCourseSentinel(void){
   courseSentinel = malloc(sizeof(Course_Node));
   courseSentinel->next = NULL;
   courseSentinel->previous = NULL;
+}
+
+/**
+ A helper function to build the assignment sentinel node and
+ store a reference to it in the global variable.
+ **/
+void makeAssignSentinel(void){
+  assignmentSize = 0;
+  assignmentSentinel = malloc(sizeof(Assignment_Node));
+  assignmentSentinel->next = NULL;
+  assignmentSentinel->previous = NULL;
 }
 
 /**
