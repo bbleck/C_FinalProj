@@ -8,8 +8,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "bb_strings.h"
 
+
+/**  Define Macros ***************** **/
+#define CHAR_INPUT_SIZE 30
+#define SSN_INPUT_SIZE 9
+#define MAIN_MENU_OPTS '6'
+#define ADD_MENU_OPTS '6'
+#define EDIT_MENU_OPTS '5'
+#define DELETE_MENU_OPTS '6'
+#define VIEW_D_MENU_OPTS '6'
+#define VIEW_G_MENU_OPTS '5'
 
 /**  Struct typedefs *************** **/
 typedef struct InputChar{
@@ -18,6 +29,34 @@ typedef struct InputChar{
   struct InputChar *previous;
 } Input_c;
 
+typedef struct student{
+  char first[CHAR_INPUT_SIZE];
+  char last[CHAR_INPUT_SIZE];
+  char ssn[SSN_INPUT_SIZE];
+} Student;
+
+typedef struct class{
+  int course_id;
+  char course_title[CHAR_INPUT_SIZE];
+} Course;
+
+typedef struct enrollment{
+  int course_id;
+  char ssn[SSN_INPUT_SIZE];
+} Enrollment;
+
+typedef struct assignment{
+  int assignment_id;
+  char assignment_title[CHAR_INPUT_SIZE];
+  int pts_total;
+  int course_id;
+} Assignment;
+
+typedef struct grade{
+  int course_id;
+  char ssn[SSN_INPUT_SIZE];
+  int pts_received;
+} Grade;
 
 /**  Function Declarations ********* **/
 int grabLine(void);
@@ -43,7 +82,6 @@ int storeNameInput (char* nameStorage);
 void getName(const char* prompt, char* name);
 void getSSN(const char* prompt, char* ssn);
 
-
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
 int inputSize;
@@ -54,6 +92,9 @@ int inputSize;
  Insertion point into program.
  **/
 int main(int argc, const char * argv[]) {
+  
+  srand((unsigned int)time(0));
+  
   makeSentinel();
   if(argc > 1){
     //todo implement cli
@@ -71,12 +112,12 @@ int main(int argc, const char * argv[]) {
 void retrieveName(char* name){
   int counter = 0;
   Input_c *tempNode = inputSentinel->next;
-  while(tempNode != inputSentinel && counter < 30){
+  while(tempNode != inputSentinel && counter < CHAR_INPUT_SIZE){
     name[counter] = tempNode->value;
     counter++;
     tempNode = tempNode->next;
   }
-  name[counter] = '\0';
+//  name[counter] = '\0';
 }
 
 /**
@@ -87,7 +128,7 @@ void toMainMenu(void){
   clearLine();
   grabLine();
   if(inputSize != 1 ||
-     !isMenuSelectionValid('6',inputSentinel->next->value)){
+     !isMenuSelectionValid(MAIN_MENU_OPTS, inputSentinel->next->value)){
     printf("%s", INVALID_INPUT);
     toMainMenu();
   }
@@ -124,7 +165,7 @@ void toAddDataMenu(void){
   clearLine();
   grabLine();
   if(inputSize != 1 ||
-     !isMenuSelectionValid('6',inputSentinel->next->value)){
+     !isMenuSelectionValid(ADD_MENU_OPTS, inputSentinel->next->value)){
     printf("%s", INVALID_INPUT);
     toAddDataMenu();
   }
@@ -136,7 +177,7 @@ void toAddDataMenu(void){
       toAddClass();
       break;
     case '3':
-      //todo: add assignment
+      toAddAssignment();
       break;
     case '4':
       //todo: add grade
@@ -211,18 +252,14 @@ void getSSN(const char* prompt, char* ssn){
  A function that will add a student
  **/
 void toAddStudent(void){
-  char first[31];
-  char last[31];
-  char ssnStr[10];
-  first[30] = '\0';
-  last[30] = '\0';
+  char first[CHAR_INPUT_SIZE];
+  char last[CHAR_INPUT_SIZE];
+  char ssnStr[SSN_INPUT_SIZE];
   printf("Add Student\n");
   getName(ADD_STUDENT_PROMPTS[0], first);
   getName(ADD_STUDENT_PROMPTS[1], last);
   getSSN(ADD_STUDENT_PROMPTS[2], ssnStr);
-  printf("First name: %s\n", first);
-  printf("Last name: %s\n", last);
-  printf("SSN: %s\n", ssnStr);
+  
   //get rid of print statements and store data
 }
 
@@ -234,15 +271,6 @@ void toAddClass(void){
   title[30] = '\0';
   printf("Add Class\n");
   getName(ADD_CLASS_PROMPTS[0], title);
-//  while(1){
-//    printf("%s", ADD_CLASS_PROMPTS[0]);
-//    clearLine();
-//    grabLine();
-//    if(isValidClassTitle()){
-//      retrieveName(title);
-//      break;
-//    }
-//  }
   printf("Class title: %s\n", title);
 }
 
@@ -295,7 +323,7 @@ void toDeleteDataMenu(void){
   clearLine();
   grabLine();
   if(inputSize != 1 ||
-     !isMenuSelectionValid('6',inputSentinel->next->value)){
+     !isMenuSelectionValid(DELETE_MENU_OPTS, inputSentinel->next->value)){
     printf("%s", INVALID_INPUT);
     toDeleteDataMenu();
   }
@@ -332,7 +360,7 @@ void toViewDataMenu(void){
   clearLine();
   grabLine();
   if(inputSize != 1 ||
-     !isMenuSelectionValid('6',inputSentinel->next->value)){
+     !isMenuSelectionValid(VIEW_D_MENU_OPTS, inputSentinel->next->value)){
     printf("%s", INVALID_INPUT);
     toViewDataMenu();
   }
@@ -370,7 +398,7 @@ void toEditDataMenu(void){
   clearLine();
   grabLine();
   if(inputSize != 1 ||
-     !isMenuSelectionValid('5',inputSentinel->next->value)){
+     !isMenuSelectionValid(VIEW_G_MENU_OPTS, inputSentinel->next->value)){
     printf("%s", INVALID_INPUT);
     toEditDataMenu();
   }
