@@ -132,6 +132,7 @@ int clearStudentList(void);
 void fillStudentList(void);
 void writeStudentList(void);
 void addStudentList(Student_Node *toAdd);
+void copyCharArray(char *copyTo, char *copyFrom, int arrSize);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -334,12 +335,28 @@ void toAddStudent(void){
   char first[CHAR_INPUT_SIZE];
   char last[CHAR_INPUT_SIZE];
   char ssnStr[SSN_INPUT_SIZE];
+  Student *toAdd = malloc(sizeof(Student));
+  Student_Node *toAddNode = malloc(sizeof(Student_Node));
   printf("Add Student\n");
   getName(ADD_STUDENT_PROMPTS[0], first);
   getName(ADD_STUDENT_PROMPTS[1], last);
   getSSN(ADD_STUDENT_PROMPTS[2], ssnStr);
-  
-  //get rid of print statements and store data
+  copyCharArray(toAdd->first, first, CHAR_INPUT_SIZE);
+  copyCharArray(toAdd->last, last, CHAR_INPUT_SIZE);
+  copyCharArray(toAdd->ssn, ssnStr, SSN_INPUT_SIZE);
+  toAddNode->student = toAdd;
+  addStudentList(toAddNode);
+  writeStudentList();
+}
+
+/**
+ A function to copy the contents of an array into another array.
+ **/
+void copyCharArray(char *copyTo, char *copyFrom, int arrSize){
+  int i = 0;
+  for(i=0; i<arrSize; i++){
+    copyTo[i] = copyFrom[i];
+  }
 }
 
 /**
