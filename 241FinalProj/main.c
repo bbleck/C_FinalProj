@@ -11,7 +11,6 @@
 #include <time.h>
 #include "bb_strings.h"
 
-
 /**  Define Macros ***************** **/
 #define CHAR_INPUT_SIZE 30
 #define SSN_INPUT_SIZE 9
@@ -35,15 +34,33 @@ typedef struct student{
   char ssn[SSN_INPUT_SIZE];
 } Student;
 
+typedef struct student_node{
+  Student student;
+  struct student_node *next;
+  struct student_node *previous;
+} Student_Node;
+
 typedef struct class{
   int course_id;
   char course_title[CHAR_INPUT_SIZE];
 } Course;
 
+typedef struct course_node{
+  Course course;
+  struct course_node *next;
+  struct course_node *previous;
+} Course_Node;
+
 typedef struct enrollment{
   int course_id;
   char ssn[SSN_INPUT_SIZE];
 } Enrollment;
+
+typedef struct enrollment_node{
+  Enrollment enrollment;
+  struct enrollment_node *next;
+  struct enrollment_node *previous;
+} Enrollment_Node;
 
 typedef struct assignment{
   int assignment_id;
@@ -52,11 +69,23 @@ typedef struct assignment{
   int course_id;
 } Assignment;
 
+typedef struct assignment_node{
+  Assignment assignment;
+  struct assignment_node *next;
+  struct assignment_node *previous;
+} Assignment_Node;
+
 typedef struct grade{
   int course_id;
   char ssn[SSN_INPUT_SIZE];
   int pts_received;
 } Grade;
+
+typedef struct grade_node{
+  Grade grade;
+  struct grade_node *next;
+  struct grade_node *previous;
+} Grade_Node;
 
 /**  Function Declarations ********* **/
 int grabLine(void);
