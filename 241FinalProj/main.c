@@ -196,6 +196,7 @@ void setUpLists(void){
   makeAssignSentinel();
   fillStudentList();
   fillCourseList();
+  fillAssignmentList();
   //todo: make sure all sentinels are called and lists filled
 }
 
@@ -206,6 +207,7 @@ void setUpLists(void){
 void tearDownLists(void){
   free(inputSentinel);
   free(studentSentinel);
+  free(assignmentSentinel);
 }
 
 /**
@@ -453,11 +455,15 @@ void toAddClass(void){
   Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
   //todo: check if any other course already has the id; re-randomize if needed
   printf("Add Class\n");
+  //move values into new course
   getName(ADD_CLASS_PROMPTS[0], title);
   courseAdd->course_id = course_id;
   copyCharArray(courseAdd->course_title, title, CHAR_INPUT_SIZE);
+  //move new node into course node
   courseNodeAdd->course = courseAdd;
+  //add course node into list
   addCourseList(courseNodeAdd);
+  //write course list db to reflect change
   writeCourseList();
 }
 
@@ -485,7 +491,19 @@ void toAddAssignment(void){
   getInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
   getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
-  printf("%d, %c, %d, %d", assignment_id, assignment_title[0], courseID, totPts);
+//  printf("%d, %c, %d, %d", assignment_id, assignment_title[0], courseID, totPts);
+  //move values into new assignment
+  assignAdd->assignment_id = assignment_id;
+  assignAdd->course_id = courseID;
+  assignAdd->pts_total = totPts;
+  copyCharArray(assignAdd->assignment_title, assignment_title, CHAR_INPUT_SIZE);
+  //add new assignment into new assignment node
+  assignNodeAdd->assignment = assignAdd;
+  //add new assignment node into list
+  addAssignmentList(assignNodeAdd);
+  //rewrite assignment list to reflect change
+  writeAssignmentList();
+  printf("assignments in db: %d\n", assignmentSize);
 }
 
 /**
@@ -878,7 +896,7 @@ void fillAssignmentList(void){
       Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
       fread(assignAdd, sizeof(Assignment), 1, fp);
       assignNodeAdd->assignment = assignAdd;
-      //  todo: addAssignList(assignNodeAdd);
+      addAssignmentList(assignNodeAdd);
     }
     fclose(fp);
   }else{
