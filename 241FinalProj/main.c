@@ -128,6 +128,10 @@ void getSSN(const char* prompt, char* ssn);
 void setUpLists(void);
 void tearDownLists(void);
 void makeStudentSentinel(void);
+int clearStudentList(void);
+void fillStudentList(void);
+void writeStudentList(void);
+void addStudentList(Student_Node *toAdd);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -604,6 +608,10 @@ void addStudentList(Student_Node *toAdd){
   }
 }
 
+/**
+ A function to write the contents of the student linked list into
+ the Student database. Overwrites the Student database.
+ **/
 void writeStudentList(void){
   FILE *fp;
   Student_Node *toAdd = studentSentinel->next;
@@ -615,7 +623,11 @@ void writeStudentList(void){
   fclose(fp);
 }
 
-
+/**
+ A function to read one student at a time from the Student database,
+ then adding the student to a student node, which is then added to the
+ student linked list.
+ **/
 void fillStudentList(void){
   FILE *fp;
   if((fp = fopen(STUDENTS_DB, "r")) != NULL){
