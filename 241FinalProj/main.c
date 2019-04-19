@@ -20,6 +20,9 @@
 #define DELETE_MENU_OPTS '6'
 #define VIEW_D_MENU_OPTS '6'
 #define VIEW_G_MENU_OPTS '5'
+#define PASSWORD_SIZE 64
+#define ROLE_SIZE 8
+#define USERNAME_SIZE 20
 
 /**  Struct typedefs *************** **/
 typedef struct InputChar{
@@ -87,6 +90,18 @@ typedef struct grade_node{
   struct grade_node *previous;
 } Grade_Node;
 
+typedef struct user_record{
+  char userName[USERNAME_SIZE];
+  char role[ROLE_SIZE];
+  char password[PASSWORD_SIZE];
+} User_Record;
+
+typedef struct user_node{
+  User_Record user;
+  struct user_node *next;
+  struct user_node *previous;
+} User_Node;
+
 /**  Function Declarations ********* **/
 int grabLine(void);
 int clearLine(void);
@@ -114,6 +129,11 @@ void getSSN(const char* prompt, char* ssn);
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
 int inputSize;
+Student_Node *studentSentinel;
+int studentSize;
+Course_Node *courseSentinel;
+int courseSize;
+
 
 /** ******************************** **/
 

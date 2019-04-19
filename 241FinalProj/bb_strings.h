@@ -14,6 +14,7 @@ const char CLASSES_DB[] = "classes.db";
 const char ASSIGNMENTS_DB[] = "assignments.db";
 const char ENROLLMENT_DB[] = "enrollment.db";
 const char GRADES_DB[] = "grades.db";
+const char USERS_DB[] = "users.db";
 
 const char MAIN_MENU_TEXT[] = "Main Menu\n1. Add Data\n2. Edit Data\n3. Delete Data\n4. View Data\n5. Use Command Line Environment\n6. Exit\nEnter 1-6\n";
 const char ADD_DATA_MENU_TEXT[] = "Add Data Menu\n1. Add Student\n2. Add Class\n3. Add Assignment\n4. Add Grade\n5. Enroll Student\n6. Return to Main Menu\nEnter 1-6\n";
