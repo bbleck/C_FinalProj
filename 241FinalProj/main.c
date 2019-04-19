@@ -38,7 +38,7 @@ typedef struct student{
 } Student;
 
 typedef struct student_node{
-  Student student;
+  Student *student;
   struct student_node *next;
   struct student_node *previous;
 } Student_Node;
@@ -604,8 +604,35 @@ void addStudentList(Student_Node *toAdd){
   }
 }
 
+void writeStudentList(void){
+  FILE *fp;
+  Student_Node *toAdd = studentSentinel->next;
+  fp = fopen(STUDENTS_DB, "w");
+  while(toAdd != studentSentinel){
+    fwrite(toAdd->student, sizeof(Student), 1, fp);
+    toAdd = toAdd->next;
+  }
+  fclose(fp);
+}
+
+
 void fillStudentList(void){
-  
+  FILE *fp;
+  if((fp = fopen(STUDENTS_DB, "r")) != NULL){
+    //file exists, fill student list
+    fseek(fp, 0, SEEK_SET);
+    while(!feof(fp)){
+      Student *studentAdd = malloc(sizeof(Student));
+      Student_Node *studentNodeAdd = malloc(sizeof(Student_Node));
+      fread(studentAdd, sizeof(Student), 1, fp);
+      studentNodeAdd->student = studentAdd;
+      addStudentList(studentNodeAdd);
+    }
+    fclose(fp);
+  }else{
+    fp = fopen(STUDENTS_DB, "w");
+    fclose(fp);
+  }
 }
 
 /**
@@ -618,6 +645,7 @@ int clearStudentList(void){
   Student_Node *toClear = studentSentinel->previous;
   while(toClear != studentSentinel){
     Student_Node *nextClear = toClear->previous;
+    free(toClear->student);
     free(toClear);
     toClear = nextClear;
   }
