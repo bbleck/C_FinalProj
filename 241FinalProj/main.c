@@ -731,7 +731,7 @@ void fillCourseList(void){
       Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
       fread(courseAdd, sizeof(Course), 1, fp);
       courseNodeAdd->course = courseAdd;
-      //todo: call addCourseList(courseNodeAdd);
+      addCourseList(courseNodeAdd);
     }
     fclose(fp);
   }else{
@@ -780,6 +780,7 @@ int clearCourseList(void){
   }
   courseSentinel->next = NULL;
   courseSentinel->previous = NULL;
+  courseSize = 0;
   return 1;
 }
 
