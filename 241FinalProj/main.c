@@ -80,6 +80,7 @@ typedef struct assignment_node{
 
 typedef struct grade{
   int course_id;
+  int assignment_id;
   char ssn[SSN_INPUT_SIZE];
   int pts_received;
 } Grade;
@@ -147,6 +148,11 @@ int clearAssignList(void);
 void fillAssignmentList(void);
 void writeAssignmentList(void);
 void addAssignmentList(Assignment_Node *toAdd);
+void makeGradeSentinel(void);
+int clearGradeList(void);
+void fillGradeList(void);
+void writeGradesList(void);
+void addGradeList(Grade_Node *toAdd);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -194,9 +200,11 @@ void setUpLists(void){
   makeStudentSentinel();
   makeCourseSentinel();
   makeAssignSentinel();
+  makeGradeSentinel();
   fillStudentList();
   fillCourseList();
   fillAssignmentList();
+  fillGradeList();
   //todo: make sure all sentinels are called and lists filled
 }
 
@@ -208,6 +216,7 @@ void tearDownLists(void){
   free(inputSentinel);
   free(studentSentinel);
   free(assignmentSentinel);
+  free(gradeSentinel);
 }
 
 /**
@@ -471,7 +480,28 @@ void toAddClass(void){
  A function that will add a grade to the database.
  **/
 void toAddGrade(void){
-  
+  int course_id;
+  int assignment_id;
+  char ssn[SSN_INPUT_SIZE];
+  int pts_received;
+  int *courseID = &course_id;
+  int *ptsReceived = &pts_received;
+  int *assignID = &assignment_id;
+  Grade *gradeAdd = malloc(sizeof(Grade));
+  Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
+  printf("Add Grade\n");
+  getInt(ADD_GRADE_PROMPTS[0], courseID);
+  getInt(ADD_GRADE_PROMPTS[1], assignID);
+  getSSN(ADD_GRADE_PROMPTS[2], ssn);
+  getInt(ADD_GRADE_PROMPTS[3], ptsReceived);
+  gradeAdd->assignment_id = assignment_id;
+  gradeAdd->course_id = course_id;
+  gradeAdd->pts_received = pts_received;
+  copyCharArray(gradeAdd->ssn, ssn, SSN_INPUT_SIZE);
+  gradeNodeAdd->grade = gradeAdd;
+  addGradeList(gradeNodeAdd);
+  writeGradesList();
+  printf("grades in db: %d\n", gradeSize);
 }
 
 /**
@@ -734,6 +764,7 @@ void addInputC(Input_c *toAdd){
  A function to add a student node onto the end of the linked list.
  **/
 void addStudentList(Student_Node *toAdd){
+  printf("addStudentList called\n");
   if(studentSentinel->next == NULL && studentSentinel->previous == NULL){
     studentSentinel->next = toAdd;
     studentSentinel->previous = toAdd;
@@ -753,6 +784,7 @@ void addStudentList(Student_Node *toAdd){
  A function to add a course node onto the end of the linkd list.
  **/
 void addCourseList(Course_Node *toAdd){
+  printf("addCourseList called\n");
   if(courseSentinel->next == NULL && courseSentinel->previous == NULL){
     courseSentinel->next = toAdd;
     courseSentinel->previous = toAdd;
@@ -772,6 +804,7 @@ void addCourseList(Course_Node *toAdd){
  A function to add an assignment node onto the end of the assignment linked list.
  **/
 void addAssignmentList(Assignment_Node *toAdd){
+  printf("addAssignmentList called\n");
   if(assignmentSentinel->next == NULL && assignmentSentinel->previous == NULL){
     assignmentSentinel->next = toAdd;
     assignmentSentinel->previous = toAdd;
@@ -786,6 +819,27 @@ void addAssignmentList(Assignment_Node *toAdd){
     assignmentSize++;
   }
 }
+
+/**
+ A function to add an grade node onto the end of the grade linked list.
+ **/
+void addGradeList(Grade_Node *toAdd){
+  printf("addGradeList called\n");
+  if(gradeSentinel->next == NULL && gradeSentinel->previous == NULL){
+    gradeSentinel->next = toAdd;
+    gradeSentinel->previous = toAdd;
+    toAdd->next = gradeSentinel;
+    toAdd->previous = gradeSentinel;
+    gradeSize = 1;
+  }else{
+    gradeSentinel->previous->next = toAdd;
+    toAdd->next = gradeSentinel;
+    toAdd->previous = gradeSentinel->previous;
+    gradeSentinel->previous = toAdd;
+    gradeSize++;
+  }
+}
+
 
 /**
  A function to write the contents of the student linked list into
@@ -832,6 +886,21 @@ void writeAssignmentList(void){
   fclose(fp);
 }
 
+/**
+ A functin to write the contents of the grades linked list into
+ the grades database.  Overwrites the grades database.
+ **/
+void writeGradesList(void){
+  FILE *fp;
+  Grade_Node *toAdd = gradeSentinel->next;
+  fp = fopen(GRADES_DB, "w");
+  while(toAdd != gradeSentinel && toAdd != NULL){
+    fwrite(toAdd->grade, sizeof(Grade), 1, fp);
+    toAdd = toAdd->next;
+  }
+  fclose(fp);
+}
+
 
 /**
  A function to read one student at a time from the Student database,
@@ -846,9 +915,10 @@ void fillStudentList(void){
     while(!feof(fp)){
       Student *studentAdd = malloc(sizeof(Student));
       Student_Node *studentNodeAdd = malloc(sizeof(Student_Node));
-      fread(studentAdd, sizeof(Student), 1, fp);
-      studentNodeAdd->student = studentAdd;
-      addStudentList(studentNodeAdd);
+      if(fread(studentAdd, sizeof(Student), 1, fp)){
+        studentNodeAdd->student = studentAdd;
+        addStudentList(studentNodeAdd);
+      };
     }
     fclose(fp);
   }else{
@@ -870,9 +940,10 @@ void fillCourseList(void){
     while(!feof(fp)){
       Course *courseAdd = malloc(sizeof(Course));
       Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
-      fread(courseAdd, sizeof(Course), 1, fp);
-      courseNodeAdd->course = courseAdd;
-      addCourseList(courseNodeAdd);
+      if(fread(courseAdd, sizeof(Course), 1, fp)){
+        courseNodeAdd->course = courseAdd;
+        addCourseList(courseNodeAdd);
+      };
     }
     fclose(fp);
   }else{
@@ -894,13 +965,39 @@ void fillAssignmentList(void){
     while(!feof(fp)){
       Assignment *assignAdd = malloc(sizeof(Assignment));
       Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
-      fread(assignAdd, sizeof(Assignment), 1, fp);
-      assignNodeAdd->assignment = assignAdd;
-      addAssignmentList(assignNodeAdd);
+      if(fread(assignAdd, sizeof(Assignment), 1, fp)){
+        assignNodeAdd->assignment = assignAdd;
+        addAssignmentList(assignNodeAdd);
+      };
     }
     fclose(fp);
   }else{
     fp = fopen(ASSIGNMENTS_DB, "w");
+    fclose(fp);
+  }
+}
+
+/**
+ A function to read one grade at a time from the grade database,
+ then adds the course to a grade node, which is added to the grade
+ linked list.
+ **/
+void fillGradeList(void){
+  FILE *fp;
+  if((fp = fopen(GRADES_DB, "r")) != NULL){
+    //file exists, fill course list
+    fseek(fp, 0, SEEK_SET);
+    while(!feof(fp)){
+      Grade *gradeAdd = malloc(sizeof(Grade));
+      Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
+      if(fread(gradeAdd, sizeof(Grade), 1, fp)){
+        gradeNodeAdd->grade = gradeAdd;
+        addGradeList(gradeNodeAdd);
+      };
+    }
+    fclose(fp);
+  }else{
+    fp = fopen(GRADES_DB, "w");
     fclose(fp);
   }
 }
@@ -972,6 +1069,28 @@ int clearAssignList(void){
 }
 
 /**
+ A function to clear the grade linked list.
+ **/
+int clearGradeList(void){
+  if(gradeSize == 0){
+    return 1;
+  }
+  Grade_Node *toClear = gradeSentinel->previous;
+  while(toClear != gradeSentinel){
+    Grade_Node *nextClear = toClear->previous;
+    if(toClear->grade != NULL){
+      free(toClear->grade);
+    }
+    free(toClear);
+    toClear = nextClear;
+  }
+  gradeSentinel->next = NULL;
+  gradeSentinel->previous = NULL;
+  gradeSize = 0;
+  return 1;
+}
+
+/**
  A helper function to build the input sentinel node
  and store a reference to it in the global variable.
  **/
@@ -1014,6 +1133,17 @@ void makeAssignSentinel(void){
   assignmentSentinel = malloc(sizeof(Assignment_Node));
   assignmentSentinel->next = NULL;
   assignmentSentinel->previous = NULL;
+}
+
+/**
+ A helper function to build the grade sentinel node and
+ store a reference to it in the global variable.
+ **/
+void makeGradeSentinel(void){
+  gradeSize = 0;
+  gradeSentinel = malloc(sizeof(Grade_Node));
+  gradeSentinel->next = NULL;
+  gradeSentinel->previous = NULL;
 }
 
 /**
