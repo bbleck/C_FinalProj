@@ -49,7 +49,7 @@ typedef struct class{
 } Course;
 
 typedef struct course_node{
-  Course course;
+  Course *course;
   struct course_node *next;
   struct course_node *previous;
 } Course_Node;
@@ -60,7 +60,7 @@ typedef struct enrollment{
 } Enrollment;
 
 typedef struct enrollment_node{
-  Enrollment enrollment;
+  Enrollment *enrollment;
   struct enrollment_node *next;
   struct enrollment_node *previous;
 } Enrollment_Node;
@@ -73,7 +73,7 @@ typedef struct assignment{
 } Assignment;
 
 typedef struct assignment_node{
-  Assignment assignment;
+  Assignment *assignment;
   struct assignment_node *next;
   struct assignment_node *previous;
 } Assignment_Node;
@@ -85,7 +85,7 @@ typedef struct grade{
 } Grade;
 
 typedef struct grade_node{
-  Grade grade;
+  Grade *grade;
   struct grade_node *next;
   struct grade_node *previous;
 } Grade_Node;
@@ -97,7 +97,7 @@ typedef struct user_record{
 } User_Record;
 
 typedef struct user_node{
-  User_Record user;
+  User_Record *user;
   struct user_node *next;
   struct user_node *previous;
 } User_Node;
@@ -133,6 +133,11 @@ void fillStudentList(void);
 void writeStudentList(void);
 void addStudentList(Student_Node *toAdd);
 void copyCharArray(char *copyTo, char *copyFrom, int arrSize);
+int clearCourseList(void);
+void makeCourseSentinel(void);
+void fillCourseList(void);
+void addCourseList(Course_Node *toAdd);
+void writeCourseList(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -157,6 +162,9 @@ int userSize;
  **/
 int main(int argc, const char * argv[]) {
   srand((unsigned int)time(0));
+//  FILE *fp;
+//  fopen(STUDENTS_DB, "w");
+  
   setUpLists();
   if(argc > 1){
     //todo implement cli
@@ -175,6 +183,9 @@ int main(int argc, const char * argv[]) {
 void setUpLists(void){
   makeSentinel();
   makeStudentSentinel();
+  makeCourseSentinel();
+  fillStudentList();
+  fillCourseList();
 }
 
 /**
@@ -183,7 +194,7 @@ void setUpLists(void){
  **/
 void tearDownLists(void){
   free(inputSentinel);
-  
+  free(studentSentinel);
 }
 
 /**
@@ -363,11 +374,18 @@ void copyCharArray(char *copyTo, char *copyFrom, int arrSize){
  A function that will add a class to database.
  **/
 void toAddClass(void){
-  char title[31];
-  title[30] = '\0';
+  char title[CHAR_INPUT_SIZE];
+  int course_id = rand();
+  Course *courseAdd = malloc(sizeof(Course));
+  Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
+  //todo: check if any other course already has the id; re-randomize if needed
   printf("Add Class\n");
   getName(ADD_CLASS_PROMPTS[0], title);
-  printf("Class title: %s\n", title);
+  courseAdd->course_id = course_id;
+  copyCharArray(courseAdd->course_title, title, CHAR_INPUT_SIZE);
+  courseNodeAdd->course = courseAdd;
+  addCourseList(courseNodeAdd);
+  writeCourseList();
 }
 
 /**
@@ -626,6 +644,25 @@ void addStudentList(Student_Node *toAdd){
 }
 
 /**
+ A function to add a course node onto the end of the linkd list.
+ **/
+void addCourseList(Course_Node *toAdd){
+  if(courseSentinel->next == NULL && courseSentinel->previous == NULL){
+    courseSentinel->next = toAdd;
+    courseSentinel->previous = toAdd;
+    toAdd->next = courseSentinel;
+    toAdd->previous = courseSentinel;
+    studentSize = 1;
+  }else{
+    courseSentinel->previous->next = toAdd;
+    toAdd->next = courseSentinel;
+    toAdd->previous = courseSentinel->previous;
+    courseSentinel->previous = toAdd;
+    courseSize++;
+  }
+}
+
+/**
  A function to write the contents of the student linked list into
  the Student database. Overwrites the Student database.
  **/
@@ -633,8 +670,23 @@ void writeStudentList(void){
   FILE *fp;
   Student_Node *toAdd = studentSentinel->next;
   fp = fopen(STUDENTS_DB, "w");
-  while(toAdd != studentSentinel){
+  while(toAdd != studentSentinel && toAdd != NULL){
     fwrite(toAdd->student, sizeof(Student), 1, fp);
+    toAdd = toAdd->next;
+  }
+  fclose(fp);
+}
+
+/**
+ A functin to write the contents of the course linked list into
+ the courses database.  Overwrites the courses database.
+ **/
+void writeCourseList(void){
+  FILE *fp;
+  Course_Node *toAdd = courseSentinel->next;
+  fp = fopen(CLASSES_DB, "w");
+  while(toAdd != courseSentinel && toAdd != NULL){
+    fwrite(toAdd->course, sizeof(Course), 1, fp);
     toAdd = toAdd->next;
   }
   fclose(fp);
@@ -665,6 +717,30 @@ void fillStudentList(void){
 }
 
 /**
+ A function to read one course at a time from the course database,
+ then adding the course to the course node, which is then added to the
+ course linked list.
+ **/
+void fillCourseList(void){
+  FILE *fp;
+  if((fp = fopen(CLASSES_DB, "r")) != NULL){
+    //file exists, fill course list
+    fseek(fp, 0, SEEK_SET);
+    while(!feof(fp)){
+      Course *courseAdd = malloc(sizeof(Course));
+      Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
+      fread(courseAdd, sizeof(Course), 1, fp);
+      courseNodeAdd->course = courseAdd;
+      //todo: call addCourseList(courseNodeAdd);
+    }
+    fclose(fp);
+  }else{
+    fp = fopen(CLASSES_DB, "w");
+    fclose(fp);
+  }
+}
+
+/**
  A function to clear the student list.
  **/
 int clearStudentList(void){
@@ -674,13 +750,36 @@ int clearStudentList(void){
   Student_Node *toClear = studentSentinel->previous;
   while(toClear != studentSentinel){
     Student_Node *nextClear = toClear->previous;
-    free(toClear->student);
+    if(toClear->student != NULL){
+      free(toClear->student);
+    }
     free(toClear);
     toClear = nextClear;
   }
   studentSentinel->next = NULL;
   studentSentinel->previous = NULL;
   studentSize = 0;
+  return 1;
+}
+
+/**
+ A function to clear the course list.
+ **/
+int clearCourseList(void){
+  if(courseSize == 0){
+    return 1;
+  }
+  Course_Node *toClear = courseSentinel->previous;
+  while(toClear != courseSentinel){
+    Course_Node *nextClear = toClear->previous;
+    if(toClear->course != NULL){
+      free(toClear->course);
+    }
+    free(toClear);
+    toClear = nextClear;
+  }
+  courseSentinel->next = NULL;
+  courseSentinel->previous = NULL;
   return 1;
 }
 
@@ -705,6 +804,17 @@ void makeStudentSentinel(void){
   studentSentinel = malloc(sizeof(Student_Node));
   studentSentinel->next = NULL;
   studentSentinel->previous = NULL;
+}
+
+/**
+ A helper function to build the class sentinel node and
+ store a reference to it in the global variable.
+ **/
+void makeCourseSentinel(void){
+  courseSize = 0;
+  courseSentinel = malloc(sizeof(Course_Node));
+  courseSentinel->next = NULL;
+  courseSentinel->previous = NULL;
 }
 
 /**
