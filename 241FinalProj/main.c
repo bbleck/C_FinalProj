@@ -125,6 +125,9 @@ void toAddAssignment(void);
 int storeNameInput (char* nameStorage);
 void getName(const char* prompt, char* name);
 void getSSN(const char* prompt, char* ssn);
+void setUpLists(void);
+void tearDownLists(void);
+void makeStudentSentinel(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -133,7 +136,14 @@ Student_Node *studentSentinel;
 int studentSize;
 Course_Node *courseSentinel;
 int courseSize;
-
+Enrollment_Node *enrollSentinel;
+int enrollSize;
+Assignment_Node *assignmentSentinel;
+int assignmentSize;
+Grade_Node *gradeSentinel;
+int gradeSize;
+User_Node *userSentinel;
+int userSize;
 
 /** ******************************** **/
 
@@ -141,18 +151,34 @@ int courseSize;
  Insertion point into program.
  **/
 int main(int argc, const char * argv[]) {
-  
   srand((unsigned int)time(0));
-  
-  makeSentinel();
+  setUpLists();
   if(argc > 1){
     //todo implement cli
     printf("greater than 1 argc");
     return -1;
   }
   toMainMenu();
-  free(inputSentinel);
+  tearDownLists();
   return 0;
+}
+
+/**
+ A function to sub delegate setting up the linked lists for input
+ and databases.
+ **/
+void setUpLists(void){
+  makeSentinel();
+  makeStudentSentinel();
+}
+
+/**
+ A function to sub delegate freeing the linked lists for input
+ and databases.
+ **/
+void tearDownLists(void){
+  free(inputSentinel);
+  
 }
 
 /**
@@ -540,7 +566,6 @@ int clearLine(void){
   return 1;
 }
 
-
 /**
  A function to add an input node onto the end of the linked list.
  **/
@@ -560,6 +585,47 @@ void addInputC(Input_c *toAdd){
   }
 }
 
+/**
+ A function to add a student node onto the end of the linked list.
+ **/
+void addStudentList(Student_Node *toAdd){
+  if(studentSentinel->next == NULL && studentSentinel->previous == NULL){
+    studentSentinel->next = toAdd;
+    studentSentinel->previous = toAdd;
+    toAdd->next = studentSentinel;
+    toAdd->previous = studentSentinel;
+    studentSize = 1;
+  }else{
+    studentSentinel->previous->next = toAdd;
+    toAdd->next = studentSentinel;
+    toAdd->previous = studentSentinel->previous;
+    studentSentinel->previous = toAdd;
+    studentSize++;
+  }
+}
+
+void fillStudentList(void){
+  
+}
+
+/**
+ A function to clear the student list.
+ **/
+int clearStudentList(void){
+  if(studentSize==0){
+    return 1;
+  }
+  Student_Node *toClear = studentSentinel->previous;
+  while(toClear != studentSentinel){
+    Student_Node *nextClear = toClear->previous;
+    free(toClear);
+    toClear = nextClear;
+  }
+  studentSentinel->next = NULL;
+  studentSentinel->previous = NULL;
+  studentSize = 0;
+  return 1;
+}
 
 /**
  A helper function to build the input sentinel node
@@ -571,6 +637,17 @@ void makeSentinel(void){
   inputSentinel->next = NULL;
   inputSentinel->previous = NULL;
   inputSentinel->value = '\0';
+}
+
+/**
+ A helper function to build the student sentinel node
+ and store a reference to it in the global variable.
+ **/
+void makeStudentSentinel(void){
+  studentSize = 0;
+  studentSentinel = malloc(sizeof(Student_Node));
+  studentSentinel->next = NULL;
+  studentSentinel->previous = NULL;
 }
 
 /**
