@@ -159,6 +159,9 @@ int clearEnrollList(void);
 void fillEnrollList(void);
 void writeEnrollList(void);
 void addEnrollList(Enrollment_Node *toAdd);
+void toEditStudent(void);
+int ssnsAreEqual(char* ssn1, char* ssn2);
+int studentExists(char* ssn, Student_Node* toEdit);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -547,7 +550,6 @@ void toAddAssignment(void){
   getInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
   getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
-//  printf("%d, %c, %d, %d", assignment_id, assignment_title[0], courseID, totPts);
   //move values into new assignment
   assignAdd->assignment_id = assignment_id;
   assignAdd->course_id = courseID;
@@ -559,7 +561,74 @@ void toAddAssignment(void){
   addAssignmentList(assignNodeAdd);
   //rewrite assignment list to reflect change
   writeAssignmentList();
-  printf("assignments in db: %d\n", assignmentSize);
+}
+
+/**
+ A function that will retrieve a student entry, edit it,
+ and update the student list and db to reflect changes.
+ **/
+void toEditStudent(void){
+  int flag = 0;
+  char ssn[SSN_INPUT_SIZE];
+  char first[CHAR_INPUT_SIZE];
+  char last[CHAR_INPUT_SIZE];
+  Student_Node *toEdit = studentSentinel;
+  while(1){
+    getSSN(EDIT_STUDENT_PROMPTS[0], &ssn[0]);
+    if(studentExists(&ssn[0], toEdit)){
+      break;
+    }
+  }
+  printf("%s",EDIT_STUDENT_PROMPTS[1]);
+  clearLine();
+  grabLine();
+  if(inputSize != 0){
+    retrieveName(&first[0]);
+    copyCharArray(toEdit->student->first, first, CHAR_INPUT_SIZE);
+    flag = 1;
+  }
+  printf("%s",EDIT_STUDENT_PROMPTS[2]);
+  clearLine();
+  grabLine();
+  if(inputSize != 0){
+    retrieveName(&last[0]);
+    copyCharArray(toEdit->student->last, last, CHAR_INPUT_SIZE);
+    flag = 1;
+  }
+  if(flag){
+    writeStudentList();
+  }
+  printf("%c %c %c\n", studentSentinel->student->first[0], studentSentinel->student->last[0], studentSentinel->student->ssn[0]);
+}
+
+/**
+ A function that takes a SSN and looks for a match in the
+ Students linked list.  If found, returns 1 and sets the node
+ pointer parameter to the correspoding node.
+ **/
+int studentExists(char* ssn, Student_Node* toEdit){
+  Student_Node *temp = studentSentinel->next;
+  while(temp != studentSentinel){
+    if(ssnsAreEqual(ssn, temp->student->ssn)){
+      toEdit = temp;
+      return 1;
+    }
+    temp = temp->next;
+  }
+  return 0;
+}
+
+/**
+ Function that returns 1 if passed in SSNs are equal.
+ **/
+int ssnsAreEqual(char* ssn1, char* ssn2){
+  int i = 0;
+  for(i=0; i<SSN_INPUT_SIZE; i++){
+    if(ssn1[i]!=ssn2[i]){
+      return 0;
+    }
+  }
+  return 1;
 }
 
 /**
@@ -680,7 +749,7 @@ void toEditDataMenu(void){
   }
   switch (inputSentinel->next->value) {
     case '1':
-      //todo: edit student
+      toEditStudent();
       break;
     case '2':
       //todo: edit class
