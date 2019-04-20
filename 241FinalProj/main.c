@@ -225,6 +225,7 @@ void setUpLists(void){
  **/
 void tearDownLists(void){
   free(inputSentinel);
+  free(courseSentinel);
   free(studentSentinel);
   free(assignmentSentinel);
   free(gradeSentinel);
@@ -572,7 +573,6 @@ void toEditStudent(void){
   char ssn[SSN_INPUT_SIZE];
   char first[CHAR_INPUT_SIZE];
   char last[CHAR_INPUT_SIZE];
-//  Student_Node *toEditNodePtr = NULL;
   Student *toEdit = NULL;
   while(1){
     getSSN(EDIT_STUDENT_PROMPTS[0], &ssn[0]);
