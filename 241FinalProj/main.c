@@ -161,7 +161,7 @@ void writeEnrollList(void);
 void addEnrollList(Enrollment_Node *toAdd);
 void toEditStudent(void);
 int ssnsAreEqual(char* ssn1, char* ssn2);
-int studentExists(char* ssn, Student_Node* toEdit);
+Student* studentExists(char* ssn);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -572,10 +572,11 @@ void toEditStudent(void){
   char ssn[SSN_INPUT_SIZE];
   char first[CHAR_INPUT_SIZE];
   char last[CHAR_INPUT_SIZE];
-  Student_Node *toEdit = studentSentinel;
+//  Student_Node *toEditNodePtr = NULL;
+  Student *toEdit = NULL;
   while(1){
     getSSN(EDIT_STUDENT_PROMPTS[0], &ssn[0]);
-    if(studentExists(&ssn[0], toEdit)){
+    if((toEdit = studentExists(&ssn[0])) != NULL){
       break;
     }
   }
@@ -584,7 +585,7 @@ void toEditStudent(void){
   grabLine();
   if(inputSize != 0){
     retrieveName(&first[0]);
-    copyCharArray(toEdit->student->first, first, CHAR_INPUT_SIZE);
+    copyCharArray(toEdit->first, first, CHAR_INPUT_SIZE);
     flag = 1;
   }
   printf("%s",EDIT_STUDENT_PROMPTS[2]);
@@ -592,13 +593,13 @@ void toEditStudent(void){
   grabLine();
   if(inputSize != 0){
     retrieveName(&last[0]);
-    copyCharArray(toEdit->student->last, last, CHAR_INPUT_SIZE);
+    copyCharArray(toEdit->last, last, CHAR_INPUT_SIZE);
     flag = 1;
   }
   if(flag){
     writeStudentList();
   }
-  printf("%c %c %c\n", studentSentinel->student->first[0], studentSentinel->student->last[0], studentSentinel->student->ssn[0]);
+//  printf("%c %c %c\n", studentSentinel->next->student->first[0], studentSentinel->next->student->last[0], studentSentinel->next->student->ssn[0]);
 }
 
 /**
@@ -606,16 +607,15 @@ void toEditStudent(void){
  Students linked list.  If found, returns 1 and sets the node
  pointer parameter to the correspoding node.
  **/
-int studentExists(char* ssn, Student_Node* toEdit){
+Student* studentExists(char* ssn){
   Student_Node *temp = studentSentinel->next;
   while(temp != studentSentinel){
     if(ssnsAreEqual(ssn, temp->student->ssn)){
-      toEdit = temp;
-      return 1;
+      return temp->student;
     }
     temp = temp->next;
   }
-  return 0;
+  return NULL;
 }
 
 /**
