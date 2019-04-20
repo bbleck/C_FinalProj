@@ -153,6 +153,12 @@ int clearGradeList(void);
 void fillGradeList(void);
 void writeGradesList(void);
 void addGradeList(Grade_Node *toAdd);
+void toAddEnrollment(void);
+void makeEnrollmentSentinel(void);
+int clearEnrollList(void);
+void fillEnrollList(void);
+void writeEnrollList(void);
+void addEnrollList(Enrollment_Node *toAdd);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -201,10 +207,12 @@ void setUpLists(void){
   makeCourseSentinel();
   makeAssignSentinel();
   makeGradeSentinel();
+  makeEnrollmentSentinel();
   fillStudentList();
   fillCourseList();
   fillAssignmentList();
   fillGradeList();
+  fillEnrollList();
   //todo: make sure all sentinels are called and lists filled
 }
 
@@ -217,6 +225,7 @@ void tearDownLists(void){
   free(studentSentinel);
   free(assignmentSentinel);
   free(gradeSentinel);
+  free(enrollSentinel);
 }
 
 /**
@@ -312,7 +321,7 @@ void toAddDataMenu(void){
       toAddGrade();
       break;
     case '5':
-      //todo: enroll student
+      toAddEnrollment();
       break;
     case '6':
       return;
@@ -501,7 +510,24 @@ void toAddGrade(void){
   gradeNodeAdd->grade = gradeAdd;
   addGradeList(gradeNodeAdd);
   writeGradesList();
-  printf("grades in db: %d\n", gradeSize);
+}
+
+/**
+ A function to enroll a student in a course.
+ **/
+void toAddEnrollment(void){
+  int course_id;
+  char ssn[SSN_INPUT_SIZE];
+  Enrollment *enrollmentAdd = malloc(sizeof(Enrollment));
+  Enrollment_Node *enrollmentNodeAdd = malloc(sizeof(Enrollment_Node));
+  printf("Add Enrollment\n");
+  getInt(ENROLL_STUDENT_PROMPTS[0], &course_id);
+  getSSN(ENROLL_STUDENT_PROMPTS[1], &ssn[0]);
+  enrollmentAdd->course_id = course_id;
+  copyCharArray(enrollmentAdd->ssn, ssn, SSN_INPUT_SIZE);
+  enrollmentNodeAdd->enrollment = enrollmentAdd;
+  addEnrollList(enrollmentNodeAdd);
+  writeEnrollList();
 }
 
 /**
@@ -764,7 +790,6 @@ void addInputC(Input_c *toAdd){
  A function to add a student node onto the end of the linked list.
  **/
 void addStudentList(Student_Node *toAdd){
-  printf("addStudentList called\n");
   if(studentSentinel->next == NULL && studentSentinel->previous == NULL){
     studentSentinel->next = toAdd;
     studentSentinel->previous = toAdd;
@@ -784,7 +809,6 @@ void addStudentList(Student_Node *toAdd){
  A function to add a course node onto the end of the linkd list.
  **/
 void addCourseList(Course_Node *toAdd){
-  printf("addCourseList called\n");
   if(courseSentinel->next == NULL && courseSentinel->previous == NULL){
     courseSentinel->next = toAdd;
     courseSentinel->previous = toAdd;
@@ -804,7 +828,6 @@ void addCourseList(Course_Node *toAdd){
  A function to add an assignment node onto the end of the assignment linked list.
  **/
 void addAssignmentList(Assignment_Node *toAdd){
-  printf("addAssignmentList called\n");
   if(assignmentSentinel->next == NULL && assignmentSentinel->previous == NULL){
     assignmentSentinel->next = toAdd;
     assignmentSentinel->previous = toAdd;
@@ -824,7 +847,6 @@ void addAssignmentList(Assignment_Node *toAdd){
  A function to add an grade node onto the end of the grade linked list.
  **/
 void addGradeList(Grade_Node *toAdd){
-  printf("addGradeList called\n");
   if(gradeSentinel->next == NULL && gradeSentinel->previous == NULL){
     gradeSentinel->next = toAdd;
     gradeSentinel->previous = toAdd;
@@ -837,6 +859,25 @@ void addGradeList(Grade_Node *toAdd){
     toAdd->previous = gradeSentinel->previous;
     gradeSentinel->previous = toAdd;
     gradeSize++;
+  }
+}
+
+/**
+ A function to add an enrollment node onto the end of the enrollment linked list.
+ **/
+void addEnrollList(Enrollment_Node *toAdd){
+  if(enrollSentinel->next == NULL && enrollSentinel->previous == NULL){
+    enrollSentinel->next = toAdd;
+    enrollSentinel->previous = toAdd;
+    toAdd->next = enrollSentinel;
+    toAdd->previous = enrollSentinel;
+    enrollSize = 1;
+  }else{
+    enrollSentinel->previous->next = toAdd;
+    toAdd->next = enrollSentinel;
+    toAdd->previous = enrollSentinel->previous;
+    enrollSentinel->previous = toAdd;
+    enrollSize++;
   }
 }
 
@@ -896,6 +937,21 @@ void writeGradesList(void){
   fp = fopen(GRADES_DB, "w");
   while(toAdd != gradeSentinel && toAdd != NULL){
     fwrite(toAdd->grade, sizeof(Grade), 1, fp);
+    toAdd = toAdd->next;
+  }
+  fclose(fp);
+}
+
+/**
+ A functin to write the contents of the enrollment linked list into
+ the enrollment database.  Overwrites the enrollment database.
+ **/
+void writeEnrollList(void){
+  FILE *fp;
+  Enrollment_Node *toAdd = enrollSentinel->next;
+  fp = fopen(ENROLLMENT_DB, "w");
+  while(toAdd != enrollSentinel && toAdd != NULL){
+    fwrite(toAdd->enrollment, sizeof(Enrollment), 1, fp);
     toAdd = toAdd->next;
   }
   fclose(fp);
@@ -1003,6 +1059,32 @@ void fillGradeList(void){
 }
 
 /**
+ A function to read one enrollment at a time from the enrollment database,
+ then adds the course to a enrollment node, which is added to the enrollment
+ linked list.
+ **/
+void fillEnrollList(void){
+  FILE *fp;
+  if((fp = fopen(ENROLLMENT_DB, "r")) != NULL){
+    //file exists, fill course list
+    fseek(fp, 0, SEEK_SET);
+    while(!feof(fp)){
+      Enrollment *enrollAdd = malloc(sizeof(Enrollment));
+      Enrollment_Node *enrollNodeAdd = malloc(sizeof(Enrollment_Node));
+      if(fread(enrollAdd, sizeof(Enrollment), 1, fp)){
+        enrollNodeAdd->enrollment = enrollAdd;
+        addEnrollList(enrollNodeAdd);
+      };
+    }
+    fclose(fp);
+  }else{
+    fp = fopen(ENROLLMENT_DB, "w");
+    fclose(fp);
+  }
+}
+
+
+/**
  A function to clear the student list.
  **/
 int clearStudentList(void){
@@ -1091,6 +1173,28 @@ int clearGradeList(void){
 }
 
 /**
+ A function to clear the enroll linked list.
+ **/
+int clearEnrollList(void){
+  if(enrollSize == 0){
+    return 1;
+  }
+  Enrollment_Node *toClear = enrollSentinel->previous;
+  while(toClear != enrollSentinel){
+    Enrollment_Node *nextClear = toClear->previous;
+    if(toClear->enrollment != NULL){
+      free(toClear->enrollment);
+    }
+    free(toClear);
+    toClear = nextClear;
+  }
+  enrollSentinel->next = NULL;
+  enrollSentinel->previous = NULL;
+  enrollSize = 0;
+  return 1;
+}
+
+/**
  A helper function to build the input sentinel node
  and store a reference to it in the global variable.
  **/
@@ -1144,6 +1248,17 @@ void makeGradeSentinel(void){
   gradeSentinel = malloc(sizeof(Grade_Node));
   gradeSentinel->next = NULL;
   gradeSentinel->previous = NULL;
+}
+
+/**
+ A helper function to build the enroll sentinel node and
+ store a reference to it in the global variable.
+ **/
+void makeEnrollmentSentinel(void){
+  enrollSize = 0;
+  enrollSentinel = malloc(sizeof(Enrollment_Node));
+  enrollSentinel->next = NULL;
+  enrollSentinel->previous = NULL;
 }
 
 /**
