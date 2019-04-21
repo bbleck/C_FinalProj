@@ -175,6 +175,8 @@ void deleteAnAssignment(Assignment_Node *toRemove);
 void deleteAGrade(Grade_Node *toRemove);
 void deleteEnrollment(Enrollment_Node *toRemove);
 Student_Node* studentNodeExists(char* ssn);
+Course_Node* courseNodeExists(int course_id);
+void toDeleteCourse(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -752,6 +754,39 @@ void toDeleteStudent(void){
 }
 
 /**
+ A function that will delete a class from the classes
+ linked list and database.
+ **/
+void toDeleteCourse(void){
+  int course_id;
+  Course_Node *toDelete = NULL;
+  while(1){
+    getInt(DELETE_CLASS_PROMPTS[0], &course_id);
+    if((toDelete = courseNodeExists(course_id)) != NULL){
+      break;
+    }
+  }
+  while(1){
+    printf("%s",DELETE_CLASS_PROMPTS[1]);
+    clearLine();
+    grabLine();
+    if(inputSize==1){
+      if(inputSentinel->next->value == 'y'
+         || inputSentinel->next->value == 'Y'){
+        break;
+      }
+      if(inputSentinel->next->value == 'n'
+         || inputSentinel->next->value == 'N'){
+        return;
+      }
+    }
+  }
+  deleteACourse(toDelete);
+  writeCourseList();
+}
+
+
+/**
  A function that takes two ints and looks for a course/assignment match in
  the assignments linked list.  If found, returns
  pointer parameter to the correspoding node.
@@ -797,6 +832,22 @@ Course* courseExists(int course_id){
   while(temp != courseSentinel){
     if(course_id == temp->course->course_id){
       return temp->course;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
+
+/**
+ A function that takes an int and looks for a match in the
+ courses linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Course_Node* courseNodeExists(int course_id){
+  Course_Node *temp = courseSentinel->next;
+  while(temp != courseSentinel){
+    if(course_id == temp->course->course_id){
+      return temp;
     }
     temp = temp->next;
   }
@@ -894,7 +945,7 @@ void toDeleteDataMenu(void){
       toDeleteStudent();
       break;
     case '2':
-      //todo: delete class
+      toDeleteCourse();
       break;
     case '3':
       //todo: delete assignment
