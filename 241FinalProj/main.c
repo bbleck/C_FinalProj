@@ -164,6 +164,8 @@ int ssnsAreEqual(char* ssn1, char* ssn2);
 Student* studentExists(char* ssn);
 void toEditCourse(void);
 Course* courseExists(int course_id);
+void toEditAssignment(void);
+Assignment* assignExists(int course_id, int assignment_id);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -630,6 +632,63 @@ void toEditCourse(void){
   if(flag){
     writeCourseList();
   }
+}
+
+/**
+ A function that will retrieve a course entry, edit it,
+ and update the course list and db to reflect changes.
+ **/
+void toEditAssignment(void){
+  int flag = 0;
+  int assignment_id;
+  char assignment_title[CHAR_INPUT_SIZE];
+  int pts_total;
+  int course_id;
+  Assignment *toEdit = NULL;
+  while(1){
+    getInt(EDIT_ASSIGNMENT_PROMPTS[0], &course_id);
+    getInt(EDIT_ASSIGNMENT_PROMPTS[1], &assignment_id);
+    if((toEdit = assignExists(course_id, assignment_id)) != NULL){
+      break;
+    }
+    printf("Invalid Class ID / Assignment ID combination.\n");
+  }
+  printf("%s", EDIT_ASSIGNMENT_PROMPTS[2]);
+  clearLine();
+  grabLine();
+  if(inputSize != 0){
+    retrieveName(&assignment_title[0]);
+    copyCharArray(toEdit->assignment_title, assignment_title, CHAR_INPUT_SIZE);
+    flag = 1;
+  }
+  printf("%s", EDIT_ASSIGNMENT_PROMPTS[3]);
+  clearLine();
+  grabLine();
+  if(inputSize != 0){
+    retrieveInt(&pts_total);
+    toEdit->pts_total = pts_total;
+    flag = 1;
+  }
+  if(flag){
+    writeAssignmentList();
+  }
+}
+
+/**
+ A function that takes an int and looks for a course match in
+ the assignments linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Assignment* assignExists(int course_id, int assignment_id){
+  Assignment_Node *temp = assignmentSentinel->next;
+  while(temp != assignmentSentinel){
+    if(course_id == temp->assignment->course_id
+       && assignment_id == temp->assignment->assignment_id){
+      return temp->assignment;
+    }
+    temp = temp->next;
+  }
+  return NULL;
 }
 
 /**
