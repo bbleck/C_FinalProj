@@ -162,6 +162,8 @@ void addEnrollList(Enrollment_Node *toAdd);
 void toEditStudent(void);
 int ssnsAreEqual(char* ssn1, char* ssn2);
 Student* studentExists(char* ssn);
+void toEditCourse(void);
+Course* courseExists(int course_id);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -603,6 +605,50 @@ void toEditStudent(void){
 }
 
 /**
+ A function that will retrieve a course entry, edit it,
+ and update the course list and db to reflect changes.
+ **/
+void toEditCourse(void){
+  int flag = 0;
+  int course_id;
+  char course_title[CHAR_INPUT_SIZE];
+  Course *toEdit = NULL;
+  while(1){
+    getInt(EDIT_CLASS_PROMPTS[0], &course_id);
+    if((toEdit = courseExists(course_id)) != NULL){
+      break;
+    }
+  }
+  printf("%s", EDIT_CLASS_PROMPTS[1]);
+  clearLine();
+  grabLine();
+  if(inputSize != 0){
+    retrieveName(&course_title[0]);
+    copyCharArray(toEdit->course_title, course_title, CHAR_INPUT_SIZE);
+    flag = 1;
+  }
+  if(flag){
+    writeCourseList();
+  }
+}
+
+/**
+ A function that takes an int and looks for a match in the
+ courses linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Course* courseExists(int course_id){
+  Course_Node *temp = courseSentinel->next;
+  while(temp != courseSentinel){
+    if(course_id == temp->course->course_id){
+      return temp->course;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
+
+/**
  A function that takes a SSN and looks for a match in the
  Students linked list.  If found, returns 1 and sets the node
  pointer parameter to the correspoding node.
@@ -752,10 +798,10 @@ void toEditDataMenu(void){
       toEditStudent();
       break;
     case '2':
-      //todo: edit class
+      toEditCourse();
       break;
     case '3':
-      //todo: edit assignment
+      toEditAssignment();
       break;
     case '4':
       //todo: edit grade
