@@ -836,7 +836,7 @@ void toDeleteDataMenu(void){
   }
   switch (inputSentinel->next->value) {
     case '1':
-      //todo: delete student
+      toDeleteStudent();
       break;
     case '2':
       //todo: delete class
