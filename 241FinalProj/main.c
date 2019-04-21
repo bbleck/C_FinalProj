@@ -183,6 +183,11 @@ Grade_Node* gradeNodeExists(int course_id, int assignment_id, char* ssn);
 void toDeleteGrade(void);
 Enrollment_Node* enrollNodeExists(int course_id, char* ssn);
 void toDeleteEnrollment(void);
+void printGradeNode(Grade_Node* toPrint);
+void printStudentNode(Student_Node* toPrint);
+void printCourseNode(Course_Node* toPrint);
+void printEnrollNode(Enrollment_Node* toPrint);
+void printAssignmentNode(Assignment_Node* toPrint);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
