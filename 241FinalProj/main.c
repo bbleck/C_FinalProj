@@ -177,6 +177,8 @@ void deleteEnrollment(Enrollment_Node *toRemove);
 Student_Node* studentNodeExists(char* ssn);
 Course_Node* courseNodeExists(int course_id);
 void toDeleteCourse(void);
+Assignment_Node* assignNodeExists(int course_id, int assignment_id);
+void toDeleteAssignment(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -785,6 +787,41 @@ void toDeleteCourse(void){
   writeCourseList();
 }
 
+/**
+ A function that will delete an assignment from the assignments
+ linked list and database.
+ **/
+void toDeleteAssignment(void){
+  int course_id;
+  int assignment_id;
+  Assignment_Node *toDelete = NULL;
+  while(1){
+    getInt(DELETE_ASSIGNMENT_PROMPTS[0], &course_id);
+    getInt(DELETE_ASSIGNMENT_PROMPTS[1], &assignment_id);
+    if((toDelete = assignNodeExists(course_id, assignment_id)) != NULL){
+      break;
+    }
+    printf("Invalid Class ID / Assignment ID combination.\n");
+  }
+  while(1){
+    printf("%s",DELETE_ASSIGNMENT_PROMPTS[2]);
+    clearLine();
+    grabLine();
+    if(inputSize==1){
+      if(inputSentinel->next->value == 'y'
+         || inputSentinel->next->value == 'Y'){
+        break;
+      }
+      if(inputSentinel->next->value == 'n'
+         || inputSentinel->next->value == 'N'){
+        return;
+      }
+    }
+  }
+  deleteAnAssignment(toDelete);
+  writeAssignmentList();
+}
+
 
 /**
  A function that takes two ints and looks for a course/assignment match in
@@ -816,6 +853,23 @@ Assignment* assignExists(int course_id, int assignment_id){
     if(course_id == temp->assignment->course_id
        && assignment_id == temp->assignment->assignment_id){
       return temp->assignment;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
+
+/**
+ A function that takes two ints and looks for a course/assignment match in
+ the assignments linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Assignment_Node* assignNodeExists(int course_id, int assignment_id){
+  Assignment_Node *temp = assignmentSentinel->next;
+  while(temp != assignmentSentinel){
+    if(course_id == temp->assignment->course_id
+       && assignment_id == temp->assignment->assignment_id){
+      return temp;
     }
     temp = temp->next;
   }
@@ -948,7 +1002,7 @@ void toDeleteDataMenu(void){
       toDeleteCourse();
       break;
     case '3':
-      //todo: delete assignment
+      toDeleteAssignment();
       break;
     case '4':
       //todo: delete grade
