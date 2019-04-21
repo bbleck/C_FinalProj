@@ -179,6 +179,8 @@ Course_Node* courseNodeExists(int course_id);
 void toDeleteCourse(void);
 Assignment_Node* assignNodeExists(int course_id, int assignment_id);
 void toDeleteAssignment(void);
+Grade_Node* gradeNodeExists(int course_id, int assignment_id, char* ssn);
+void toDeleteGrade(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -822,6 +824,43 @@ void toDeleteAssignment(void){
   writeAssignmentList();
 }
 
+/**
+ A function that will delete a grade from the grades
+ linked list and database.
+ **/
+void toDeleteGrade(void){
+  int course_id;
+  int assignment_id;
+  char ssn[SSN_INPUT_SIZE];
+  Grade_Node *toDelete = NULL;
+  while(1){
+    getInt(EDIT_GRADE_PROMPTS[0], &course_id);
+    getInt(EDIT_GRADE_PROMPTS[1], &assignment_id);
+    getSSN(EDIT_GRADE_PROMPTS[3], &ssn[0]);
+    if((toDelete = gradeNodeExists(course_id, assignment_id, ssn)) != NULL){
+      break;
+    }
+    printf("Invalid Class ID/Assignment ID/SSN combination.\n");
+  }
+  while(1){
+    printf("%s",DELETE_ASSIGNMENT_PROMPTS[2]);
+    clearLine();
+    grabLine();
+    if(inputSize==1){
+      if(inputSentinel->next->value == 'y'
+         || inputSentinel->next->value == 'Y'){
+        break;
+      }
+      if(inputSentinel->next->value == 'n'
+         || inputSentinel->next->value == 'N'){
+        return;
+      }
+    }
+  }
+  deleteAGrade(toDelete);
+  writeGradesList();
+}
+
 
 /**
  A function that takes two ints and looks for a course/assignment match in
@@ -835,6 +874,24 @@ Grade* gradeExists(int course_id, int assignment_id, char* ssn){
        && assignment_id == temp->grade->assignment_id
        && ssnsAreEqual(ssn, temp->grade->ssn)){
       return temp->grade;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
+
+/**
+ A function that takes two ints and looks for a course/assignment match in
+ the assignments linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Grade_Node* gradeNodeExists(int course_id, int assignment_id, char* ssn){
+  Grade_Node *temp = gradeSentinel->next;
+  while(temp != gradeSentinel){
+    if(course_id == temp->grade->course_id
+       && assignment_id == temp->grade->assignment_id
+       && ssnsAreEqual(ssn, temp->grade->ssn)){
+      return temp;
     }
     temp = temp->next;
   }
@@ -1005,7 +1062,7 @@ void toDeleteDataMenu(void){
       toDeleteAssignment();
       break;
     case '4':
-      //todo: delete grade
+      toDeleteGrade();
       break;
     case '5':
       //todo: drop student
