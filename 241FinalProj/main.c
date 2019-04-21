@@ -1873,6 +1873,82 @@ void makeEnrollmentSentinel(void){
 }
 
 /**
+ A function that takes a Student Node and prints the attached
+ Student record.
+ **/
+void printStudentNode(Student_Node* toPrint){
+  int i = 0;
+  for(i=0; i<SSN_INPUT_SIZE; i++){
+    printf("%c", toPrint->student->ssn[i]);
+  }
+  printf(" ");
+  for(i=0; i<CHAR_INPUT_SIZE; i++){
+    printf("%c", toPrint->student->first[i]);
+  }
+  printf(" ");
+  for(i=0; i<CHAR_INPUT_SIZE; i++){
+    printf("%c", toPrint->student->last[i]);
+  }
+  printf("\n");
+}
+
+/**
+ A function that takes a Course Node and prints the attached
+ Course record.
+ **/
+void printCourseNode(Course_Node* toPrint){
+  int i = 0;
+  printf("%d ", toPrint->course->course_id);
+  for(i=0; i<CHAR_INPUT_SIZE; i++){
+    printf("%c", toPrint->course->course_title[i]);
+  }
+  printf("\n");
+}
+
+/**
+ A function that takes a Enrollment Node and prints the attached
+ Enrollment record.
+ **/
+void printEnrollNode(Enrollment_Node* toPrint){
+  int i = 0;
+  printf("%d ", toPrint->enrollment->course_id);
+  for(i=0; i<SSN_INPUT_SIZE; i++){
+    printf("%c", toPrint->enrollment->ssn[i]);
+  }
+  printf("\n");
+}
+
+/**
+ A function that takes a assignment Node and prints the attached
+ assignment record.
+ **/
+void printAssignmentNode(Assignment_Node* toPrint){
+  int i = 0;
+  printf("%d ", toPrint->assignment->assignment_id);
+  for(i=0; i<CHAR_INPUT_SIZE; i++){
+    printf("%c", toPrint->assignment->assignment_title[i]);
+  }
+  printf(" %d ", toPrint->assignment->course_id);
+  printf("%d", toPrint->assignment->pts_total);
+  printf("\n");
+}
+
+/**
+ A function that takes a grade Node and prints the attached
+ grade record.
+ **/
+void printGradeNode(Grade_Node* toPrint){
+  int i = 0;
+  printf("%d ", toPrint->grade->course_id);
+  printf("%d ", toPrint->grade->assignment_id);
+  for(i=0; i<SSN_INPUT_SIZE; i++){
+    printf("%c", toPrint->grade->ssn[i]);
+  }
+  printf(" %d", toPrint->grade->pts_received);
+  printf("\n");
+}
+
+/**
  A function to test the input linked list functions
  using printf statements.
  **/
