@@ -166,6 +166,8 @@ void toEditCourse(void);
 Course* courseExists(int course_id);
 void toEditAssignment(void);
 Assignment* assignExists(int course_id, int assignment_id);
+void toEditGrade(void);
+Grade* gradeExists(int course_id, int assignment_id, char* ssn);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -392,6 +394,7 @@ int storeIntInput(int* intStorage){
 int isValidIntInput(void){
   Input_c *temp = inputSentinel->next;
   while(temp != inputSentinel){
+    //todo: handle the -1 case for displaying values
     if(temp->value < '0' || temp->value > '9'){
       printf("input is: %c\n", temp->value);
       return 0;
@@ -664,6 +667,7 @@ void toEditAssignment(void){
   printf("%s", EDIT_ASSIGNMENT_PROMPTS[3]);
   clearLine();
   grabLine();
+  //todo: change this to validate in a loop
   if(inputSize != 0){
     retrieveInt(&pts_total);
     toEdit->pts_total = pts_total;
@@ -675,7 +679,60 @@ void toEditAssignment(void){
 }
 
 /**
- A function that takes an int and looks for a course match in
+ A function that will retrieve a grade entry, edit it,
+ and update the grade list and db to reflect changes.
+ **/
+void toEditGrade(void){
+  int flag = 0;
+  int course_id;
+  int assignment_id;
+  char ssn[SSN_INPUT_SIZE];
+  int pts_received;
+  Grade *toEdit = NULL;
+  while(1){
+    getInt(EDIT_GRADE_PROMPTS[0], &course_id);
+    getInt(EDIT_GRADE_PROMPTS[1], &assignment_id);
+    getSSN(EDIT_GRADE_PROMPTS[3], &ssn[0]);
+    if((toEdit = gradeExists(course_id, assignment_id, ssn)) != NULL){
+      break;
+    }
+    printf("Invalid Class ID/Assignment ID/SSN combination.\n");
+  }
+  printf("%s", EDIT_GRADE_PROMPTS[3]);
+  clearLine();
+  grabLine();
+  //todo: change this to validate in a loop
+  if(inputSize != 0){
+    retrieveInt(&pts_received);
+    toEdit->pts_received = pts_received;
+    flag = 1;
+  }
+  if(flag){
+    writeGradesList();
+  }
+}
+
+/**
+ A function that takes two ints and looks for a course/assignment match in
+ the assignments linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Grade* gradeExists(int course_id, int assignment_id, char* ssn){
+  Grade_Node *temp = gradeSentinel->next;
+  while(temp != gradeSentinel){
+    if(course_id == temp->grade->course_id
+       && assignment_id == temp->grade->assignment_id
+       && ssnsAreEqual(ssn, temp->grade->ssn)){
+      return temp->grade;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
+
+
+/**
+ A function that takes two ints and looks for a course/assignment match in
  the assignments linked list.  If found, returns
  pointer parameter to the correspoding node.
  **/
@@ -863,7 +920,7 @@ void toEditDataMenu(void){
       toEditAssignment();
       break;
     case '4':
-      //todo: edit grade
+      toEditGrade();
       break;
     case '5':
       return;
