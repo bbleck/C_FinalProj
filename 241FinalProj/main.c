@@ -168,6 +168,12 @@ void toEditAssignment(void);
 Assignment* assignExists(int course_id, int assignment_id);
 void toEditGrade(void);
 Grade* gradeExists(int course_id, int assignment_id, char* ssn);
+void toDeleteStudent(void);
+void deleteAStudent(Student_Node *toRemove);
+void deleteACourse(Course_Node *toRemove);
+void deleteAnAssignment(Assignment_Node *toRemove);
+void deleteAGrade(Grade_Node *toRemove);
+void deleteEnrollment(Enrollment_Node *toRemove);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -713,6 +719,14 @@ void toEditGrade(void){
 }
 
 /**
+ A function that will delete a student from the students
+ linked list and database.
+ **/
+void toDeleteStudent(void){
+  
+}
+
+/**
  A function that takes two ints and looks for a course/assignment match in
  the assignments linked list.  If found, returns
  pointer parameter to the correspoding node.
@@ -1110,6 +1124,111 @@ void addEnrollList(Enrollment_Node *toAdd){
     enrollSentinel->previous = toAdd;
     enrollSize++;
   }
+}
+
+/**
+ A function to remove a student node from the students linked list.
+ Assumes that the passed in student node has already been confirmed to exist
+ in the students linked list.
+ **/
+void deleteAStudent(Student_Node *toRemove){
+  Student_Node *previous = NULL;
+  Student_Node *next = NULL;
+  if(toRemove == NULL){
+    return;
+  }
+  previous = toRemove->previous;
+  next = toRemove->next;
+  previous->next = next;
+  next->previous = previous;
+  if(toRemove->student != NULL){
+    free(toRemove->student);
+  }
+  free(toRemove);
+}
+
+/**
+ A function to remove a course node from the courses linked list.
+ Assumes that the passed in course node has already been confirmed to exist
+ in the courses linked list.
+ **/
+void deleteACourse(Course_Node *toRemove){
+  Course_Node *previous = NULL;
+  Course_Node *next = NULL;
+  if(toRemove == NULL){
+    return;
+  }
+  previous = toRemove->previous;
+  next = toRemove->next;
+  previous->next = next;
+  next->previous = previous;
+  if(toRemove->course != NULL){
+    free(toRemove->course);
+  }
+  free(toRemove);
+}
+
+/**
+ A function to remove an assignment node from the assignments linked list.
+ Assumes that the passed in assignment node has already been confirmed to exist
+ in the assignments linked list.
+ **/
+void deleteAnAssignment(Assignment_Node *toRemove){
+  Assignment_Node *previous = NULL;
+  Assignment_Node *next = NULL;
+  if(toRemove == NULL){
+    return;
+  }
+  previous = toRemove->previous;
+  next = toRemove->next;
+  previous->next = next;
+  next->previous = previous;
+  if(toRemove->assignment != NULL){
+    free(toRemove->assignment);
+  }
+  free(toRemove);
+}
+
+/**
+ A function to remove a grade node from the grades linked list.
+ Assumes that the passed in grade node has already been confirmed to exist
+ in the grades linked list.
+ **/
+void deleteAGrade(Grade_Node *toRemove){
+  Grade_Node *previous = NULL;
+  Grade_Node *next = NULL;
+  if(toRemove == NULL){
+    return;
+  }
+  previous = toRemove->previous;
+  next = toRemove->next;
+  previous->next = next;
+  next->previous = previous;
+  if(toRemove->grade != NULL){
+    free(toRemove->grade);
+  }
+  free(toRemove);
+}
+
+/**
+ A function to remove a course node from the courses linked list.
+ Assumes that the passed in course node has already been confirmed to exist
+ in the courses linked list.
+ **/
+void deleteEnrollment(Enrollment_Node *toRemove){
+  Enrollment_Node *previous = NULL;
+  Enrollment_Node *next = NULL;
+  if(toRemove == NULL){
+    return;
+  }
+  previous = toRemove->previous;
+  next = toRemove->next;
+  previous->next = next;
+  next->previous = previous;
+  if(toRemove->enrollment != NULL){
+    free(toRemove->enrollment);
+  }
+  free(toRemove);
 }
 
 
