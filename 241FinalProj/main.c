@@ -181,6 +181,8 @@ Assignment_Node* assignNodeExists(int course_id, int assignment_id);
 void toDeleteAssignment(void);
 Grade_Node* gradeNodeExists(int course_id, int assignment_id, char* ssn);
 void toDeleteGrade(void);
+Enrollment_Node* enrollNodeExists(int course_id, char* ssn);
+void toDeleteEnrollment(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -705,7 +707,7 @@ void toEditGrade(void){
   while(1){
     getInt(EDIT_GRADE_PROMPTS[0], &course_id);
     getInt(EDIT_GRADE_PROMPTS[1], &assignment_id);
-    getSSN(EDIT_GRADE_PROMPTS[3], &ssn[0]);
+    getSSN(EDIT_GRADE_PROMPTS[2], &ssn[0]);
     if((toEdit = gradeExists(course_id, assignment_id, ssn)) != NULL){
       break;
     }
@@ -834,16 +836,16 @@ void toDeleteGrade(void){
   char ssn[SSN_INPUT_SIZE];
   Grade_Node *toDelete = NULL;
   while(1){
-    getInt(EDIT_GRADE_PROMPTS[0], &course_id);
-    getInt(EDIT_GRADE_PROMPTS[1], &assignment_id);
-    getSSN(EDIT_GRADE_PROMPTS[3], &ssn[0]);
+    getInt(DELETE_GRADE_PROMPTS[0], &course_id);
+    getInt(DELETE_GRADE_PROMPTS[1], &assignment_id);
+    getSSN(DELETE_GRADE_PROMPTS[2], &ssn[0]);
     if((toDelete = gradeNodeExists(course_id, assignment_id, ssn)) != NULL){
       break;
     }
     printf("Invalid Class ID/Assignment ID/SSN combination.\n");
   }
   while(1){
-    printf("%s",DELETE_ASSIGNMENT_PROMPTS[2]);
+    printf("%s",DELETE_GRADE_PROMPTS[3]);
     clearLine();
     grabLine();
     if(inputSize==1){
@@ -861,6 +863,57 @@ void toDeleteGrade(void){
   writeGradesList();
 }
 
+/**
+ A function that will delete an enrollment from the enrollment
+ linked list and database.
+ **/
+void toDeleteEnrollment(void){
+  int course_id;
+  char ssn[SSN_INPUT_SIZE];
+  Enrollment_Node *toDelete = NULL;
+  while(1){
+    getInt(DROP_STUDENT_PROMPTS[0], &course_id);
+    getSSN(DROP_STUDENT_PROMPTS[1], &ssn[0]);
+    if((toDelete = enrollNodeExists(course_id, ssn)) != NULL){
+      break;
+    }
+    printf("Invalid Class ID/Assignment ID/SSN combination.\n");
+  }
+  while(1){
+    printf("%s",DROP_STUDENT_PROMPTS[2]);
+    clearLine();
+    grabLine();
+    if(inputSize==1){
+      if(inputSentinel->next->value == 'y'
+         || inputSentinel->next->value == 'Y'){
+        break;
+      }
+      if(inputSentinel->next->value == 'n'
+         || inputSentinel->next->value == 'N'){
+        return;
+      }
+    }
+  }
+  deleteEnrollment(toDelete);
+  writeEnrollList();
+}
+
+/**
+ A function that takes two ints and looks for a course/assignment match in
+ the enroll linked list.  If found, returns
+ pointer parameter to the correspoding node.
+ **/
+Enrollment_Node* enrollNodeExists(int course_id, char* ssn){
+  Enrollment_Node *temp = enrollSentinel->next;
+  while(temp != enrollSentinel){
+    if(course_id == temp->enrollment->course_id
+       && ssnsAreEqual(ssn, temp->enrollment->ssn)){
+      return temp;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
 
 /**
  A function that takes two ints and looks for a course/assignment match in
@@ -1065,7 +1118,7 @@ void toDeleteDataMenu(void){
       toDeleteGrade();
       break;
     case '5':
-      //todo: drop student
+      toDeleteEnrollment();
       break;
     case '6':
       return;
