@@ -174,6 +174,7 @@ void deleteACourse(Course_Node *toRemove);
 void deleteAnAssignment(Assignment_Node *toRemove);
 void deleteAGrade(Grade_Node *toRemove);
 void deleteEnrollment(Enrollment_Node *toRemove);
+Student_Node* studentNodeExists(char* ssn);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -723,7 +724,31 @@ void toEditGrade(void){
  linked list and database.
  **/
 void toDeleteStudent(void){
-  
+  char ssn[SSN_INPUT_SIZE];
+  Student_Node *toDelete = NULL;
+  while(1){
+    getSSN(DELETE_STUDENT_PROMPTS[0], &ssn[0]);
+    if((toDelete = studentNodeExists(&ssn[0])) != NULL){
+      break;
+    }
+  }
+  while(1){
+    printf("%s",DELETE_STUDENT_PROMPTS[1]);
+    clearLine();
+    grabLine();
+    if(inputSize==1){
+      if(inputSentinel->next->value == 'y'
+         || inputSentinel->next->value == 'Y'){
+        break;
+      }
+      if(inputSentinel->next->value == 'n'
+         || inputSentinel->next->value == 'N'){
+        return;
+      }
+    }
+  }
+  deleteAStudent(toDelete);
+  writeStudentList();
 }
 
 /**
@@ -788,6 +813,22 @@ Student* studentExists(char* ssn){
   while(temp != studentSentinel){
     if(ssnsAreEqual(ssn, temp->student->ssn)){
       return temp->student;
+    }
+    temp = temp->next;
+  }
+  return NULL;
+}
+
+/**
+ A function that takes a SSN and looks for a match in the
+ Students linked list.  If found, returns 1 and sets the node
+ pointer parameter to the correspoding node.
+ **/
+Student_Node* studentNodeExists(char* ssn){
+  Student_Node *temp = studentSentinel->next;
+  while(temp != studentSentinel){
+    if(ssnsAreEqual(ssn, temp->student->ssn)){
+      return temp;
     }
     temp = temp->next;
   }
@@ -1145,6 +1186,7 @@ void deleteAStudent(Student_Node *toRemove){
     free(toRemove->student);
   }
   free(toRemove);
+  studentSize--;
 }
 
 /**
@@ -1166,6 +1208,7 @@ void deleteACourse(Course_Node *toRemove){
     free(toRemove->course);
   }
   free(toRemove);
+  courseSize--;
 }
 
 /**
@@ -1187,6 +1230,7 @@ void deleteAnAssignment(Assignment_Node *toRemove){
     free(toRemove->assignment);
   }
   free(toRemove);
+  assignmentSize--;
 }
 
 /**
@@ -1208,6 +1252,7 @@ void deleteAGrade(Grade_Node *toRemove){
     free(toRemove->grade);
   }
   free(toRemove);
+  gradeSize--;
 }
 
 /**
@@ -1229,6 +1274,7 @@ void deleteEnrollment(Enrollment_Node *toRemove){
     free(toRemove->enrollment);
   }
   free(toRemove);
+  enrollSize--;
 }
 
 
