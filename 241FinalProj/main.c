@@ -9,7 +9,114 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "bb_strings.h"
+
+const char STUDENTS_DB[] = "students.txt";
+const char CLASSES_DB[] = "classes.db";
+const char ASSIGNMENTS_DB[] = "assignments.db";
+const char ENROLLMENT_DB[] = "enrollment.db";
+const char GRADES_DB[] = "grades.db";
+const char USERS_DB[] = "users.db";
+
+const char MAIN_MENU_TEXT[] = "Main Menu\n1. Add Data\n2. Edit Data\n3. Delete Data\n4. View Data\n5. Use Command Line Environment\n6. Exit\nEnter 1-6\n";
+const char ADD_DATA_MENU_TEXT[] = "Add Data Menu\n1. Add Student\n2. Add Class\n3. Add Assignment\n4. Add Grade\n5. Enroll Student\n6. Return to Main Menu\nEnter 1-6\n";
+const char EDIT_DATA_MENU_TEXT[] = "Edit Data Menu\n1. Edit Student\n2. Edit Class\n3. Edit Assignment\n4. Edit Grade\n5. Return to Main Menu\nEnter 1-5\n";
+const char DELETE_DATA_MENU_TEXT[] = "Delete Data Menu\n1. Delete Student\n2. Delete Class\n3. Delete Assignment\n4. Delete Grade\n5. Drop Student\n6. Return to Main Menu\nEnter 1-6\n";
+const char VIEW_DATA_MENU_TEXT[] = "View Data Menu\n1. View Students\n2. View Classes\n3. View Assignments\n4. View Grades\n5. View Enrollment\n6. Return to Main Menu\nEnter 1-6\n";
+const char VIEW_GRADES_MENU_TEXT[] = "View Grades Menu\n1. View Class Average Grade\n2. View Student Average Grades\n3. View Class Assignment Average Grades\n4. View Class Assignment Grades\n5. Return to Main Menu\nEnter 1-5\n";
+
+const char ADD_STUDENT_PROMPTS[3][60] = {
+  {"Enter First Name\n"},
+  {"Enter Last Name\n"},
+  {"Enter Student SSN\n"}
+};
+const char ADD_CLASS_PROMPTS[1][60] = {
+  {"Enter Class Title\n"}
+};
+const char ADD_ASSIGNMENT_PROMPTS[3][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment Title\n"},
+  {"Enter Point Value\n"}
+};
+const char ADD_GRADE_PROMPTS[4][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"},
+  {"Enter Student SSN\n"},
+  {"Enter Earned Points\n"}
+};
+const char ENROLL_STUDENT_PROMPTS[2][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Student SSN\n"}
+};
+const char EDIT_STUDENT_PROMPTS[3][60] = {
+  {"Enter Student SSN\n"},
+  {"Enter New First Name ( or leave blank for no change )\n"},
+  {"Enter New Last Name ( or leave blank for no change )\n"}
+};
+const char EDIT_CLASS_PROMPTS[2][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter New Class Title ( or leave blank for no change )\n"}
+};
+const char EDIT_ASSIGNMENT_PROMPTS[4][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"},
+  {"Enter New Title (or leave blank for no change)\n"},
+  {"Enter New Point Value (or leave blank for no change)\n"}
+};
+const char EDIT_GRADE_PROMPTS[4][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"},
+  {"Enter Student SSN\n"},
+  {"Enter New Earned Points (or leave blank for no change)\n"}
+};
+const char DELETE_STUDENT_PROMPTS[2][60] = {
+  {"Enter SSN\n"},
+  {"Are you sure you wish to delete \n"}
+};
+const char DELETE_CLASS_PROMPTS[2][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Are you sure you wish to delete \n"}
+};
+const char DELETE_ASSIGNMENT_PROMPTS[3][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"},
+  {"Are you sure you wish to delete \n"}
+};
+const char DELETE_GRADE_PROMPTS[4][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"},
+  {"Enter Student SSN\n"},
+  {"Are you sure you wish to delete \n"}
+};
+const char DROP_STUDENT_PROMPTS[3][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Student SSN\n"},
+  {"Are you sure you wish to delete \n"}
+};
+const char VIEW_ASSIGNMENTS_PROMPTS[1][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"}
+};
+const char VIEW_ENROLLMENT_PROMPTS[1][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"}
+};
+const char VIEW_CLASS_AVERAGE_PROMPTS[1][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"}
+};
+const char VIEW_STUDENT_AVERAGE_PROMPTS[1][60] = {
+  {"Enter Student SSN\n"}
+};
+const char VIEW_CLASS_ASSIGNMENT_AVERAGE_PROMPTS[1][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"}
+};
+const char VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[2][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"}
+};
+const char VIEW_GRADES_PROMPTS[2][60] = {
+  {"Enter Class ID or (-1 for Class List)\n"},
+  {"Enter Assignment ID or (-1 for Assignment List)\n"}
+};
+const char YES_NO[] = "(Y/N)?\n";
+const char INVALID_INPUT[] = "Invalid Input\n";
 
 /**  Define Macros ***************** **/
 #define CHAR_INPUT_SIZE 30
@@ -194,6 +301,7 @@ void printCourses(void);
 void printStudents(void);
 void printGrades(void);
 void toViewGradesMenu(void);
+void retrieveSSN(char* name);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -269,13 +377,47 @@ void tearDownLists(void){
  **/
 void retrieveName(char* name){
   int counter = 0;
+//  int i = 0;
   Input_c *tempNode = inputSentinel->next;
   while(tempNode != inputSentinel && counter < CHAR_INPUT_SIZE){
     name[counter] = tempNode->value;
+//    printf("%d: %c -> %c\n", counter, tempNode->value, name[counter]);
     counter++;
     tempNode = tempNode->next;
   }
-//  name[counter] = '\0';
+  while(counter < CHAR_INPUT_SIZE){
+    name[counter] = '.';
+//    printf("%d: %c\n", counter, name[counter]);
+    counter++;
+  }
+//  for(i=0; i<30; i++){
+//    printf("%c", name[i]);
+//  }
+//  printf("\n");
+}
+
+/**
+ A function that puts a ssn stored in linked list memory into value at pointer parameter.
+ **/
+void retrieveSSN(char* name){
+  int counter = 0;
+//  int i = 0;
+  Input_c *tempNode = inputSentinel->next;
+  while(tempNode != inputSentinel && counter < SSN_INPUT_SIZE){
+    name[counter] = tempNode->value;
+//    printf("%d: %c -> %c\n", counter, tempNode->value, name[counter]);
+    counter++;
+    tempNode = tempNode->next;
+  }
+  while(counter < SSN_INPUT_SIZE){
+    name[counter] = '.';
+//    printf("%d: %c\n", counter, name[counter]);
+    counter++;
+  }
+//  for(i=0; i<9; i++){
+//    printf("%c", name[i]);
+//  }
+//  printf("\n");
 }
 
 /**
@@ -375,7 +517,7 @@ int storeSSNInput(char* ssnStorage){
   clearLine();
   grabLine();
   if(isValidSSNInput()){
-    retrieveName(ssnStorage);
+    retrieveSSN(ssnStorage);
     return 1;
   }else{
     return 0;
@@ -386,10 +528,15 @@ int storeSSNInput(char* ssnStorage){
  A function that takes a string pointer and adds a valid name into it.
  **/
 int storeNameInput (char* nameStorage){
+//  int i = 0;
   clearLine();
   grabLine();
   if(inputSize != 0){
     retrieveName(nameStorage);
+//    for(i=0; i<30; i++){
+//      printf("%c", nameStorage[i]);
+//    }
+//    printf("\n");
     return 1;
   }else{
     return 0;
@@ -422,7 +569,7 @@ int isValidIntInput(void){
   while(temp != inputSentinel){
     //todo: handle the -1 case for displaying values
     if(temp->value < '0' || temp->value > '9'){
-      printf("input is: %c\n", temp->value);
+//      printf("input is: %c\n", temp->value);
       return 0;
     }
     temp = temp->next;
@@ -435,9 +582,14 @@ int isValidIntInput(void){
  retrieval until successful.
  **/
 void getName(const char* prompt, char* name){
+//  int i =0;
   while(1){
     printf("%s", prompt);
     if(storeNameInput(name)){
+//      for(i=0; i<30; i++){
+//        printf("%c", name[i]);
+//      }
+//      printf("\n");
       break;
     }
   }
@@ -473,9 +625,9 @@ void getSSN(const char* prompt, char* ssn){
  A function that will add a student
  **/
 void toAddStudent(void){
-  char first[CHAR_INPUT_SIZE];
-  char last[CHAR_INPUT_SIZE];
-  char ssnStr[SSN_INPUT_SIZE];
+  char first[CHAR_INPUT_SIZE] = {0};
+  char last[CHAR_INPUT_SIZE] = {0};
+  char ssnStr[SSN_INPUT_SIZE] = {0};
   Student *toAdd = malloc(sizeof(Student));
   Student_Node *toAddNode = malloc(sizeof(Student_Node));
   printf("Add Student\n");
@@ -504,7 +656,7 @@ void copyCharArray(char *copyTo, char *copyFrom, int arrSize){
  A function that will add a class to database.
  **/
 void toAddClass(void){
-  char title[CHAR_INPUT_SIZE];
+  char title[CHAR_INPUT_SIZE]={0};
   int course_id = rand();
   Course *courseAdd = malloc(sizeof(Course));
   Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
@@ -526,10 +678,10 @@ void toAddClass(void){
  A function that will add a grade to the database.
  **/
 void toAddGrade(void){
-  int course_id;
-  int assignment_id;
-  char ssn[SSN_INPUT_SIZE];
-  int pts_received;
+  int course_id = 0;
+  int assignment_id = 0;
+  char ssn[SSN_INPUT_SIZE] = {0};
+  int pts_received = 0;
   int *courseID = &course_id;
   int *ptsReceived = &pts_received;
   int *assignID = &assignment_id;
@@ -553,8 +705,8 @@ void toAddGrade(void){
  A function to enroll a student in a course.
  **/
 void toAddEnrollment(void){
-  int course_id;
-  char ssn[SSN_INPUT_SIZE];
+  int course_id = 0;
+  char ssn[SSN_INPUT_SIZE] = {0};
   Enrollment *enrollmentAdd = malloc(sizeof(Enrollment));
   Enrollment_Node *enrollmentNodeAdd = malloc(sizeof(Enrollment_Node));
   printf("Add Enrollment\n");
@@ -575,7 +727,7 @@ void toAddAssignment(void){
   int totPts = 0;
   int courseID = 0;
   //todo: check for duplicate id, re-randomize if needed
-  char assignment_title[CHAR_INPUT_SIZE];
+  char assignment_title[CHAR_INPUT_SIZE] = {0};
   int *pts_total = &totPts;
   int *course_id = &courseID;
   Assignment *assignAdd = malloc(sizeof(Assignment));
@@ -603,9 +755,9 @@ void toAddAssignment(void){
  **/
 void toEditStudent(void){
   int flag = 0;
-  char ssn[SSN_INPUT_SIZE];
-  char first[CHAR_INPUT_SIZE];
-  char last[CHAR_INPUT_SIZE];
+  char ssn[SSN_INPUT_SIZE] = {0};
+  char first[CHAR_INPUT_SIZE] = {0};
+  char last[CHAR_INPUT_SIZE] = {0};
   Student *toEdit = NULL;
   while(1){
     getSSN(EDIT_STUDENT_PROMPTS[0], &ssn[0]);
@@ -641,8 +793,8 @@ void toEditStudent(void){
  **/
 void toEditCourse(void){
   int flag = 0;
-  int course_id;
-  char course_title[CHAR_INPUT_SIZE];
+  int course_id = 0;
+  char course_title[CHAR_INPUT_SIZE] = {0};
   Course *toEdit = NULL;
   while(1){
     getInt(EDIT_CLASS_PROMPTS[0], &course_id);
@@ -669,10 +821,10 @@ void toEditCourse(void){
  **/
 void toEditAssignment(void){
   int flag = 0;
-  int assignment_id;
-  char assignment_title[CHAR_INPUT_SIZE];
-  int pts_total;
-  int course_id;
+  int assignment_id = 0;
+  char assignment_title[CHAR_INPUT_SIZE] = {0};
+  int pts_total = 0;
+  int course_id = 0;
   Assignment *toEdit = NULL;
   while(1){
     getInt(EDIT_ASSIGNMENT_PROMPTS[0], &course_id);
@@ -710,10 +862,10 @@ void toEditAssignment(void){
  **/
 void toEditGrade(void){
   int flag = 0;
-  int course_id;
-  int assignment_id;
-  char ssn[SSN_INPUT_SIZE];
-  int pts_received;
+  int course_id = 0;
+  int assignment_id = 0;
+  char ssn[SSN_INPUT_SIZE] = {0};
+  int pts_received = 0;
   Grade *toEdit = NULL;
   while(1){
     getInt(EDIT_GRADE_PROMPTS[0], &course_id);
@@ -743,7 +895,7 @@ void toEditGrade(void){
  linked list and database.
  **/
 void toDeleteStudent(void){
-  char ssn[SSN_INPUT_SIZE];
+  char ssn[SSN_INPUT_SIZE] = {0};
   Student_Node *toDelete = NULL;
   while(1){
     getSSN(DELETE_STUDENT_PROMPTS[0], &ssn[0]);
@@ -775,7 +927,7 @@ void toDeleteStudent(void){
  linked list and database.
  **/
 void toDeleteCourse(void){
-  int course_id;
+  int course_id = 0;
   Course_Node *toDelete = NULL;
   while(1){
     getInt(DELETE_CLASS_PROMPTS[0], &course_id);
@@ -807,8 +959,8 @@ void toDeleteCourse(void){
  linked list and database.
  **/
 void toDeleteAssignment(void){
-  int course_id;
-  int assignment_id;
+  int course_id = 0;
+  int assignment_id = 0;
   Assignment_Node *toDelete = NULL;
   while(1){
     getInt(DELETE_ASSIGNMENT_PROMPTS[0], &course_id);
@@ -842,9 +994,9 @@ void toDeleteAssignment(void){
  linked list and database.
  **/
 void toDeleteGrade(void){
-  int course_id;
-  int assignment_id;
-  char ssn[SSN_INPUT_SIZE];
+  int course_id = 0;
+  int assignment_id = 0;
+  char ssn[SSN_INPUT_SIZE] = {0};
   Grade_Node *toDelete = NULL;
   while(1){
     getInt(DELETE_GRADE_PROMPTS[0], &course_id);
@@ -879,8 +1031,8 @@ void toDeleteGrade(void){
  linked list and database.
  **/
 void toDeleteEnrollment(void){
-  int course_id;
-  char ssn[SSN_INPUT_SIZE];
+  int course_id = 0;
+  char ssn[SSN_INPUT_SIZE] = {0};
   Enrollment_Node *toDelete = NULL;
   while(1){
     getInt(DROP_STUDENT_PROMPTS[0], &course_id);
@@ -1544,9 +1696,8 @@ void deleteEnrollment(Enrollment_Node *toRemove){
  the Student database. Overwrites the Student database.
  **/
 void writeStudentList(void){
-  FILE *fp;
+  FILE *fp = fopen(STUDENTS_DB, "w");
   Student_Node *toAdd = studentSentinel->next;
-  fp = fopen(STUDENTS_DB, "w");
   while(toAdd != studentSentinel && toAdd != NULL){
     fwrite(toAdd->student, sizeof(Student), 1, fp);
     toAdd = toAdd->next;
@@ -1559,9 +1710,9 @@ void writeStudentList(void){
  the courses database.  Overwrites the courses database.
  **/
 void writeCourseList(void){
-  FILE *fp;
+  FILE *fp = fopen(CLASSES_DB, "w");
   Course_Node *toAdd = courseSentinel->next;
-  fp = fopen(CLASSES_DB, "w");
+  
   while(toAdd != courseSentinel && toAdd != NULL){
     fwrite(toAdd->course, sizeof(Course), 1, fp);
     toAdd = toAdd->next;
@@ -1574,9 +1725,9 @@ void writeCourseList(void){
  the assignments database.  Overwrites the assignments database.
  **/
 void writeAssignmentList(void){
-  FILE *fp;
+  FILE *fp = fopen(ASSIGNMENTS_DB, "w");
   Assignment_Node *toAdd = assignmentSentinel->next;
-  fp = fopen(ASSIGNMENTS_DB, "w");
+  
   while(toAdd != assignmentSentinel && toAdd != NULL){
     fwrite(toAdd->assignment, sizeof(Assignment), 1, fp);
     toAdd = toAdd->next;
@@ -1589,9 +1740,9 @@ void writeAssignmentList(void){
  the grades database.  Overwrites the grades database.
  **/
 void writeGradesList(void){
-  FILE *fp;
+  FILE *fp = fopen(GRADES_DB, "w");
   Grade_Node *toAdd = gradeSentinel->next;
-  fp = fopen(GRADES_DB, "w");
+  
   while(toAdd != gradeSentinel && toAdd != NULL){
     fwrite(toAdd->grade, sizeof(Grade), 1, fp);
     toAdd = toAdd->next;
@@ -1604,9 +1755,9 @@ void writeGradesList(void){
  the enrollment database.  Overwrites the enrollment database.
  **/
 void writeEnrollList(void){
-  FILE *fp;
+  FILE *fp = fopen(ENROLLMENT_DB, "w");
   Enrollment_Node *toAdd = enrollSentinel->next;
-  fp = fopen(ENROLLMENT_DB, "w");
+  
   while(toAdd != enrollSentinel && toAdd != NULL){
     fwrite(toAdd->enrollment, sizeof(Enrollment), 1, fp);
     toAdd = toAdd->next;
@@ -1927,15 +2078,15 @@ void printStudentNode(Student_Node* toPrint){
   for(i=0; i<SSN_INPUT_SIZE; i++){
     printf("%c", toPrint->student->ssn[i]);
   }
-  printf(" ");
+  printf(" \n");
   for(i=0; i<CHAR_INPUT_SIZE; i++){
     printf("%c", toPrint->student->first[i]);
   }
-  printf(" ");
+  printf(" \n");
   for(i=0; i<CHAR_INPUT_SIZE; i++){
     printf("%c", toPrint->student->last[i]);
   }
-  printf("\n");
+  printf("\n\n");
 }
 
 /**
@@ -1944,6 +2095,9 @@ void printStudentNode(Student_Node* toPrint){
 void printStudents(void){
   Student_Node *temp = studentSentinel->next;
   while(temp != studentSentinel){
+    if(temp == NULL){
+      break;
+    }
     printStudentNode(temp);
     temp = temp->next;
   }
@@ -1968,6 +2122,9 @@ void printCourseNode(Course_Node* toPrint){
 void printCourses(void){
   Course_Node *temp = courseSentinel->next;
   while(temp != courseSentinel){
+    if(temp == NULL){
+      break;
+    }
     printCourseNode(temp);
     temp = temp->next;
   }
@@ -1992,6 +2149,9 @@ void printEnrollNode(Enrollment_Node* toPrint){
 void printEnrollment(void){
   Enrollment_Node *temp = enrollSentinel->next;
   while(temp != enrollSentinel){
+    if(temp == NULL){
+      break;
+    }
     printEnrollNode(temp);
     temp = temp->next;
   }
@@ -2018,6 +2178,9 @@ void printAssignmentNode(Assignment_Node* toPrint){
 void printAssignments(void){
   Assignment_Node *temp = assignmentSentinel->next;
   while(temp != assignmentSentinel){
+    if(temp == NULL){
+      break;
+    }
     printAssignmentNode(temp);
     temp = temp->next;
   }
@@ -2045,6 +2208,9 @@ void printGradeNode(Grade_Node* toPrint){
 void printGrades(void){
   Grade_Node *temp = gradeSentinel->next;
   while(temp != gradeSentinel){
+    if(temp == NULL){
+      break;
+    }
     printGradeNode(temp);
     temp = temp->next;
   }

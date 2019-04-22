@@ -9,7 +9,7 @@
 #ifndef bb_strings_h
 #define bb_strings_h
 
-const char STUDENTS_DB[] = "students.db";
+const char STUDENTS_DB[] = "students.txt";
 const char CLASSES_DB[] = "classes.db";
 const char ASSIGNMENTS_DB[] = "assignments.db";
 const char ENROLLMENT_DB[] = "enrollment.db";
