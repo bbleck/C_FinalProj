@@ -302,6 +302,11 @@ void printStudents(void);
 void printGrades(void);
 void toViewGradesMenu(void);
 void retrieveSSN(char* name);
+void toViewAssignments(void);
+void toViewClassAverage(void);
+void toViewStudentAverage(void);
+void toViewClassAssignmentGrades(void);
+void toViewClassAssignmentAvgGrades(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -955,6 +960,87 @@ void toDeleteCourse(void){
 }
 
 /**
+ A functino that queries user for course id and then
+ displays the associated assignment records.
+ **/
+void toViewAssignments(void){
+  int course_id = 0;
+  Assignment_Node *toCheck = assignmentSentinel->next;
+  getInt(VIEW_ASSIGNMENTS_PROMPTS[0], &course_id);
+  while(toCheck != assignmentSentinel){
+    if(toCheck->assignment->course_id == course_id){
+      printAssignmentNode(toCheck);
+    }
+    toCheck = toCheck->next;
+  }
+}
+
+/**
+ A function that queries user for course id and then
+ displays the associated enrollment records.
+ **/
+void toViewEnrollment(void){
+  int course_id = 0;
+  Enrollment_Node *toCheck = enrollSentinel->next;
+  if(toCheck == NULL){
+    return;
+  }
+  getInt(VIEW_ENROLLMENT_PROMPTS[0], &course_id);
+  while(toCheck != enrollSentinel){
+    if(toCheck->enrollment->course_id == course_id){
+      printEnrollNode(toCheck);
+    }
+    toCheck = toCheck->next;
+  }
+}
+
+/**
+ A function that queries user for course id and then
+ displays the average grades for that course.
+ **/
+void toViewClassAverage(void){
+  //todo: implement this functionality
+}
+
+/**
+ A function that queries user for ssn and then
+ displays the average grades for that student.
+ **/
+void toViewStudentAverage(void){
+  //todo: implement this functionality
+}
+
+/**
+ A function that queries user for course id and then
+ displays the averages grades for each assignment.
+ **/
+void toViewClassAssignmentAvgGrades(void){
+  //todo: implement this functionality
+}
+
+/**
+ A function that queries user for course id and assignment id
+ and displays each corresponding grade record.
+ **/
+void toViewClassAssignmentGrades(void){
+  int course_id = 0;
+  int assignment_id = 0;
+  Grade_Node *toCheck = gradeSentinel->next;
+  if(toCheck == NULL){
+    return;
+  }
+  getInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[0], &course_id);
+  getInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[1], &assignment_id);
+  while(toCheck != gradeSentinel){
+    if(toCheck->grade->assignment_id == assignment_id
+       && toCheck->grade->course_id == course_id){
+      printGradeNode(toCheck);
+    }
+    toCheck = toCheck->next;
+  }
+}
+
+/**
  A function that will delete an assignment from the assignments
  linked list and database.
  **/
@@ -1312,13 +1398,13 @@ void toViewDataMenu(void){
       printCourses();
       break;
     case '3':
-      //todo: view assignments
+      toViewAssignments();
       break;
     case '4':
       toViewGradesMenu();
       break;
     case '5':
-      //todo: view enrollment
+      toViewEnrollment();
       break;
     case '6':
       return;
@@ -1344,16 +1430,16 @@ void toViewGradesMenu(void){
   }
   switch (inputSentinel->next->value) {
     case '1':
-      //todo: view class average grade
+      toViewClassAverage();
       break;
     case '2':
-      //todo: view student average grades
+      toViewStudentAverage();
       break;
     case '3':
-      //todo: view class assignment avg grade
+      toViewClassAssignmentAvgGrades();
       break;
     case '4':
-      //todo: view class assignment grades
+      toViewClassAssignmentGrades();
       break;
     case '5':
       return;
@@ -1361,7 +1447,7 @@ void toViewGradesMenu(void){
       printf("Unexpected Error, try again.\n");
       break;
   }
-  toViewDataMenu();
+  toViewGradesMenu();
 }
 
 
