@@ -188,6 +188,12 @@ void printStudentNode(Student_Node* toPrint);
 void printCourseNode(Course_Node* toPrint);
 void printEnrollNode(Enrollment_Node* toPrint);
 void printAssignmentNode(Assignment_Node* toPrint);
+void printAssignments(void);
+void printEnrollment(void);
+void printCourses(void);
+void printStudents(void);
+void printGrades(void);
+void toViewGradesMenu(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -1148,21 +1154,56 @@ void toViewDataMenu(void){
   }
   switch (inputSentinel->next->value) {
     case '1':
-      //todo: view students
+      printStudents();
       break;
     case '2':
-      //todo: view classes
+      printCourses();
       break;
     case '3':
       //todo: view assignments
       break;
     case '4':
-      //todo: view grades
+      toViewGradesMenu();
       break;
     case '5':
       //todo: view enrollment
       break;
     case '6':
+      return;
+    default:
+      printf("Unexpected Error, try again.\n");
+      break;
+  }
+  toViewDataMenu();
+}
+
+
+/**
+ A function to display the view grades menu and handle user selection.
+ **/
+void toViewGradesMenu(void){
+  printf("%s", VIEW_GRADES_MENU_TEXT);
+  clearLine();
+  grabLine();
+  if(inputSize != 1 ||
+     !isMenuSelectionValid(VIEW_G_MENU_OPTS, inputSentinel->next->value)){
+    printf("%s", INVALID_INPUT);
+    toViewGradesMenu();
+  }
+  switch (inputSentinel->next->value) {
+    case '1':
+      //todo: view class average grade
+      break;
+    case '2':
+      //todo: view student average grades
+      break;
+    case '3':
+      //todo: view class assignment avg grade
+      break;
+    case '4':
+      //todo: view class assignment grades
+      break;
+    case '5':
       return;
     default:
       printf("Unexpected Error, try again.\n");
@@ -1898,6 +1939,17 @@ void printStudentNode(Student_Node* toPrint){
 }
 
 /**
+ A function that prints all student records.
+ **/
+void printStudents(void){
+  Student_Node *temp = studentSentinel->next;
+  while(temp != studentSentinel){
+    printStudentNode(temp);
+    temp = temp->next;
+  }
+}
+
+/**
  A function that takes a Course Node and prints the attached
  Course record.
  **/
@@ -1911,6 +1963,17 @@ void printCourseNode(Course_Node* toPrint){
 }
 
 /**
+ A function that prints all course records.
+ **/
+void printCourses(void){
+  Course_Node *temp = courseSentinel->next;
+  while(temp != courseSentinel){
+    printCourseNode(temp);
+    temp = temp->next;
+  }
+}
+
+/**
  A function that takes a Enrollment Node and prints the attached
  Enrollment record.
  **/
@@ -1921,6 +1984,17 @@ void printEnrollNode(Enrollment_Node* toPrint){
     printf("%c", toPrint->enrollment->ssn[i]);
   }
   printf("\n");
+}
+
+/**
+ A function that prints all enroll records.
+ **/
+void printEnrollment(void){
+  Enrollment_Node *temp = enrollSentinel->next;
+  while(temp != enrollSentinel){
+    printEnrollNode(temp);
+    temp = temp->next;
+  }
 }
 
 /**
@@ -1939,6 +2013,18 @@ void printAssignmentNode(Assignment_Node* toPrint){
 }
 
 /**
+ A function that prints all assignment records.
+ **/
+void printAssignments(void){
+  Assignment_Node *temp = assignmentSentinel->next;
+  while(temp != assignmentSentinel){
+    printAssignmentNode(temp);
+    temp = temp->next;
+  }
+}
+
+
+/**
  A function that takes a grade Node and prints the attached
  grade record.
  **/
@@ -1952,6 +2038,18 @@ void printGradeNode(Grade_Node* toPrint){
   printf(" %d", toPrint->grade->pts_received);
   printf("\n");
 }
+
+/**
+ A function that prints all grade records.
+ **/
+void printGrades(void){
+  Grade_Node *temp = gradeSentinel->next;
+  while(temp != gradeSentinel){
+    printGradeNode(temp);
+    temp = temp->next;
+  }
+}
+
 
 /**
  A function to test the input linked list functions
