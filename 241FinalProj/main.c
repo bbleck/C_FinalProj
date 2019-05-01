@@ -311,6 +311,7 @@ void toViewClassAverage(void);
 void toViewStudentAverage(void);
 void toViewClassAssignmentGrades(void);
 void toViewClassAssignmentAvgGrades(void);
+void giveCoursePrintAssigns(int courseID);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -327,6 +328,9 @@ Grade_Node *gradeSentinel;
 int gradeSize;
 User_Node *userSentinel;
 int userSize;
+
+int highestCourseID;
+int highestAssignmentID;
 
 /** ******************************** **/
 
@@ -354,6 +358,8 @@ int main(int argc, const char * argv[]) {
  and databases.
  **/
 void setUpLists(void){
+  highestAssignmentID = 0;
+  highestCourseID = 0;
   makeSentinel();
   makeStudentSentinel();
   makeCourseSentinel();
@@ -395,7 +401,7 @@ void retrieveName(char* name){
     tempNode = tempNode->next;
   }
   while(counter < CHAR_INPUT_SIZE){
-    name[counter] = '.';
+    name[counter] = '\0';
 //    printf("%d: %c\n", counter, name[counter]);
     counter++;
   }
@@ -419,7 +425,7 @@ void retrieveSSN(char* name){
     tempNode = tempNode->next;
   }
   while(counter < SSN_INPUT_SIZE){
-    name[counter] = '.';
+    name[counter] = '\0';
 //    printf("%d: %c\n", counter, name[counter]);
     counter++;
   }
@@ -666,20 +672,15 @@ void copyCharArray(char *copyTo, char *copyFrom, int arrSize){
  **/
 void toAddClass(void){
   char title[CHAR_INPUT_SIZE]={0};
-  int course_id = rand();
+  int course_id = ++highestCourseID;
   Course *courseAdd = malloc(sizeof(Course));
   Course_Node *courseNodeAdd = malloc(sizeof(Course_Node));
-  //todo: check if any other course already has the id; re-randomize if needed
   printf("Add Class\n");
-  //move values into new course
   getName(ADD_CLASS_PROMPTS[0], title);
   courseAdd->course_id = course_id;
   copyCharArray(courseAdd->course_title, title, CHAR_INPUT_SIZE);
-  //move new node into course node
   courseNodeAdd->course = courseAdd;
-  //add course node into list
   addCourseList(courseNodeAdd);
-  //write course list db to reflect change
   writeCourseList();
 }
 
@@ -698,17 +699,35 @@ void toAddGrade(void){
   Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
   printf("Add Grade\n");
   getInt(ADD_GRADE_PROMPTS[0], courseID);
+  giveCoursePrintAssigns(course_id);
   //todo: print assignment id numbers of courseID
   getInt(ADD_GRADE_PROMPTS[1], assignID);
   getSSN(ADD_GRADE_PROMPTS[2], ssn);
   getInt(ADD_GRADE_PROMPTS[3], ptsReceived);
   gradeAdd->assignment_id = assignment_id;
-//  gradeAdd->course_id = course_id;
   gradeAdd->pts_received = pts_received;
   copyCharArray(gradeAdd->ssn, ssn, SSN_INPUT_SIZE);
   gradeNodeAdd->grade = gradeAdd;
   addGradeList(gradeNodeAdd);
   writeGradesList();
+}
+
+
+/**
+ A function that takes an int (the course ID) and prints all the
+ assignments associated with that courseID
+ **/
+void giveCoursePrintAssigns(int courseID){
+  Assignment_Node *temp = assignmentSentinel->next;
+  if(temp == NULL){
+    return;
+  }
+  while(temp!=assignmentSentinel){
+    if(temp->assignment->course_id == courseID){
+      printAssignmentNode(temp);
+    }
+    temp = temp->next;
+  }
 }
 
 /**
@@ -733,10 +752,9 @@ void toAddEnrollment(void){
  A function that will add an assignment to database.
  **/
 void toAddAssignment(void){
-  int assignment_id = rand();
+  int assignment_id = ++highestAssignmentID;
   int totPts = 0;
   int courseID = 0;
-  //todo: check for duplicate id, re-randomize if needed
   char assignment_title[CHAR_INPUT_SIZE] = {0};
   int *pts_total = &totPts;
   int *course_id = &courseID;
@@ -746,16 +764,12 @@ void toAddAssignment(void){
   getInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
   getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
-  //move values into new assignment
   assignAdd->assignment_id = assignment_id;
   assignAdd->course_id = courseID;
   assignAdd->pts_total = totPts;
   copyCharArray(assignAdd->assignment_title, assignment_title, CHAR_INPUT_SIZE);
-  //add new assignment into new assignment node
   assignNodeAdd->assignment = assignAdd;
-  //add new assignment node into list
   addAssignmentList(assignNodeAdd);
-  //rewrite assignment list to reflect change
   writeAssignmentList();
 }
 
@@ -1906,6 +1920,12 @@ void fillCourseList(void){
     fp = fopen(CLASSES_DB, "w");
     fclose(fp);
   }
+  if(courseSentinel->previous == NULL){
+    return;
+  }
+  if(courseSentinel->previous->course->course_id > highestCourseID){
+    highestCourseID = courseSentinel->previous->course->course_id;
+  }
 }
 
 /**
@@ -1930,6 +1950,12 @@ void fillAssignmentList(void){
   }else{
     fp = fopen(ASSIGNMENTS_DB, "w");
     fclose(fp);
+  }
+  if(assignmentSentinel->previous == NULL){
+    return;
+  }
+  if(assignmentSentinel->previous->assignment->assignment_id > highestAssignmentID){
+    highestAssignmentID = assignmentSentinel->previous->assignment->assignment_id;
   }
 }
 
@@ -2255,12 +2281,12 @@ void printEnrollment(void){
  **/
 void printAssignmentNode(Assignment_Node* toPrint){
   int i = 0;
-  printf("%d ", toPrint->assignment->assignment_id);
+  printf("Assignment ID: %d ,", toPrint->assignment->assignment_id);
   for(i=0; i<CHAR_INPUT_SIZE; i++){
     printf("%c", toPrint->assignment->assignment_title[i]);
   }
-  printf(" %d ", toPrint->assignment->course_id);
-  printf("%d", toPrint->assignment->pts_total);
+  printf(", Course ID: %d ,", toPrint->assignment->course_id);
+  printf(" Points: %d", toPrint->assignment->pts_total);
   printf("\n");
 }
 
