@@ -190,7 +190,7 @@ typedef struct assignment_node{
 } Assignment_Node;
 
 typedef struct grade{
-  int course_id;  // ******* TODO ****** REMOVE COURSE_ID FROM GRADE//
+//  int course_id;  // ******* TODO ****** REMOVE COURSE_ID FROM GRADE//
   int assignment_id;
   char ssn[SSN_INPUT_SIZE];
   int pts_received;
@@ -278,7 +278,7 @@ Course* courseExists(int course_id);
 void toEditAssignment(void);
 Assignment* assignExists(int course_id, int assignment_id);
 void toEditGrade(void);
-Grade* gradeExists(int course_id, int assignment_id, char* ssn);
+Grade* gradeExists(int assignment_id, char* ssn);
 void toDeleteStudent(void);
 void deleteAStudent(Student_Node *toRemove);
 void deleteACourse(Course_Node *toRemove);
@@ -290,7 +290,7 @@ Course_Node* courseNodeExists(int course_id);
 void toDeleteCourse(void);
 Assignment_Node* assignNodeExists(int course_id, int assignment_id);
 void toDeleteAssignment(void);
-Grade_Node* gradeNodeExists(int course_id, int assignment_id, char* ssn);
+Grade_Node* gradeNodeExists(int assignment_id, char* ssn);
 void toDeleteGrade(void);
 Enrollment_Node* enrollNodeExists(int course_id, char* ssn);
 void toDeleteEnrollment(void);
@@ -698,11 +698,12 @@ void toAddGrade(void){
   Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
   printf("Add Grade\n");
   getInt(ADD_GRADE_PROMPTS[0], courseID);
+  //todo: print assignment id numbers of courseID
   getInt(ADD_GRADE_PROMPTS[1], assignID);
   getSSN(ADD_GRADE_PROMPTS[2], ssn);
   getInt(ADD_GRADE_PROMPTS[3], ptsReceived);
   gradeAdd->assignment_id = assignment_id;
-  gradeAdd->course_id = course_id;
+//  gradeAdd->course_id = course_id;
   gradeAdd->pts_received = pts_received;
   copyCharArray(gradeAdd->ssn, ssn, SSN_INPUT_SIZE);
   gradeNodeAdd->grade = gradeAdd;
@@ -878,9 +879,10 @@ void toEditGrade(void){
   Grade *toEdit = NULL;
   while(1){
     getInt(EDIT_GRADE_PROMPTS[0], &course_id);
+    //todo: print list of assignments attached to courseid
     getInt(EDIT_GRADE_PROMPTS[1], &assignment_id);
     getSSN(EDIT_GRADE_PROMPTS[2], &ssn[0]);
-    if((toEdit = gradeExists(course_id, assignment_id, ssn)) != NULL){
+    if((toEdit = gradeExists(assignment_id, ssn)) != NULL){
       break;
     }
     printf("Invalid Class ID/Assignment ID/SSN combination.\n");
@@ -1034,10 +1036,10 @@ void toViewClassAssignmentGrades(void){
     return;
   }
   getInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[0], &course_id);
+  //todo: print the assignments for a course
   getInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[1], &assignment_id);
   while(toCheck != gradeSentinel){
-    if(toCheck->grade->assignment_id == assignment_id
-       && toCheck->grade->course_id == course_id){
+    if(toCheck->grade->assignment_id == assignment_id){
       printGradeNode(toCheck);
     }
     toCheck = toCheck->next;
@@ -1090,12 +1092,14 @@ void toDeleteGrade(void){
   Grade_Node *toDelete = NULL;
   while(1){
     getInt(DELETE_GRADE_PROMPTS[0], &course_id);
+    //todo: print out grades associated with course id
     getInt(DELETE_GRADE_PROMPTS[1], &assignment_id);
     getSSN(DELETE_GRADE_PROMPTS[2], &ssn[0]);
-    if((toDelete = gradeNodeExists(course_id, assignment_id, ssn)) != NULL){
+    if((toDelete = gradeNodeExists(assignment_id, ssn)) != NULL){
       break;
     }
     printf("Invalid Class ID/Assignment ID/SSN combination.\n");
+    return;
   }
   while(1){
     printf("%s",DELETE_GRADE_PROMPTS[3]);
@@ -1173,11 +1177,10 @@ Enrollment_Node* enrollNodeExists(int course_id, char* ssn){
  the assignments linked list.  If found, returns
  pointer parameter to the correspoding node.
  **/
-Grade* gradeExists(int course_id, int assignment_id, char* ssn){
+Grade* gradeExists(int assignment_id, char* ssn){
   Grade_Node *temp = gradeSentinel->next;
   while(temp != gradeSentinel){
-    if(course_id == temp->grade->course_id
-       && assignment_id == temp->grade->assignment_id
+    if(assignment_id == temp->grade->assignment_id
        && ssnsAreEqual(ssn, temp->grade->ssn)){
       return temp->grade;
     }
@@ -1191,11 +1194,10 @@ Grade* gradeExists(int course_id, int assignment_id, char* ssn){
  the assignments linked list.  If found, returns
  pointer parameter to the correspoding node.
  **/
-Grade_Node* gradeNodeExists(int course_id, int assignment_id, char* ssn){
+Grade_Node* gradeNodeExists(int assignment_id, char* ssn){
   Grade_Node *temp = gradeSentinel->next;
   while(temp != gradeSentinel){
-    if(course_id == temp->grade->course_id
-       && assignment_id == temp->grade->assignment_id
+    if(assignment_id == temp->grade->assignment_id
        && ssnsAreEqual(ssn, temp->grade->ssn)){
       return temp;
     }
@@ -2283,7 +2285,6 @@ void printAssignments(void){
  **/
 void printGradeNode(Grade_Node* toPrint){
   int i = 0;
-  printf("%d ", toPrint->grade->course_id);
   printf("%d ", toPrint->grade->assignment_id);
   for(i=0; i<SSN_INPUT_SIZE; i++){
     printf("%c", toPrint->grade->ssn[i]);
