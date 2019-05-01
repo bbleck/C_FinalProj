@@ -10,6 +10,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+/**
+ class id ->> needs to be autoincremented by 1 starting at
+ **/
+
 const char STUDENTS_DB[] = "students.txt";
 const char CLASSES_DB[] = "classes.db";
 const char ASSIGNMENTS_DB[] = "assignments.db";
@@ -186,7 +190,7 @@ typedef struct assignment_node{
 } Assignment_Node;
 
 typedef struct grade{
-  int course_id;
+  int course_id;  // ******* TODO ****** REMOVE COURSE_ID FROM GRADE//
   int assignment_id;
   char ssn[SSN_INPUT_SIZE];
   int pts_received;
