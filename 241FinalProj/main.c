@@ -315,6 +315,7 @@ void giveCoursePrintAssigns(int courseID);
 int storeCourseIntInput(int* intStorage);
 int checkForNegOne(void);
 void getCourseInt(const char* prompt, int* id);
+int isValidCourseID(int courseID);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -750,7 +751,7 @@ void toAddGrade(void){
   Grade *gradeAdd = malloc(sizeof(Grade));
   Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
   printf("Add Grade\n");
-  getInt(ADD_GRADE_PROMPTS[0], courseID);
+  getCourseInt(ADD_GRADE_PROMPTS[0], courseID);
   giveCoursePrintAssigns(course_id);
   //todo: print assignment id numbers of courseID
   getInt(ADD_GRADE_PROMPTS[1], assignID);
@@ -814,6 +815,9 @@ void toAddAssignment(void){
   Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
   printf("Add Assignment\n");
   getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
+  if(!isValidCourseID(courseID)){
+    return;
+  }
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
   getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
   assignAdd->assignment_id = assignment_id;
@@ -823,6 +827,23 @@ void toAddAssignment(void){
   assignNodeAdd->assignment = assignAdd;
   addAssignmentList(assignNodeAdd);
   writeAssignmentList();
+}
+
+/**
+ 
+ **/
+int isValidCourseID(int courseID){
+  Course_Node *temp = courseSentinel->next;
+  if(temp == NULL){
+    return 0;
+  }
+  while(temp!=courseSentinel){
+    if(temp->course->course_id == courseID){
+      return 1;
+    }
+    temp = temp->next;
+  }
+  return 0;
 }
 
 /**
