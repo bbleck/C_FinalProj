@@ -316,6 +316,8 @@ int storeCourseIntInput(int* intStorage);
 int checkForNegOne(void);
 void getCourseInt(const char* prompt, int* id);
 int isValidCourseID(int courseID);
+int storeAssignIntInput(int* intStorage, int courseID);
+int isValidAssignID(int assignID);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -617,10 +619,35 @@ int storeCourseIntInput(int* intStorage){
 }
 
 /**
+ A function for assignment id that takes an int pointer and adds a valid int into its value.
+ **/
+int storeAssignIntInput(int* intStorage, int courseID){
+  clearLine();
+  grabLine();
+  if(checkForNegOne()){
+    giveCoursePrintAssigns(courseID);
+    storeAssignIntInput(intStorage, courseID);
+  }
+  if(!isValidIntInput()){
+    printf("invalid input\n");
+    return 0;
+  }
+  if(inputSize != 0){
+    retrieveInt(intStorage);
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+/**
  A function to validate that input is only digits.
  **/
 int isValidIntInput(void){
   Input_c *temp = inputSentinel->next;
+  if(temp == NULL){
+    return 0;
+  }
   while(temp != inputSentinel){
     //todo: handle the -1 case for displaying values
     if(temp->value < '0' || temp->value > '9'){
@@ -671,6 +698,19 @@ void getCourseInt(const char* prompt, int* id){
   while(1){
     printf("%s", prompt);
     if(storeCourseIntInput(id)){
+      break;
+    }
+  }
+}
+
+/**
+ A function that prints a prompt to get a assignment ID and delegates ID
+ retrieval until successful.
+ **/
+void getAssignInt(const char* prompt, int* id, int courseID){
+  while(1){
+    printf("%s", prompt);
+    if(storeAssignIntInput(id, courseID)){
       break;
     }
   }
@@ -752,9 +792,15 @@ void toAddGrade(void){
   Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
   printf("Add Grade\n");
   getCourseInt(ADD_GRADE_PROMPTS[0], courseID);
+  if(!isValidCourseID(course_id)){
+    return;
+  }
   giveCoursePrintAssigns(course_id);
   //todo: print assignment id numbers of courseID
-  getInt(ADD_GRADE_PROMPTS[1], assignID);
+  getAssignInt(ADD_GRADE_PROMPTS[1], assignID,course_id);
+  if(!isValidAssignID(assignment_id)){
+    return;
+  }
   getSSN(ADD_GRADE_PROMPTS[2], ssn);
   getInt(ADD_GRADE_PROMPTS[3], ptsReceived);
   gradeAdd->assignment_id = assignment_id;
@@ -830,7 +876,24 @@ void toAddAssignment(void){
 }
 
 /**
- 
+ Checks assignmentID to see if it is valid.
+ **/
+int isValidAssignID(int assignID){
+  Assignment_Node *temp = assignmentSentinel->next;
+  if(temp == NULL){
+    return 0;
+  }
+  while(temp!=assignmentSentinel){
+    if(temp->assignment->assignment_id == assignID){
+      return 1;
+    }
+    temp = temp->next;
+  }
+  return 0;
+}
+
+/**
+ Checks courseID to see if it is valid.
  **/
 int isValidCourseID(int courseID){
   Course_Node *temp = courseSentinel->next;
