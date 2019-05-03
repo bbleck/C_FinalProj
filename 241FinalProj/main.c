@@ -862,6 +862,7 @@ void toAddAssignment(void){
   printf("Add Assignment\n");
   getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
   if(!isValidCourseID(courseID)){
+    highestCourseID--;
     return;
   }
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
