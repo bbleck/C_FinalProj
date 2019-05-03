@@ -318,6 +318,7 @@ void getCourseInt(const char* prompt, int* id);
 int isValidCourseID(int courseID);
 int storeAssignIntInput(int* intStorage, int courseID);
 int isValidAssignID(int assignID);
+int isValidStudent(char* ssn);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -742,6 +743,10 @@ void toAddStudent(void){
   getName(ADD_STUDENT_PROMPTS[0], first);
   getName(ADD_STUDENT_PROMPTS[1], last);
   getSSN(ADD_STUDENT_PROMPTS[2], ssnStr);
+  if(isValidStudent(ssnStr)){
+    printf("Student already exists with that SSN\n");
+    return;
+  }
   copyCharArray(toAdd->first, first, CHAR_INPUT_SIZE);
   copyCharArray(toAdd->last, last, CHAR_INPUT_SIZE);
   copyCharArray(toAdd->ssn, ssnStr, SSN_INPUT_SIZE);
@@ -838,7 +843,10 @@ void toAddEnrollment(void){
   Enrollment *enrollmentAdd = malloc(sizeof(Enrollment));
   Enrollment_Node *enrollmentNodeAdd = malloc(sizeof(Enrollment_Node));
   printf("Add Enrollment\n");
-  getInt(ENROLL_STUDENT_PROMPTS[0], &course_id);
+  getCourseInt(ENROLL_STUDENT_PROMPTS[0], &course_id);
+  if(!isValidCourseID(course_id)){
+    return;
+  }
   getSSN(ENROLL_STUDENT_PROMPTS[1], &ssn[0]);
   enrollmentAdd->course_id = course_id;
   copyCharArray(enrollmentAdd->ssn, ssn, SSN_INPUT_SIZE);
@@ -909,6 +917,25 @@ int isValidCourseID(int courseID){
   }
   return 0;
 }
+
+/**
+ Checks to see if a student exists in DB with a given SSN
+ **/
+int isValidStudent(char* ssn){
+  Student_Node *temp = studentSentinel->next;
+  if(temp==NULL){
+    return 0;
+  }
+  while(temp!=studentSentinel){
+    if(ssnsAreEqual(temp->student->ssn, ssn)){
+      return 1;
+    }
+    temp = temp->next;
+  }
+  return 0;
+}
+
+
 
 /**
  A function that will retrieve a student entry, edit it,
