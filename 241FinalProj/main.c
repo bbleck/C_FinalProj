@@ -312,6 +312,9 @@ void toViewStudentAverage(void);
 void toViewClassAssignmentGrades(void);
 void toViewClassAssignmentAvgGrades(void);
 void giveCoursePrintAssigns(int courseID);
+int storeCourseIntInput(int* intStorage);
+int checkForNegOne(void);
+void getCourseInt(const char* prompt, int* id);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -577,6 +580,42 @@ int storeIntInput(int* intStorage){
 }
 
 /**
+ A function that checks to see if the input was -1
+ **/
+int checkForNegOne(void){
+  if(inputSentinel->next == NULL){
+    return 0;
+  }else if(inputSentinel->next->value == '-'){
+    if(inputSentinel->previous->value == '1'){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/**
+ A function for course id that takes an int pointer and adds a valid int into its value.
+ **/
+int storeCourseIntInput(int* intStorage){
+  clearLine();
+  grabLine();
+  if(checkForNegOne()){
+    printCourses();
+    storeCourseIntInput(intStorage);
+  }
+  if(!isValidIntInput()){
+    printf("invalid input\n");
+    return 0;
+  }
+  if(inputSize != 0){
+    retrieveInt(intStorage);
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+/**
  A function to validate that input is only digits.
  **/
 int isValidIntInput(void){
@@ -618,6 +657,19 @@ void getInt(const char* prompt, int* id){
   while(1){
     printf("%s", prompt);
     if(storeIntInput(id)){
+      break;
+    }
+  }
+}
+
+/**
+ A function that prints a prompt to get a course ID and delegates ID
+ retrieval until successful.
+ **/
+void getCourseInt(const char* prompt, int* id){
+  while(1){
+    printf("%s", prompt);
+    if(storeCourseIntInput(id)){
       break;
     }
   }
@@ -761,7 +813,7 @@ void toAddAssignment(void){
   Assignment *assignAdd = malloc(sizeof(Assignment));
   Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
   printf("Add Assignment\n");
-  getInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
+  getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
   getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
   assignAdd->assignment_id = assignment_id;
