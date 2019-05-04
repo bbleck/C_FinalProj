@@ -1030,6 +1030,9 @@ void toEditStudent(void){
     getSSN(EDIT_STUDENT_PROMPTS[0], &ssn[0]);
     if((toEdit = studentExists(&ssn[0])) != NULL){
       break;
+    }else{
+      printf("Invalid SSN\n");
+      return;
     }
   }
   printf("%s",EDIT_STUDENT_PROMPTS[1]);
