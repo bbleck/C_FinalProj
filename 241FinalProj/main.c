@@ -1305,7 +1305,45 @@ void toViewEnrollment(void){
  displays the average grades for that course.
  **/
 void toViewClassAverage(void){
-  //todo: implement this functionality
+  int course_id = 0;
+  int assignment_id = 0;
+  int max_assignm_pts = 0;
+  int total_poss_pts = 0;
+  int sum_grades = 0;
+  Assignment_Node *tempAssign = assignmentSentinel->next;
+  Grade_Node *tempGrade = gradeSentinel->next;
+  getCourseInt(VIEW_CLASS_AVERAGE_PROMPTS[0], &course_id);
+  if(!isValidCourseID(course_id)){
+    printf("Invalid course ID\n");
+    return;
+  }
+  if(tempAssign == NULL){
+    printf("No assignments in database\n");
+    return;
+  }
+  if(tempGrade == NULL){
+    printf("No grades in database\n");
+    return;
+  }
+  while(tempAssign!=assignmentSentinel){
+    max_assignm_pts = tempAssign->assignment->pts_total;
+    while(tempGrade!=gradeSentinel){
+      if(tempGrade->grade->assignment_id == assignment_id){
+        total_poss_pts += max_assignm_pts;
+        sum_grades += tempGrade->grade->pts_received;
+      }
+      tempGrade = tempGrade->next;
+    }
+    tempAssign = tempAssign->next;
+  }
+  if(max_assignm_pts <= 0){
+    printf("Course ID #%d Error - Max possible points <= 0\n"
+           ,course_id);
+    return;
+  }
+  printf("Course ID #%d Class Average: %d\n"
+         , tempAssign->assignment->assignment_id
+         , (sum_grades * 100)/(total_poss_pts));
 }
 
 /**
@@ -1351,16 +1389,16 @@ void toViewClassAssignmentAvgGrades(void){
       tempGrade = tempGrade->next;
     }
     if(count_grades <= 0 || max_assignm_pts <= 0){
-      printf("Assignment ID #%d Error - No grades for assignment"
+      printf("Assignment ID #%d Error - No grades for assignment\n"
              ,tempAssign->assignment->assignment_id);
       count_grades = 0;
       sum_grades = 0;
       tempAssign = tempAssign->next;
       continue;
     }
-    printf("Assignment ID #%d Class Average: %d"
+    printf("Assignment ID #%d Class Average: %d\n"
            , tempAssign->assignment->assignment_id
-           , (sum_grades)/(max_assignm_pts*count_grades));
+           , (sum_grades * 100)/(max_assignm_pts*count_grades));
     count_grades = 0;
     sum_grades = 0;
     tempAssign = tempAssign->next;
