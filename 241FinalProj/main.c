@@ -1139,8 +1139,7 @@ void toEditAssignment(void){
   }
 }
 
-/***
- 
+/**
  A function that will retrieve a grade entry, edit it,
  and update the grade list and db to reflect changes.
  **/
@@ -2014,8 +2013,19 @@ void deleteACourse(Course_Node *toRemove){
 void deleteAnAssignment(Assignment_Node *toRemove){
   Assignment_Node *previous = NULL;
   Assignment_Node *next = NULL;
+  Grade_Node *tempGrade = gradeSentinel->next;
   if(toRemove == NULL){
     return;
+  }
+  if(tempGrade!=NULL){
+    while(tempGrade!=gradeSentinel){
+      if(tempGrade->grade->assignment_id == toRemove->assignment->assignment_id){
+        tempGrade = tempGrade->next;
+        deleteAGrade(tempGrade->previous);
+      }else{
+        tempGrade = tempGrade->next;
+      }
+    }
   }
   previous = toRemove->previous;
   next = toRemove->next;
@@ -2058,8 +2068,19 @@ void deleteAGrade(Grade_Node *toRemove){
 void deleteEnrollment(Enrollment_Node *toRemove){
   Enrollment_Node *previous = NULL;
   Enrollment_Node *next = NULL;
+  Grade_Node *tempGrade = gradeSentinel->next;
   if(toRemove == NULL){
     return;
+  }
+  if(tempGrade!=NULL){
+    while(tempGrade!=gradeSentinel){
+      if(tempGrade->grade->ssn == toRemove->enrollment->ssn){
+        tempGrade = tempGrade->next;
+        deleteAGrade(tempGrade->previous);
+      }else{
+        tempGrade = tempGrade->next;
+      }
+    }
   }
   previous = toRemove->previous;
   next = toRemove->next;
