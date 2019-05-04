@@ -1220,6 +1220,8 @@ void toDeleteStudent(void){
   }
   deleteAStudent(toDelete);
   writeStudentList();
+  writeGradesList();
+  writeEnrollList();
 }
 
 /**
@@ -1252,6 +1254,9 @@ void toDeleteCourse(void){
   }
   deleteACourse(toDelete);
   writeCourseList();
+  writeGradesList();
+  writeAssignmentList();
+  writeEnrollList();
 }
 
 /**
@@ -1368,6 +1373,7 @@ void toDeleteAssignment(void){
   }
   deleteAnAssignment(toDelete);
   writeAssignmentList();
+  writeGradesList();
 }
 
 /**
@@ -1442,6 +1448,7 @@ void toDeleteEnrollment(void){
   }
   deleteEnrollment(toDelete);
   writeEnrollList();
+  writeGradesList();
 }
 
 /**
@@ -1969,8 +1976,19 @@ void addEnrollList(Enrollment_Node *toAdd){
 void deleteAStudent(Student_Node *toRemove){
   Student_Node *previous = NULL;
   Student_Node *next = NULL;
+  Enrollment_Node *tempEnroll = enrollSentinel->next;
   if(toRemove == NULL){
     return;
+  }
+  if(tempEnroll!=NULL){
+    while(tempEnroll!=enrollSentinel){
+      if(ssnsAreEqual(toRemove->student->ssn, tempEnroll->enrollment->ssn)){
+        tempEnroll=tempEnroll->next;
+        deleteEnrollment(tempEnroll->previous);
+      }else{
+        tempEnroll = tempEnroll->next;
+      }
+    }
   }
   previous = toRemove->previous;
   next = toRemove->next;
@@ -1991,8 +2009,30 @@ void deleteAStudent(Student_Node *toRemove){
 void deleteACourse(Course_Node *toRemove){
   Course_Node *previous = NULL;
   Course_Node *next = NULL;
+  Assignment_Node *tempAssign = assignmentSentinel->next;
+  Enrollment_Node *tempEnroll = enrollSentinel->next;
   if(toRemove == NULL){
     return;
+  }
+  if(tempEnroll!=NULL){
+    while(tempEnroll!=enrollSentinel){
+      if(toRemove->course->course_id == tempEnroll->enrollment->course_id){
+        tempEnroll = tempEnroll->next;
+        deleteEnrollment(tempEnroll->previous);
+      }else{
+        tempEnroll = tempEnroll->next;
+      }
+    }
+  }
+  if(tempAssign!=NULL){
+    while(tempAssign!=assignmentSentinel){
+      if(toRemove->course->course_id == tempAssign->assignment->course_id){
+        tempAssign = tempAssign->next;
+        deleteAnAssignment(tempAssign->previous);
+      }else{
+        tempAssign = tempAssign->next;
+      }
+    }
   }
   previous = toRemove->previous;
   next = toRemove->next;
