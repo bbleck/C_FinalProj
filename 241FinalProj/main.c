@@ -14,7 +14,7 @@
  class id ->> needs to be autoincremented by 1 starting at
  **/
 
-const char STUDENTS_DB[] = "students.txt";
+const char STUDENTS_DB[] = "students.db";
 const char CLASSES_DB[] = "classes.db";
 const char ASSIGNMENTS_DB[] = "assignments.db";
 const char ENROLLMENT_DB[] = "enrollment.db";
@@ -236,7 +236,7 @@ void toAddClass(void);
 void toAddAssignment(void);
 int storeNameInput (char* nameStorage);
 void getName(const char* prompt, char* name);
-void getSSN(const char* prompt, char* ssn);
+int getSSN(const char* prompt, char* ssn);
 void setUpLists(void);
 void tearDownLists(void);
 void makeStudentSentinel(void);
@@ -721,11 +721,14 @@ void getAssignInt(const char* prompt, int* id, int courseID){
  A function that prints a prompt to get a ssn and delegates ssn
  retrieval until successful.
  **/
-void getSSN(const char* prompt, char* ssn){
+int getSSN(const char* prompt, char* ssn){
   while(1){
     printf("%s", prompt);
     if(storeSSNInput(ssn)){
-      break;
+      return 1;
+    }else{
+      printf("Invalid SSN\n");
+      return 0;
     }
   }
 }
@@ -742,7 +745,9 @@ void toAddStudent(void){
   printf("Add Student\n");
   getName(ADD_STUDENT_PROMPTS[0], first);
   getName(ADD_STUDENT_PROMPTS[1], last);
-  getSSN(ADD_STUDENT_PROMPTS[2], ssnStr);
+  if(!getSSN(ADD_STUDENT_PROMPTS[2], ssnStr)){
+    return;
+  }
   if(isValidStudent(ssnStr)){
     printf("Student already exists with that SSN\n");
     return;
