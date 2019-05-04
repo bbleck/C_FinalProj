@@ -907,9 +907,20 @@ void toAddEnrollment(void){
   printf("Add Enrollment\n");
   getCourseInt(ENROLL_STUDENT_PROMPTS[0], &course_id);
   if(!isValidCourseID(course_id)){
+    printf("Invalid course id\n");
     return;
   }
-  getSSN(ENROLL_STUDENT_PROMPTS[1], &ssn[0]);
+  if(!getSSN(ENROLL_STUDENT_PROMPTS[1], &ssn[0])){
+    return;
+  }
+  if(!isValidStudent(ssn)){
+    printf("Student does not exist with that SSN\n");
+    return;
+  }
+  if(isStudentEnrolled(ssn, course_id)){
+    printf("Student is already enrolled\n");
+    return;
+  }
   enrollmentAdd->course_id = course_id;
   copyCharArray(enrollmentAdd->ssn, ssn, SSN_INPUT_SIZE);
   enrollmentNodeAdd->enrollment = enrollmentAdd;
