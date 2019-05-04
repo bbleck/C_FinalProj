@@ -803,12 +803,14 @@ void toAddGrade(void){
   printf("Add Grade\n");
   getCourseInt(ADD_GRADE_PROMPTS[0], courseID);
   if(!isValidCourseID(course_id)){
+    printf("Invalid class id\n");
     return;
   }
   giveCoursePrintAssigns(course_id);
   //todo: print assignment id numbers of courseID
   getAssignInt(ADD_GRADE_PROMPTS[1], assignID,course_id);
   if(!isValidAssignID(assignment_id)){
+    printf("Invalid assignment id\n");
     return;
   }
   getSSN(ADD_GRADE_PROMPTS[2], ssn);
@@ -875,7 +877,8 @@ void toAddAssignment(void){
   printf("Add Assignment\n");
   getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
   if(!isValidCourseID(courseID)){
-    highestCourseID--;
+    highestAssignmentID--;
+    printf("Ivalid class ID\n");
     return;
   }
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
