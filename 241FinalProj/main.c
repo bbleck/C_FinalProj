@@ -253,7 +253,7 @@ void writeCourseList(void);
 void toAddGrade(void);
 int isValidIntInput(void);
 int storeIntInput(int* intStorage);
-void getInt(const char* prompt, int* id);
+int getInt(const char* prompt, int* id);
 void makeAssignSentinel(void);
 int clearAssignList(void);
 void fillAssignmentList(void);
@@ -682,11 +682,13 @@ void getName(const char* prompt, char* name){
  A function that prints a prompt to get an ID and delegates ID
  retrieval until successful.
  **/
-void getInt(const char* prompt, int* id){
+int getInt(const char* prompt, int* id){
   while(1){
     printf("%s", prompt);
     if(storeIntInput(id)){
-      break;
+      return 1;
+    }else{
+      return 0;
     }
   }
 }
@@ -814,7 +816,10 @@ void toAddGrade(void){
     return;
   }
   getSSN(ADD_GRADE_PROMPTS[2], ssn);
-  getInt(ADD_GRADE_PROMPTS[3], ptsReceived);
+  if(!getInt(ADD_GRADE_PROMPTS[3], ptsReceived)){
+    printf("Invalid point amount\n");
+    return;
+  }
   gradeAdd->assignment_id = assignment_id;
   gradeAdd->pts_received = pts_received;
   copyCharArray(gradeAdd->ssn, ssn, SSN_INPUT_SIZE);
@@ -882,7 +887,11 @@ void toAddAssignment(void){
     return;
   }
   getName(ADD_ASSIGNMENT_PROMPTS[1], assignment_title);
-  getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total);
+  if(!getInt(ADD_ASSIGNMENT_PROMPTS[2], pts_total)){
+    highestAssignmentID--;
+    printf("Invalid point amount\n");
+    return;
+  }
   assignAdd->assignment_id = assignment_id;
   assignAdd->course_id = courseID;
   assignAdd->pts_total = totPts;
