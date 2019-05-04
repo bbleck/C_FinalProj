@@ -1139,7 +1139,8 @@ void toEditAssignment(void){
   }
 }
 
-/**
+/***
+ 
  A function that will retrieve a grade entry, edit it,
  and update the grade list and db to reflect changes.
  **/
