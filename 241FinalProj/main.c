@@ -1335,9 +1335,16 @@ void toViewClassAssignmentGrades(void){
   if(toCheck == NULL){
     return;
   }
-  getInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[0], &course_id);
-  //todo: print the assignments for a course
-  getInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[1], &assignment_id);
+  getCourseInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[0], &course_id);
+  if(!isValidCourseID(course_id)){
+    printf("Invalid course id\n");
+    return;
+  }
+  getAssignInt(VIEW_CLASS_ASSIGNMENT_GRADES_PROMPTS[1], &assignment_id, course_id);
+  if(!isValidAssignID(assignment_id, course_id)){
+    printf("Invalid assignment id\n");
+    return;
+  }
   while(toCheck != gradeSentinel){
     if(toCheck->grade->assignment_id == assignment_id){
       printGradeNode(toCheck);
