@@ -811,7 +811,6 @@ void toAddGrade(void){
     return;
   }
   giveCoursePrintAssigns(course_id);
-  //todo: print assignment id numbers of courseID
   getAssignInt(ADD_GRADE_PROMPTS[1], assignID,course_id);
   if(!isValidAssignID(assignment_id, course_id)){
     printf("Invalid assignment id\n");
@@ -1082,9 +1081,6 @@ void toEditCourse(void){
     retrieveName(&course_title[0]);
     copyCharArray(toEdit->course_title, course_title, CHAR_INPUT_SIZE);
     flag = 1;
-  }else{
-    printf("Invalid input\n");
-    return;
   }
   if(flag){
     writeCourseList();
@@ -1103,12 +1099,18 @@ void toEditAssignment(void){
   int course_id = 0;
   Assignment *toEdit = NULL;
   while(1){
-    getInt(EDIT_ASSIGNMENT_PROMPTS[0], &course_id);
-    getInt(EDIT_ASSIGNMENT_PROMPTS[1], &assignment_id);
+    getCourseInt(EDIT_ASSIGNMENT_PROMPTS[0], &course_id);
+    if(!isValidCourseID(course_id)){
+      printf("Invalid class id\n");
+      return;
+    }
+    giveCoursePrintAssigns(course_id);
+    getAssignInt(EDIT_ASSIGNMENT_PROMPTS[1], &assignment_id, course_id);
     if((toEdit = assignExists(course_id, assignment_id)) != NULL){
       break;
     }
     printf("Invalid Class ID / Assignment ID combination.\n");
+    return;
   }
   printf("%s", EDIT_ASSIGNMENT_PROMPTS[2]);
   clearLine();
@@ -1121,7 +1123,6 @@ void toEditAssignment(void){
   printf("%s", EDIT_ASSIGNMENT_PROMPTS[3]);
   clearLine();
   grabLine();
-  //todo: change this to validate in a loop
   if(inputSize != 0){
     retrieveInt(&pts_total);
     toEdit->pts_total = pts_total;
