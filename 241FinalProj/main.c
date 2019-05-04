@@ -1201,6 +1201,9 @@ void toDeleteStudent(void){
     getSSN(DELETE_STUDENT_PROMPTS[0], &ssn[0]);
     if((toDelete = studentNodeExists(&ssn[0])) != NULL){
       break;
+    }else{
+      printf("No students exists with that SSN\n");
+      return;
     }
   }
   while(1){
@@ -1232,9 +1235,12 @@ void toDeleteCourse(void){
   int course_id = 0;
   Course_Node *toDelete = NULL;
   while(1){
-    getInt(DELETE_CLASS_PROMPTS[0], &course_id);
+    getCourseInt(DELETE_CLASS_PROMPTS[0], &course_id);
     if((toDelete = courseNodeExists(course_id)) != NULL){
       break;
+    }else{
+      printf("Invalid course ID\n");
+      return;
     }
   }
   while(1){
@@ -1266,7 +1272,7 @@ void toDeleteCourse(void){
 void toViewAssignments(void){
   int course_id = 0;
   Assignment_Node *toCheck = assignmentSentinel->next;
-  getInt(VIEW_ASSIGNMENTS_PROMPTS[0], &course_id);
+  getCourseInt(VIEW_ASSIGNMENTS_PROMPTS[0], &course_id);
   while(toCheck != assignmentSentinel){
     if(toCheck->assignment->course_id == course_id){
       printAssignmentNode(toCheck);
@@ -1349,12 +1355,17 @@ void toDeleteAssignment(void){
   int assignment_id = 0;
   Assignment_Node *toDelete = NULL;
   while(1){
-    getInt(DELETE_ASSIGNMENT_PROMPTS[0], &course_id);
-    getInt(DELETE_ASSIGNMENT_PROMPTS[1], &assignment_id);
+    getCourseInt(DELETE_ASSIGNMENT_PROMPTS[0], &course_id);
+    if(!isValidCourseID(course_id)){
+      printf("Invalid course ID\n");
+      return;
+    }
+    getAssignInt(DELETE_ASSIGNMENT_PROMPTS[1], &assignment_id, course_id);
     if((toDelete = assignNodeExists(course_id, assignment_id)) != NULL){
       break;
     }
     printf("Invalid Class ID / Assignment ID combination.\n");
+    return;
   }
   while(1){
     printf("%s",DELETE_ASSIGNMENT_PROMPTS[2]);
@@ -1386,9 +1397,16 @@ void toDeleteGrade(void){
   char ssn[SSN_INPUT_SIZE] = {0};
   Grade_Node *toDelete = NULL;
   while(1){
-    getInt(DELETE_GRADE_PROMPTS[0], &course_id);
-    //todo: print out grades associated with course id
-    getInt(DELETE_GRADE_PROMPTS[1], &assignment_id);
+    getCourseInt(DELETE_GRADE_PROMPTS[0], &course_id);
+    if(!isValidCourseID(course_id)){
+      printf("Invalid course ID\n");
+      return;
+    }
+    getAssignInt(DELETE_GRADE_PROMPTS[1], &assignment_id, course_id);
+    if(!isValidAssignID(assignment_id, course_id)){
+      printf("Invalid assignment id\n");
+      return;
+    }
     getSSN(DELETE_GRADE_PROMPTS[2], &ssn[0]);
     if((toDelete = gradeNodeExists(assignment_id, ssn)) != NULL){
       break;
@@ -1424,12 +1442,17 @@ void toDeleteEnrollment(void){
   char ssn[SSN_INPUT_SIZE] = {0};
   Enrollment_Node *toDelete = NULL;
   while(1){
-    getInt(DROP_STUDENT_PROMPTS[0], &course_id);
+    getCourseInt(DROP_STUDENT_PROMPTS[0], &course_id);
+    if(!isValidCourseID(course_id)){
+      printf("Invalid course ID\n");
+      return;
+    }
     getSSN(DROP_STUDENT_PROMPTS[1], &ssn[0]);
     if((toDelete = enrollNodeExists(course_id, ssn)) != NULL){
       break;
     }
     printf("Invalid Class ID/Assignment ID/SSN combination.\n");
+    return;
   }
   while(1){
     printf("%s",DROP_STUDENT_PROMPTS[2]);
