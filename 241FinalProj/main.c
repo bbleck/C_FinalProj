@@ -320,6 +320,7 @@ int storeAssignIntInput(int* intStorage, int courseID);
 int isValidAssignID(int assignID, int courseID);
 int isValidStudent(char* ssn);
 int studentAssignGradeExists(char* ssn, int assignmentID);
+int isStudentEnrolled(char* ssn, int courseID);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -823,6 +824,10 @@ void toAddGrade(void){
     printf("Student does not exist with that SSN\n");
     return;
   }
+  if(!isStudentEnrolled(ssn, course_id)){
+    printf("Student is not enrolled in the class\n");
+    return;
+  }
   if(studentAssignGradeExists(ssn, assignment_id)){
     printf("Student already has a grade for this assignment\n");
     return;
@@ -837,6 +842,24 @@ void toAddGrade(void){
   gradeNodeAdd->grade = gradeAdd;
   addGradeList(gradeNodeAdd);
   writeGradesList();
+}
+
+/**
+ A function taht checks to see if the student is enrolled in the class.
+ **/
+int isStudentEnrolled(char* ssn, int courseID){
+  Enrollment_Node* temp = enrollSentinel->next;
+  if(temp == NULL){
+    return 0;
+  }
+  while(temp!=enrollSentinel){
+    if(temp->enrollment->course_id==courseID
+       && ssnsAreEqual(ssn, temp->enrollment->ssn)){
+      return 1;
+    }
+    temp = temp->next;
+  }
+  return 0;
 }
 
 /**
