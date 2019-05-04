@@ -1067,9 +1067,12 @@ void toEditCourse(void){
   char course_title[CHAR_INPUT_SIZE] = {0};
   Course *toEdit = NULL;
   while(1){
-    getInt(EDIT_CLASS_PROMPTS[0], &course_id);
+    getCourseInt(EDIT_CLASS_PROMPTS[0], &course_id);
     if((toEdit = courseExists(course_id)) != NULL){
       break;
+    }else{
+      printf("Invalid course id\n");
+      return;
     }
   }
   printf("%s", EDIT_CLASS_PROMPTS[1]);
@@ -1079,6 +1082,9 @@ void toEditCourse(void){
     retrieveName(&course_title[0]);
     copyCharArray(toEdit->course_title, course_title, CHAR_INPUT_SIZE);
     flag = 1;
+  }else{
+    printf("Invalid input\n");
+    return;
   }
   if(flag){
     writeCourseList();
