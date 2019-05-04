@@ -699,7 +699,7 @@ int getInt(const char* prompt, int* id){
  A function that prints a prompt to get a course ID and delegates ID
  retrieval until successful.
  **/
-void getCourseInt(const char* prompt, int* id){
+void getCourseInt(const char* prompt, int* id){//TODO: CHANGE TO RETURN INT, BREAK OUT IF BAD INPUT
   while(1){
     printf("%s", prompt);
     if(storeCourseIntInput(id)){
@@ -712,7 +712,7 @@ void getCourseInt(const char* prompt, int* id){
  A function that prints a prompt to get a assignment ID and delegates ID
  retrieval until successful.
  **/
-void getAssignInt(const char* prompt, int* id, int courseID){
+void getAssignInt(const char* prompt, int* id, int courseID){ //TODO: CHANGE TO RETURN INT, BREAK OUT IF BAD INPUT
   while(1){
     printf("%s", prompt);
     if(storeAssignIntInput(id, courseID)){
@@ -802,6 +802,7 @@ void toAddGrade(void){
   int *courseID = &course_id;
   int *ptsReceived = &pts_received;
   int *assignID = &assignment_id;
+  Assignment_Node* tempAssign = assignmentSentinel;
   Grade *gradeAdd = malloc(sizeof(Grade));
   Grade_Node *gradeNodeAdd = malloc(sizeof(Grade_Node));
   printf("Add Grade\n");
@@ -812,7 +813,7 @@ void toAddGrade(void){
   }
   giveCoursePrintAssigns(course_id);
   getAssignInt(ADD_GRADE_PROMPTS[1], assignID,course_id);
-  if(!isValidAssignID(assignment_id, course_id)){
+  if((tempAssign = assignNodeExists(course_id, assignment_id))==NULL){
     printf("Invalid assignment id\n");
     return;
   }
@@ -833,6 +834,11 @@ void toAddGrade(void){
   }
   if(!getInt(ADD_GRADE_PROMPTS[3], ptsReceived)){
     printf("Invalid point amount\n");
+    return;
+  }
+  if(pts_received < 0
+     || pts_received > tempAssign->assignment->pts_total){
+    printf("Invalid points received\n");
     return;
   }
   gradeAdd->assignment_id = assignment_id;
@@ -1143,25 +1149,41 @@ void toEditGrade(void){
   int assignment_id = 0;
   char ssn[SSN_INPUT_SIZE] = {0};
   int pts_received = 0;
+  Assignment_Node* temp = assignmentSentinel;
   Grade *toEdit = NULL;
   while(1){
-    getInt(EDIT_GRADE_PROMPTS[0], &course_id);
-    //todo: print list of assignments attached to courseid
-    getInt(EDIT_GRADE_PROMPTS[1], &assignment_id);
+    getCourseInt(EDIT_GRADE_PROMPTS[0], &course_id);
+    if(!isValidCourseID(course_id)){
+      printf("Invalid class id\n");
+      return;
+    }
+    giveCoursePrintAssigns(course_id);
+    getAssignInt(EDIT_GRADE_PROMPTS[1], &assignment_id, course_id);
+    temp = assignNodeExists(course_id, assignment_id);
+    if(temp == NULL){
+      printf("Assignment does not exist\n");
+      return;
+    }
     getSSN(EDIT_GRADE_PROMPTS[2], &ssn[0]);
     if((toEdit = gradeExists(assignment_id, ssn)) != NULL){
       break;
     }
     printf("Invalid Class ID/Assignment ID/SSN combination.\n");
+    return;
   }
   printf("%s", EDIT_GRADE_PROMPTS[3]);
   clearLine();
   grabLine();
-  //todo: change this to validate in a loop
   if(inputSize != 0){
     retrieveInt(&pts_received);
-    toEdit->pts_received = pts_received;
-    flag = 1;
+    if(pts_received >= 0
+       && pts_received <= temp->assignment->pts_total){
+      toEdit->pts_received = pts_received;
+      flag = 1;
+    }else{
+      printf("Invalid points received.\n");
+      return;
+    }
   }
   if(flag){
     writeGradesList();
