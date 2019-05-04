@@ -2114,7 +2114,7 @@ void deleteEnrollment(Enrollment_Node *toRemove){
   }
   if(tempGrade!=NULL){
     while(tempGrade!=gradeSentinel){
-      if(tempGrade->grade->ssn == toRemove->enrollment->ssn){
+      if(ssnsAreEqual(tempGrade->grade->ssn, toRemove->enrollment->ssn)){
         tempGrade = tempGrade->next;
         deleteAGrade(tempGrade->previous);
       }else{
