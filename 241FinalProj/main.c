@@ -317,8 +317,9 @@ int checkForNegOne(void);
 void getCourseInt(const char* prompt, int* id);
 int isValidCourseID(int courseID);
 int storeAssignIntInput(int* intStorage, int courseID);
-int isValidAssignID(int assignID);
+int isValidAssignID(int assignID, int courseID);
 int isValidStudent(char* ssn);
+int studentAssignGradeExists(char* ssn, int assignmentID);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -811,11 +812,21 @@ void toAddGrade(void){
   giveCoursePrintAssigns(course_id);
   //todo: print assignment id numbers of courseID
   getAssignInt(ADD_GRADE_PROMPTS[1], assignID,course_id);
-  if(!isValidAssignID(assignment_id)){
+  if(!isValidAssignID(assignment_id, course_id)){
     printf("Invalid assignment id\n");
     return;
   }
-  getSSN(ADD_GRADE_PROMPTS[2], ssn);
+  if(!getSSN(ADD_GRADE_PROMPTS[2], ssn)){
+    return;
+  }
+  if(!isValidStudent(ssn)){
+    printf("Student does not exist with that SSN\n");
+    return;
+  }
+  if(studentAssignGradeExists(ssn, assignment_id)){
+    printf("Student already has a grade for this assignment\n");
+    return;
+  }
   if(!getInt(ADD_GRADE_PROMPTS[3], ptsReceived)){
     printf("Invalid point amount\n");
     return;
@@ -828,7 +839,23 @@ void toAddGrade(void){
   writeGradesList();
 }
 
-
+/**
+ A function that checks to see if the record for student grade for an assignment already exists.
+ **/
+int studentAssignGradeExists(char* ssn, int assignmentID){
+  Grade_Node* temp = gradeSentinel->next;
+  if(temp == NULL){
+    return 0;
+  }
+  while(temp!=gradeSentinel){
+    if(temp->grade->assignment_id == assignmentID
+       && ssnsAreEqual(ssn, temp->grade->ssn)){
+      return 1;
+    }
+    temp = temp->next;
+  }
+  return 0;
+}
 /**
  A function that takes an int (the course ID) and prints all the
  assignments associated with that courseID
@@ -904,13 +931,14 @@ void toAddAssignment(void){
 /**
  Checks assignmentID to see if it is valid.
  **/
-int isValidAssignID(int assignID){
+int isValidAssignID(int assignID, int courseID){
   Assignment_Node *temp = assignmentSentinel->next;
   if(temp == NULL){
     return 0;
   }
   while(temp!=assignmentSentinel){
-    if(temp->assignment->assignment_id == assignID){
+    if(temp->assignment->assignment_id == assignID
+       && temp->assignment->course_id == courseID){
       return 1;
     }
     temp = temp->next;
