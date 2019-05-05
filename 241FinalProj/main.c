@@ -358,6 +358,7 @@ int studentAssignGradeExists(char* ssn, int assignmentID);
 int isStudentEnrolled(char* ssn, int courseID);
 void toFakeEnv(void);
 int isThisCcliCmnd(const char* ccliCmnd);
+void removeInputC(Input_c *toRemove);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -482,8 +483,15 @@ void disposeToSpace(int spaceNumber){
   }
   for(i=0; i<spaceNumber; i++){
     while(tempInput->value != ' '){
+      if(tempInput == inputSentinel){
+        return;
+      }
       tempInput = tempInput->next;
-      
+      removeInputC(tempInput->previous);
+    }
+    if(tempInput!=inputSentinel && tempInput->value == ' '){
+      tempInput = tempInput->next;
+      removeInputC(tempInput->previous);
     }
   }
 }
