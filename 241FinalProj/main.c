@@ -405,7 +405,66 @@ void toFakeEnv(void){
   printf("CCLI: ");
   clearLine();
   grabLine();
-  
+  if(isThisCcliCmnd(CCLI_ADD_STUDENT)){
+    //todo: implement functionality
+    printf("entered add student\n");
+  }else if(isThisCcliCmnd(CCLI_ADD_CLASS)){
+    //todo: implement functionality
+    printf("entered add class\n");
+  }else if(isThisCcliCmnd(CCLI_ADD_GRADE)){
+    //todo: implement functionality
+    printf("entered add grade\n");
+  }else if(isThisCcliCmnd(CCLI_ADD_ENROLL)){
+    //todo:implement functionality
+    printf("entered add enroll\n");
+  }else if(isThisCcliCmnd(CCLI_ADD_ASSIGNMENT)){
+    //todo:implement functionality
+    printf("entered add assignment\n");
+  }else if(isThisCcliCmnd(CCLI_EDIT_STUDENT)){
+    //todo: implement functionality
+    printf("entered edit student\n");
+  }else if(isThisCcliCmnd(CCLI_EDIT_GRADE)){
+    //todo: implement functionality
+    printf("entered edit grade\n");
+  }else if(isThisCcliCmnd(CCLI_EDIT_CLASS)){
+    //todo: implement functionality
+    printf("entered edit class\n");
+  }else if(isThisCcliCmnd(CCLI_EDIT_ASSIGNMENT)){
+    //todo: implement functionality
+    printf("entered edit assignment\n");
+  }else if(isThisCcliCmnd(CCLI_DELETE_STUDENT)){
+    //todo: implement
+    printf("Entered delete student\n");
+  }else if(isThisCcliCmnd(CCLI_DELETE_COURSE)){
+    //todo: implement
+    printf("entered delete course\n");
+  }else if(isThisCcliCmnd(CCLI_DELETE_ASSIGNMENT)){
+    //todo: implement
+    printf("entered delete assignment\n");
+  }else if(isThisCcliCmnd(CCLI_DELETE_ENROLL)){
+    //todo: implement
+    printf("entered delete enroll\n");
+  }else if(isThisCcliCmnd(CCLI_DELETE_GRADE)){
+    //todo: implement
+    printf("entered delete grade\n");
+  }else if(isThisCcliCmnd(CCLI_VIEW_STUDENTS)){
+    //todo: implement
+    printf("entered view students\n");
+  }else if(isThisCcliCmnd(CCLI_VIEW_COURSES)){
+    //todo: implement
+    printf("entered view courses\n");
+  }else if(isThisCcliCmnd(CCLI_VIEW_ASSIGNMENTS)){
+    //todo: implement
+    printf("entered view assignments\n");
+  }else if(isThisCcliCmnd(CCLI_VIEW_GRADES)){
+    //todo: implement
+    printf("entered view grades\n");
+  }else if(isThisCcliCmnd(CCLI_VIEW_AVG_GRADE)){
+    //todo: implement
+    printf("entered view avg grade\n");
+    return;
+  }
+  toFakeEnv();
 }
 
 /**
