@@ -1444,7 +1444,7 @@ void toViewStudentAverage(void){
  **/
 void toViewClassAssignmentAvgGrades(void){
   int course_id = 0;
-  int assignment_id = 0;
+//  int assignment_id = 0;
   int max_assignm_pts = 0;
   int count_grades = 0;
   int sum_grades = 0;
@@ -1465,12 +1465,17 @@ void toViewClassAssignmentAvgGrades(void){
   }
   while(tempAssign!=assignmentSentinel){
     max_assignm_pts = tempAssign->assignment->pts_total;
-    while(tempGrade!=gradeSentinel){
-      if(tempGrade->grade->assignment_id == assignment_id){
-        count_grades++;
-        sum_grades+=tempGrade->grade->pts_received;
+    if(tempAssign->assignment->course_id == course_id){
+      while(tempGrade!=gradeSentinel){
+        if(tempGrade->grade->assignment_id == tempAssign->assignment->assignment_id){
+          count_grades++;
+          sum_grades+=tempGrade->grade->pts_received;
+        }
+        tempGrade = tempGrade->next;
       }
-      tempGrade = tempGrade->next;
+    }else{
+      tempAssign = tempAssign->next;
+      continue;
     }
     if(count_grades <= 0 || max_assignm_pts <= 0){
       printf("Assignment ID #%d Error - No grades for assignment\n"//TODO: bug getting all no grades
