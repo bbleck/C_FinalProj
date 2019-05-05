@@ -1273,6 +1273,10 @@ void toViewAssignments(void){
   int course_id = 0;
   Assignment_Node *toCheck = assignmentSentinel->next;
   getCourseInt(VIEW_ASSIGNMENTS_PROMPTS[0], &course_id);
+  if(!isValidCourseID(course_id)){
+    printf("invalid course id\n");
+    return;
+  }
   while(toCheck != assignmentSentinel){
     if(toCheck->assignment->course_id == course_id){
       printAssignmentNode(toCheck);
@@ -1291,7 +1295,11 @@ void toViewEnrollment(void){
   if(toCheck == NULL){
     return;
   }
-  getInt(VIEW_ENROLLMENT_PROMPTS[0], &course_id);
+  getCourseInt(VIEW_ENROLLMENT_PROMPTS[0], &course_id);
+  if(!isValidCourseID(course_id)){
+    printf("invalid course ID\n");
+    return;
+  }
   while(toCheck != enrollSentinel){
     if(toCheck->enrollment->course_id == course_id){
       printEnrollNode(toCheck);
@@ -1351,7 +1359,73 @@ void toViewClassAverage(void){
  displays the average grades for that student.
  **/
 void toViewStudentAverage(void){
-  //todo: implement this functionality
+  char ssn[SSN_INPUT_SIZE] = {0};
+  int sum_received = 0;
+  int total_poss = 0;
+  Enrollment_Node *tempEnroll = enrollSentinel->next;
+  Course_Node *tempCourse = courseSentinel->next;
+  Assignment_Node *tempAssign = assignmentSentinel->next;
+  Grade_Node *tempGrade = gradeSentinel->next;
+  if(tempEnroll == NULL){
+    printf("no enrollment records in database\n");
+    return;
+  }
+  if(tempCourse == NULL){
+    printf("no course records in database\n");
+    return;
+  }
+  if(tempAssign == NULL){
+    printf("no assignment records in database\n");
+    return;
+  }
+  if(tempGrade == NULL){
+    printf("no grade records in database\n");
+    return;
+  }
+  getSSN(VIEW_STUDENT_AVERAGE_PROMPTS[0], &ssn[0]);
+  if(!isValidStudent(ssn)){
+    printf("no student on record with that ssn\n");
+    return;
+  }
+  while(tempEnroll!=enrollSentinel){
+    if(ssnsAreEqual(tempEnroll->enrollment->ssn, ssn)){
+      while(tempCourse != courseSentinel){
+        if(tempEnroll->enrollment->course_id == tempCourse->course->course_id){
+          while(tempAssign != assignmentSentinel){
+            if(tempAssign->assignment->course_id == tempCourse->course->course_id){
+              while(tempGrade != gradeSentinel){
+               if(tempGrade->grade->assignment_id == tempAssign->assignment->assignment_id
+                  && ssnsAreEqual(ssn, tempGrade->grade->ssn)){
+                 total_poss += tempAssign->assignment->pts_total;
+                 sum_received += tempGrade->grade->pts_received;
+                 tempGrade = tempGrade->next;
+               }else{
+                 tempGrade = tempGrade->next;
+               }
+              }
+              tempAssign = tempAssign->next;
+            }else{
+              tempAssign = tempAssign->next;
+            }
+          }
+          printCourseNode(tempCourse);
+          if(total_poss<=0){
+            printf("Student Grade error, total points <= 0");
+          }else{
+            printf("Student grade: %d\n\n", (100*sum_received)/(total_poss));
+          }
+          sum_received = 0;
+          total_poss = 0;
+          tempCourse = tempCourse->next;
+        }else{
+          tempCourse = tempCourse->next;
+        }
+      }
+      tempEnroll = tempEnroll->next;
+    }else{
+      tempEnroll = tempEnroll->next;
+    }
+  }
 }
 
 /**
