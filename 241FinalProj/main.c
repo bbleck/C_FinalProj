@@ -155,6 +155,7 @@ const char CCLI_VIEW_GRADES[] = "view grades";
 const int CCLI_VIEW_GRADES_SPACE = 3;
 const char CCLI_VIEW_AVG_GRADE[] = "view average grade";
 const int CCLI_VIEW_AVG_GRADE_SPACE = 4;
+const char CCLI_EXIT[] = "exit";
 
 /**  Define Macros ***************** **/
 #define CHAR_INPUT_SIZE 30
@@ -463,6 +464,10 @@ void toFakeEnv(void){
     //todo: implement
     printf("entered view avg grade\n");
     return;
+  }else if(isThisCcliCmnd(CCLI_EXIT)){
+    return;
+  }else{
+    printf("Error: unknown command\n");
   }
   toFakeEnv();
 }
