@@ -359,6 +359,7 @@ int isStudentEnrolled(char* ssn, int courseID);
 void toFakeEnv(void);
 int isThisCcliCmnd(const char* ccliCmnd);
 void removeInputC(Input_c *toRemove);
+int getNumberOfInputSpaces(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -404,72 +405,186 @@ int main(int argc, const char * argv[]) {
  A function that handle the fake environment loop. Returns go back to menu system.
  **/
 void toFakeEnv(void){
+  int spaces = 0;
   printf("CCLI: ");
   clearLine();
   grabLine();
+  spaces = getNumberOfInputSpaces();
   if(isThisCcliCmnd(CCLI_ADD_STUDENT)){
-    //todo: implement functionality
-    printf("entered add student\n");
+    if(spaces == CCLI_ADD_STUDENT_SPACE){
+      //todo: implement functionality
+      printf("entered add student\n");
+    }else{
+      printf("invalid custom command\n");
+    }
   }else if(isThisCcliCmnd(CCLI_ADD_CLASS)){
-    //todo: implement functionality
-    printf("entered add class\n");
+    if(spaces == CCLI_ADD_CLASS_SPACE){
+      //todo: implement functionality
+      printf("entered add class\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_ADD_GRADE)){
-    //todo: implement functionality
-    printf("entered add grade\n");
+    if(spaces == CCLI_ADD_GRADE_SPACE){
+      //todo: implement functionality
+      printf("entered add grade\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_ADD_ENROLL)){
-    //todo:implement functionality
-    printf("entered add enroll\n");
+    if(spaces == CCLI_ADD_ENROLL_SPACE){
+      //todo:implement functionality
+      printf("entered add enroll\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_ADD_ASSIGNMENT)){
-    //todo:implement functionality
-    printf("entered add assignment\n");
+    if(spaces == CCLI_ADD_ASSIGNMENT_SPACE){
+      //todo:implement functionality
+      printf("entered add assignment\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_EDIT_STUDENT)){
-    //todo: implement functionality
-    printf("entered edit student\n");
+    if(spaces == CCLI_EDIT_STUDENT_SPACE){
+      //todo: implement functionality
+      printf("entered edit student\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_EDIT_GRADE)){
-    //todo: implement functionality
-    printf("entered edit grade\n");
+    if(spaces == CCLI_EDIT_GRADE_SPACE){
+      //todo: implement functionality
+      printf("entered edit grade\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_EDIT_CLASS)){
-    //todo: implement functionality
-    printf("entered edit class\n");
+    if(spaces == CCLI_EDIT_CLASS_SPACE){
+      //todo: implement functionality
+      printf("entered edit class\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_EDIT_ASSIGNMENT)){
-    //todo: implement functionality
-    printf("entered edit assignment\n");
+    if(spaces == CCLI_EDIT_ASSIGNMENT_SPACE){
+      //todo: implement functionality
+      printf("entered edit assignment\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_DELETE_STUDENT)){
-    //todo: implement
-    printf("Entered delete student\n");
+    if(spaces == CCLI_DELETE_STUDENT_SPACE){
+      //todo: implement
+      printf("Entered delete student\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_DELETE_COURSE)){
-    //todo: implement
-    printf("entered delete course\n");
+    if(spaces == CCLI_DELETE_COURSE_SPACE){
+      //todo: implement
+      printf("entered delete course\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_DELETE_ASSIGNMENT)){
-    //todo: implement
-    printf("entered delete assignment\n");
+    if(spaces == CCLI_DELETE_ASSIGNMENT_SPACE){
+      //todo: implement
+      printf("entered delete assignment\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_DELETE_ENROLL)){
-    //todo: implement
-    printf("entered delete enroll\n");
+    if(spaces == CCLI_DELETE_ENROLL_SPACE){
+      //todo: implement
+      printf("entered delete enroll\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_DELETE_GRADE)){
-    //todo: implement
-    printf("entered delete grade\n");
+    if(spaces == CCLI_DELETE_GRADE_SPACE){
+      //todo: implement
+      printf("entered delete grade\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_VIEW_STUDENTS)){
-    //todo: implement
-    printf("entered view students\n");
+    if(spaces == CCLI_VIEW_STUDENTS_SPACE){
+      //todo: implement
+      printf("entered view students\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_VIEW_COURSES)){
-    //todo: implement
-    printf("entered view courses\n");
+    if(spaces == CCLI_VIEW_COURSES_SPACE){
+      //todo: implement
+      printf("entered view courses\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_VIEW_ASSIGNMENTS)){
-    //todo: implement
-    printf("entered view assignments\n");
+    if(spaces == CCLI_VIEW_ASSIGNMENTS_SPACE){
+      //todo: implement
+      printf("entered view assignments\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_VIEW_GRADES)){
-    //todo: implement
-    printf("entered view grades\n");
+    if(spaces == CCLI_VIEW_GRADES_SPACE){
+      //todo: implement
+      printf("entered view grades\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_VIEW_AVG_GRADE)){
-    //todo: implement
-    printf("entered view avg grade\n");
+    if(spaces == CCLI_VIEW_AVG_GRADE_SPACE){
+      //todo: implement
+      printf("entered view avg grade\n");
+    }else{
+      printf("invalid custom command\n");
+    }
+
   }else if(isThisCcliCmnd(CCLI_EXIT)){
     return;
   }else{
     printf("Error: unknown command\n");
   }
   toFakeEnv();
+}
+
+/**
+ Function that returns number of spaces in input linked list.
+ **/
+int getNumberOfInputSpaces(void){
+  int counter = 0;
+  Input_c *tempInput = inputSentinel->next;
+  if(tempInput == NULL){
+    return 0;
+  }
+  while(tempInput!=inputSentinel){
+    if(tempInput->value == ' '){
+      counter++;
+    }
+    tempInput = tempInput->next;
+  }
+  return counter;
 }
 
 /**
