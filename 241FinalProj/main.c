@@ -10,10 +10,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-/**
- class id ->> needs to be autoincremented by 1 starting at
- **/
-
 const char STUDENTS_DB[] = "students.db";
 const char CLASSES_DB[] = "classes.db";
 const char ASSIGNMENTS_DB[] = "assignments.db";
@@ -121,6 +117,44 @@ const char VIEW_GRADES_PROMPTS[2][60] = {
 };
 const char YES_NO[] = "(Y/N)?\n";
 const char INVALID_INPUT[] = "Invalid Input\n";
+const char CCLI_ADD_STUDENT[] = "add student";
+const int CCLI_ADD_STUDENT_SPACE = 4;
+const char CCLI_ADD_CLASS[] = "add class";
+const int CCLI_ADD_CLASS_SPACE = 2;
+const char CCLI_ADD_ASSIGNMENT[] = "add assignment";
+const int CCLI_ADD_ASSIGNMENT_SPACE = 4;
+const char CCLI_ADD_GRADE[] = "add grade";
+const int CCLI_ADD_GRADE_SPACE = 5;
+const char CCLI_ADD_ENROLL[] = "enroll";
+const int CCLI_ADD_ENROLL_SPACE = 2;
+const char CCLI_EDIT_STUDENT[] = "edit student";
+const int CCLI_EDIT_STUDENT_SPACE = 4;
+const char CCLI_EDIT_CLASS[] = "edit class";
+const int CCLI_EDIT_CLASS_SPACE = 3;
+const char CCLI_EDIT_ASSIGNMENT[] = "edit assignment";
+const int CCLI_EDIT_ASSIGNMENT_SPACE = 5;
+const char CCLI_EDIT_GRADE[] = "edit grade";
+const int CCLI_EDIT_GRADE_SPACE = 5;
+const char CCLI_DELETE_STUDENT[] = "delete student";
+const int CCLI_DELETE_STUDENT_SPACE = 2;
+const char CCLI_DELETE_COURSE[] = "delete class";
+const int CCLI_DELETE_COURSE_SPACE = 2;
+const char CCLI_DELETE_ASSIGNMENT[] = "delete assignment";
+const int CCLI_DELETE_ASSIGNMENT_SPACE = 3;
+const char CCLI_DELETE_GRADE[] = "delete grade";
+const int CCLI_DELETE_GRADE_SPACE = 4;
+const char CCLI_DELETE_ENROLL[] = "drop";
+const int CCLI_DELETE_ENROLL_SPACE = 2;
+const char CCLI_VIEW_STUDENTS[] = "view students";
+const int CCLI_VIEW_STUDENTS_SPACE = 1;
+const char CCLI_VIEW_COURSES[] = "view classes";
+const int CCLI_VIEW_COURSES_SPACE = 1;
+const char CCLI_VIEW_ASSIGNMENTS[] = "view assignments";
+const int CCLI_VIEW_ASSIGNMENTS_SPACE = 2;
+const char CCLI_VIEW_GRADES[] = "view grades";
+const int CCLI_VIEW_GRADES_SPACE = 3;
+const char CCLI_VIEW_AVG_GRADE[] = "view average grade";
+const int CCLI_VIEW_AVG_GRADE_SPACE = 4;
 
 /**  Define Macros ***************** **/
 #define CHAR_INPUT_SIZE 30
@@ -321,6 +355,7 @@ int isValidAssignID(int assignID, int courseID);
 int isValidStudent(char* ssn);
 int studentAssignGradeExists(char* ssn, int assignmentID);
 int isStudentEnrolled(char* ssn, int courseID);
+void toFakeEnv(void);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -363,6 +398,17 @@ int main(int argc, const char * argv[]) {
 }
 
 /**
+ A function that handle the fake environment loop. Returns go back to menu system.
+ **/
+void toFakeEnv(void){
+  printf("CCLI: ");
+  clearLine();
+  grabLine();
+  
+}
+
+
+/**
  A function to sub delegate setting up the linked lists for input
  and databases.
  **/
@@ -401,23 +447,16 @@ void tearDownLists(void){
  **/
 void retrieveName(char* name){
   int counter = 0;
-//  int i = 0;
   Input_c *tempNode = inputSentinel->next;
   while(tempNode != inputSentinel && counter < CHAR_INPUT_SIZE){
     name[counter] = tempNode->value;
-//    printf("%d: %c -> %c\n", counter, tempNode->value, name[counter]);
     counter++;
     tempNode = tempNode->next;
   }
   while(counter < CHAR_INPUT_SIZE){
     name[counter] = '\0';
-//    printf("%d: %c\n", counter, name[counter]);
     counter++;
   }
-//  for(i=0; i<30; i++){
-//    printf("%c", name[i]);
-//  }
-//  printf("\n");
 }
 
 /**
@@ -425,23 +464,16 @@ void retrieveName(char* name){
  **/
 void retrieveSSN(char* name){
   int counter = 0;
-//  int i = 0;
   Input_c *tempNode = inputSentinel->next;
   while(tempNode != inputSentinel && counter < SSN_INPUT_SIZE){
     name[counter] = tempNode->value;
-//    printf("%d: %c -> %c\n", counter, tempNode->value, name[counter]);
     counter++;
     tempNode = tempNode->next;
   }
   while(counter < SSN_INPUT_SIZE){
     name[counter] = '\0';
-//    printf("%d: %c\n", counter, name[counter]);
     counter++;
   }
-//  for(i=0; i<9; i++){
-//    printf("%c", name[i]);
-//  }
-//  printf("\n");
 }
 
 /**
@@ -486,7 +518,7 @@ void toMainMenu(void){
       toViewDataMenu();
       break;
     case '5':
-      //todo: use command line environ
+      toFakeEnv();
       break;
     case '6':
       return;
