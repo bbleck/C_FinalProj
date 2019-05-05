@@ -356,6 +356,7 @@ int isValidStudent(char* ssn);
 int studentAssignGradeExists(char* ssn, int assignmentID);
 int isStudentEnrolled(char* ssn, int courseID);
 void toFakeEnv(void);
+int isThisCcliCmnd(const char* ccliCmnd);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -407,6 +408,26 @@ void toFakeEnv(void){
   
 }
 
+/**
+ A function that checks the ccli command in the parameter against input and returns 1 if
+ they match, 0 if they don't;
+ **/
+int isThisCcliCmnd(const char* ccliCmnd){
+  int i = 0;
+  Input_c *tempInput = inputSentinel->next;
+  while(ccliCmnd[i]){
+    if(tempInput == NULL || tempInput == inputSentinel){
+      return 0;
+    }
+    if(tempInput->value != ccliCmnd[i]){
+      return 0;
+    }else{
+      i++;
+      tempInput = tempInput->next;
+    }
+  }
+  return 1;
+}
 
 /**
  A function to sub delegate setting up the linked lists for input
