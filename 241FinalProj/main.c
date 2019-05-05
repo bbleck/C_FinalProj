@@ -463,13 +463,29 @@ void toFakeEnv(void){
   }else if(isThisCcliCmnd(CCLI_VIEW_AVG_GRADE)){
     //todo: implement
     printf("entered view avg grade\n");
-    return;
   }else if(isThisCcliCmnd(CCLI_EXIT)){
     return;
   }else{
     printf("Error: unknown command\n");
   }
   toFakeEnv();
+}
+
+/**
+ A function that deletes input nodes up to a designated space.
+ **/
+void disposeToSpace(int spaceNumber){
+  int i = 0;
+  Input_c *tempInput = inputSentinel->next;
+  if(tempInput == NULL){
+    return;
+  }
+  for(i=0; i<spaceNumber; i++){
+    while(tempInput->value != ' '){
+      tempInput = tempInput->next;
+      
+    }
+  }
 }
 
 /**
@@ -2151,6 +2167,23 @@ int grabLine(void){
     addInputC(toAdd);
   }
   return 1;
+}
+
+void removeInputC(Input_c *toRemove){
+  if(toRemove == NULL || toRemove->next == NULL || toRemove->previous == NULL){
+    return;
+  }
+  if(toRemove->previous == inputSentinel && toRemove->next == inputSentinel){
+    toRemove->previous->next = NULL;
+    toRemove->next->previous = NULL;
+    free(toRemove);
+    inputSize--;
+    return;
+  }
+  toRemove->previous->next = toRemove->next;
+  toRemove->next->previous = toRemove->previous;
+  free(toRemove);
+  inputSize--;
 }
 
 /**
