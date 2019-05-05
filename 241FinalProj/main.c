@@ -946,7 +946,7 @@ void toAddAssignment(void){
   Assignment *assignAdd = malloc(sizeof(Assignment));
   Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
   printf("Add Assignment\n");
-  getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);
+  getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);//TODO: BAD INPUT RETURN
   if(!isValidCourseID(courseID)){
     highestAssignmentID--;
     printf("Ivalid class ID\n");
@@ -1314,7 +1314,7 @@ void toViewEnrollment(void){
  **/
 void toViewClassAverage(void){
   int course_id = 0;
-  int assignment_id = 0;
+//  int assignment_id = 0;
   int max_assignm_pts = 0;
   int total_poss_pts = 0;
   int sum_grades = 0;
@@ -1336,7 +1336,7 @@ void toViewClassAverage(void){
   while(tempAssign!=assignmentSentinel){
     max_assignm_pts = tempAssign->assignment->pts_total;
     while(tempGrade!=gradeSentinel){
-      if(tempGrade->grade->assignment_id == assignment_id){
+      if(tempGrade->grade->assignment_id == tempAssign->assignment->assignment_id){
         total_poss_pts += max_assignm_pts;
         sum_grades += tempGrade->grade->pts_received;
       }
@@ -1344,13 +1344,13 @@ void toViewClassAverage(void){
     }
     tempAssign = tempAssign->next;
   }
-  if(max_assignm_pts <= 0){
+  if(total_poss_pts <= 0){
     printf("Course ID #%d Error - Max possible points <= 0\n"
            ,course_id);
     return;
   }
   printf("Course ID #%d Class Average: %d\n"
-         , tempAssign->assignment->assignment_id
+         , course_id
          , (sum_grades * 100)/(total_poss_pts));
 }
 
@@ -1403,11 +1403,13 @@ void toViewStudentAverage(void){
                  tempGrade = tempGrade->next;
                }
               }
+              tempGrade = gradeSentinel->next;
               tempAssign = tempAssign->next;
             }else{
               tempAssign = tempAssign->next;
             }
           }
+          tempAssign = assignmentSentinel->next;
           printCourseNode(tempCourse);
           if(total_poss<=0){
             printf("Student Grade error, total points <= 0");
@@ -1421,6 +1423,7 @@ void toViewStudentAverage(void){
           tempCourse = tempCourse->next;
         }
       }
+      tempCourse = courseSentinel->next;
       tempEnroll = tempEnroll->next;
     }else{
       tempEnroll = tempEnroll->next;
@@ -1463,7 +1466,7 @@ void toViewClassAssignmentAvgGrades(void){
       tempGrade = tempGrade->next;
     }
     if(count_grades <= 0 || max_assignm_pts <= 0){
-      printf("Assignment ID #%d Error - No grades for assignment\n"
+      printf("Assignment ID #%d Error - No grades for assignment\n"//TODO: bug getting all no grades
              ,tempAssign->assignment->assignment_id);
       count_grades = 0;
       sum_grades = 0;
