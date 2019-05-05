@@ -1315,7 +1315,7 @@ void toViewEnrollment(void){
 void toViewClassAverage(void){
   int course_id = 0;
 //  int assignment_id = 0;
-  int max_assignm_pts = 0;
+//  int max_assignm_pts = 0;
   int total_poss_pts = 0;
   int sum_grades = 0;
   Assignment_Node *tempAssign = assignmentSentinel->next;
@@ -1334,24 +1334,31 @@ void toViewClassAverage(void){
     return;
   }
   while(tempAssign!=assignmentSentinel){
-    max_assignm_pts = tempAssign->assignment->pts_total;
-    while(tempGrade!=gradeSentinel){
-      if(tempGrade->grade->assignment_id == tempAssign->assignment->assignment_id){
-        total_poss_pts += max_assignm_pts;
-        sum_grades += tempGrade->grade->pts_received;
+//    max_assignm_pts = tempAssign->assignment->pts_total;
+    if(tempAssign->assignment->course_id == course_id){
+      while(tempGrade!=gradeSentinel){
+        if(tempGrade->grade->assignment_id == tempAssign->assignment->assignment_id){
+//          printf("grade found: %d points out of %d\n", tempGrade->grade->pts_received,
+//                 tempAssign->assignment->pts_total);
+          total_poss_pts += tempAssign->assignment->pts_total;
+          sum_grades += tempGrade->grade->pts_received;
+        }
+        tempGrade = tempGrade->next;
       }
-      tempGrade = tempGrade->next;
+      tempGrade = gradeSentinel->next;
+      tempAssign = tempAssign->next;
+    }else{
+      tempAssign = tempAssign->next;
     }
-    tempAssign = tempAssign->next;
   }
   if(total_poss_pts <= 0){
     printf("Course ID #%d Error - Max possible points <= 0\n"
            ,course_id);
     return;
   }
-  printf("Course ID #%d Class Average: %d\n"
+  printf("Course ID #%d Class Average: %.2f\n"
          , course_id
-         , (sum_grades * 100)/(total_poss_pts));
+         , ((double)sum_grades * 100)/((double)total_poss_pts));
 }
 
 /**
@@ -1470,6 +1477,7 @@ void toViewClassAssignmentAvgGrades(void){
              ,tempAssign->assignment->assignment_id);
       count_grades = 0;
       sum_grades = 0;
+      tempGrade = gradeSentinel->next;
       tempAssign = tempAssign->next;
       continue;
     }
@@ -1478,6 +1486,7 @@ void toViewClassAssignmentAvgGrades(void){
            , (sum_grades * 100)/(max_assignm_pts*count_grades));
     count_grades = 0;
     sum_grades = 0;
+    tempGrade = gradeSentinel->next;
     tempAssign = tempAssign->next;
   }
 }
