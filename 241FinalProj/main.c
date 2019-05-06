@@ -419,16 +419,16 @@ void toFakeEnv(void){
   int assignment_id = 0;
   int pts_total = 0;
   int pts_received = 0;
-  Student *toAddStudent = NULL;
-  Student_Node *toAddStudentNode = NULL;
-  Course *courseAdd = NULL;
-  Course_Node *courseNodeAdd = NULL;
-  Grade *gradeAdd = NULL;
-  Grade_Node *gradeNodeAdd = NULL;
-  Enrollment *enrollmentAdd = NULL;
-  Enrollment_Node *enrollmentNodeAdd = NULL;
-  Assignment *assignAdd = NULL;
-  Assignment_Node *assignNodeAdd = NULL;
+  Student *tempStudent = NULL;
+  Student_Node *tempStudentNode = NULL;
+  Course *tempCourse = NULL;
+  Course_Node *tempCourseNode = NULL;
+  Grade *tempGrade = NULL;
+  Grade_Node *tempGradeNode = NULL;
+  Enrollment *tempEnroll = NULL;
+  Enrollment_Node *tempEnrollNode = NULL;
+  Assignment *tempAssign = NULL;
+  Assignment_Node *tempAssignNode = NULL;
   printf("CCLI: ");
   clearLine();
   grabLine();
@@ -446,13 +446,13 @@ void toFakeEnv(void){
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
-        toAddStudent = malloc(sizeof(Student));
-        toAddStudentNode = malloc(sizeof(Student_Node));
-        copyCharArray(toAddStudent->first, first, CHAR_INPUT_SIZE);
-        copyCharArray(toAddStudent->last, last, CHAR_INPUT_SIZE);
-        copyCharArray(toAddStudent->ssn, ssnStr, SSN_INPUT_SIZE);
-        toAddStudentNode->student = toAddStudent;
-        addStudentList(toAddStudentNode);
+        tempStudent = malloc(sizeof(Student));
+        tempStudentNode = malloc(sizeof(Student_Node));
+        copyCharArray(tempStudent->first, first, CHAR_INPUT_SIZE);
+        copyCharArray(tempStudent->last, last, CHAR_INPUT_SIZE);
+        copyCharArray(tempStudent->ssn, ssnStr, SSN_INPUT_SIZE);
+        tempStudentNode->student = tempStudent;
+        addStudentList(tempStudentNode);
         writeStudentList();
       }
     }else{
@@ -468,12 +468,12 @@ void toFakeEnv(void){
       }
       if(!badInputFlag){
         course_id = ++highestCourseID;
-        courseAdd = malloc(sizeof(Course));
-        courseNodeAdd = malloc(sizeof(Course_Node));
-        courseAdd->course_id = course_id;
-        copyCharArray(courseAdd->course_title, courseTitle, CHAR_INPUT_SIZE);
-        courseNodeAdd->course = courseAdd;
-        addCourseList(courseNodeAdd);
+        tempCourse = malloc(sizeof(Course));
+        tempCourseNode = malloc(sizeof(Course_Node));
+        tempCourse->course_id = course_id;
+        copyCharArray(tempCourse->course_title, courseTitle, CHAR_INPUT_SIZE);
+        tempCourseNode->course = tempCourse;
+        addCourseList(tempCourseNode);
         writeCourseList();
       }
     }else{
@@ -497,13 +497,13 @@ void toFakeEnv(void){
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
-        gradeAdd = malloc(sizeof(Grade));
-        gradeNodeAdd = malloc(sizeof(Grade_Node));
-        gradeAdd->assignment_id = assignment_id;
-        gradeAdd->pts_received = pts_received;
-        copyCharArray(gradeAdd->ssn, ssnStr, SSN_INPUT_SIZE);
-        gradeNodeAdd->grade = gradeAdd;
-        addGradeList(gradeNodeAdd);
+        tempGrade = malloc(sizeof(Grade));
+        tempGradeNode = malloc(sizeof(Grade_Node));
+        tempGrade->assignment_id = assignment_id;
+        tempGrade->pts_received = pts_received;
+        copyCharArray(tempGrade->ssn, ssnStr, SSN_INPUT_SIZE);
+        tempGradeNode->grade = tempGrade;
+        addGradeList(tempGradeNode);
         writeGradesList();
       }
     }else{
@@ -523,12 +523,12 @@ void toFakeEnv(void){
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
-        enrollmentAdd = malloc(sizeof(Enrollment));
-        enrollmentNodeAdd = malloc(sizeof(Enrollment_Node));
-        enrollmentAdd->course_id = course_id;
-        copyCharArray(enrollmentAdd->ssn, ssnStr, SSN_INPUT_SIZE);
-        enrollmentNodeAdd->enrollment = enrollmentAdd;
-        addEnrollList(enrollmentNodeAdd);
+        tempEnroll = malloc(sizeof(Enrollment));
+        tempEnrollNode = malloc(sizeof(Enrollment_Node));
+        tempEnroll->course_id = course_id;
+        copyCharArray(tempEnroll->ssn, ssnStr, SSN_INPUT_SIZE);
+        tempEnrollNode->enrollment = tempEnroll;
+        addEnrollList(tempEnrollNode);
         writeEnrollList();
       }
     }else{
@@ -549,15 +549,15 @@ void toFakeEnv(void){
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
-        assignAdd = malloc(sizeof(Assignment));
-        assignNodeAdd = malloc(sizeof(Assignment_Node));
+        tempAssign = malloc(sizeof(Assignment));
+        tempAssignNode = malloc(sizeof(Assignment_Node));
         assignment_id = ++highestAssignmentID;
-        assignAdd->assignment_id = assignment_id;
-        assignAdd->course_id = course_id;
-        assignAdd->pts_total = pts_total;
-        copyCharArray(assignAdd->assignment_title, assignTitle, CHAR_INPUT_SIZE);
-        assignNodeAdd->assignment = assignAdd;
-        addAssignmentList(assignNodeAdd);
+        tempAssign->assignment_id = assignment_id;
+        tempAssign->course_id = course_id;
+        tempAssign->pts_total = pts_total;
+        copyCharArray(tempAssign->assignment_title, assignTitle, CHAR_INPUT_SIZE);
+        tempAssignNode->assignment = tempAssign;
+        addAssignmentList(tempAssignNode);
         writeAssignmentList();
       }
     }else{
@@ -566,14 +566,24 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_EDIT_STUDENT)){
     if(spaces == CCLI_EDIT_STUDENT_SPACE){
-      //todo: implement functionality
-      printf("entered edit student\n");
+      if(!ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)
+         || !ccliGetNextWord(first, CHAR_INPUT_SIZE)
+         || !ccliGetNextWord(last, CHAR_INPUT_SIZE)
+         || !isSsnAllDigits(ssnStr)
+         || isValidStudent(ssnStr)){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        tempStudent = studentExists(&ssnStr[0]);
+        copyCharArray(tempStudent->first, first, CHAR_INPUT_SIZE);
+        copyCharArray(tempStudent->last, last, CHAR_INPUT_SIZE);
+        writeStudentList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_EDIT_GRADE)){
     if(spaces == CCLI_EDIT_GRADE_SPACE){
       //todo: implement functionality
