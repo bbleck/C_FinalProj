@@ -703,14 +703,23 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_DELETE_ENROLL)){
     if(spaces == CCLI_DELETE_ENROLL_SPACE){
-      //todo: implement
-      printf("entered delete enroll\n");
+      disposeToSpace(1);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextWord(&ssnStr[0], SSN_INPUT_SIZE)
+         || !isValidCourseID(course_id)
+         || (tempEnrollNode = enrollNodeExists(course_id, ssnStr)) == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        deleteEnrollment(tempEnrollNode);
+        writeEnrollList();
+        writeGradesList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_DELETE_GRADE)){
     if(spaces == CCLI_DELETE_GRADE_SPACE){
       //todo: implement
