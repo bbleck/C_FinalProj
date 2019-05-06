@@ -610,14 +610,21 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_EDIT_CLASS)){
     if(spaces == CCLI_EDIT_CLASS_SPACE){
-      //todo: implement functionality
-      printf("entered edit class\n");
+      disposeToSpace(2);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
+         || (tempCourse = courseExists(course_id)) == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        copyCharArray(tempCourse->course_title, courseTitle, CHAR_INPUT_SIZE);
+        writeCourseList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_EDIT_ASSIGNMENT)){
     if(spaces == CCLI_EDIT_ASSIGNMENT_SPACE){
       //todo: implement functionality
