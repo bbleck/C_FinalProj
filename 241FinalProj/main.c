@@ -427,6 +427,8 @@ void toFakeEnv(void){
   Grade_Node *gradeNodeAdd = NULL;
   Enrollment *enrollmentAdd = NULL;
   Enrollment_Node *enrollmentNodeAdd = NULL;
+  Assignment *assignAdd = NULL;
+  Assignment_Node *assignNodeAdd = NULL;
   printf("CCLI: ");
   clearLine();
   grabLine();
@@ -535,14 +537,33 @@ void toFakeEnv(void){
 
   }else if(isThisCcliCmnd(CCLI_ADD_ASSIGNMENT)){
     if(spaces == CCLI_ADD_ASSIGNMENT_SPACE){
-      //todo:implement functionality
-      printf("entered add assignment\n");
+      disposeToSpace(2);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
+         || !ccliGetNextInt(&pts_total)
+         || !isValidCourseID(course_id)
+         || !isSsnAllDigits(ssnStr)
+         || !isValidStudent(ssnStr)
+         || isStudentEnrolled(ssnStr, course_id)){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        assignAdd = malloc(sizeof(Assignment));
+        assignNodeAdd = malloc(sizeof(Assignment_Node));
+        assignment_id = ++highestAssignmentID;
+        assignAdd->assignment_id = assignment_id;
+        assignAdd->course_id = course_id;
+        assignAdd->pts_total = pts_total;
+        copyCharArray(assignAdd->assignment_title, assignTitle, CHAR_INPUT_SIZE);
+        assignNodeAdd->assignment = assignAdd;
+        addAssignmentList(assignNodeAdd);
+        writeAssignmentList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_EDIT_STUDENT)){
     if(spaces == CCLI_EDIT_STUDENT_SPACE){
       //todo: implement functionality
