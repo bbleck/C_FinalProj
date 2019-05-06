@@ -685,14 +685,22 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_DELETE_ASSIGNMENT)){
     if(spaces == CCLI_DELETE_ASSIGNMENT_SPACE){
-      //todo: implement
-      printf("entered delete assignment\n");
+      disposeToSpace(2);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextInt(&assignment_id)
+         || (tempAssignNode = assignNodeExists(course_id, assignment_id)) == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        deleteAnAssignment(tempAssignNode);
+        writeAssignmentList();
+        writeGradesList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_DELETE_ENROLL)){
     if(spaces == CCLI_DELETE_ENROLL_SPACE){
       //todo: implement
