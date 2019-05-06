@@ -419,15 +419,17 @@ void toFakeEnv(void){
   int assignment_id = 0;
   int pts_total = 0;
   int pts_received = 0;
+  Student *toAddStudent = NULL;
+  Student_Node *toAddStudentNode = NULL;
+  Course *courseAdd = NULL;
+  Course_Node *courseNodeAdd = NULL;
   printf("CCLI: ");
   clearLine();
   grabLine();
   spaces = getNumberOfInputSpaces();
+  
   if(isThisCcliCmnd(CCLI_ADD_STUDENT)){
     if(spaces == CCLI_ADD_STUDENT_SPACE){
-      Student *toAddStudent = malloc(sizeof(Student));
-      Student_Node *toAddStudentNode = malloc(sizeof(Student_Node));
-      //todo: implement functionality
       disposeToSpace(2);
       if(!ccliGetNextWord(first, CHAR_INPUT_SIZE)
          || !ccliGetNextWord(last, CHAR_INPUT_SIZE)
@@ -435,26 +437,40 @@ void toFakeEnv(void){
          || !isSsnAllDigits(ssnStr)
          || isValidStudent(ssnStr)){
         badInputFlag = 1;
-        free(toAddStudent);
-        free(toAddStudentNode);
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
+        toAddStudent = malloc(sizeof(Student));
+        toAddStudentNode = malloc(sizeof(Student_Node));
         copyCharArray(toAddStudent->first, first, CHAR_INPUT_SIZE);
         copyCharArray(toAddStudent->last, last, CHAR_INPUT_SIZE);
         copyCharArray(toAddStudent->ssn, ssnStr, SSN_INPUT_SIZE);
         toAddStudentNode->student = toAddStudent;
         addStudentList(toAddStudentNode);
         writeStudentList();
-        printf("entered add student\n%c%c%c\n", first[0], last[0], ssnStr[0]);
       }
     }else{
       printf("invalid custom command\n");
     }
+  
   }else if(isThisCcliCmnd(CCLI_ADD_CLASS)){
     if(spaces == CCLI_ADD_CLASS_SPACE){
       //todo: implement functionality
-      printf("entered add class\n");
+      disposeToSpace(2);
+      if(!ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        course_id = ++highestCourseID;
+        courseAdd = malloc(sizeof(Course));
+        courseNodeAdd = malloc(sizeof(Course_Node));
+        courseAdd->course_id = course_id;
+        copyCharArray(courseAdd->course_title, courseTitle, CHAR_INPUT_SIZE);
+        courseNodeAdd->course = courseAdd;
+        addCourseList(courseNodeAdd);
+        writeCourseList();
+      }
     }else{
       printf("invalid custom command\n");
     }
@@ -564,8 +580,7 @@ void toFakeEnv(void){
 
   }else if(isThisCcliCmnd(CCLI_VIEW_COURSES)){
     if(spaces == CCLI_VIEW_COURSES_SPACE){
-      //todo: implement
-      printf("entered view courses\n");
+      printCourses();
     }else{
       printf("invalid custom command\n");
     }
