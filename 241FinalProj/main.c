@@ -425,19 +425,29 @@ void toFakeEnv(void){
   spaces = getNumberOfInputSpaces();
   if(isThisCcliCmnd(CCLI_ADD_STUDENT)){
     if(spaces == CCLI_ADD_STUDENT_SPACE){
+      Student *toAddStudent = malloc(sizeof(Student));
+      Student_Node *toAddStudentNode = malloc(sizeof(Student_Node));
       //todo: implement functionality
       disposeToSpace(2);
       if(!ccliGetNextWord(first, CHAR_INPUT_SIZE)
          || !ccliGetNextWord(last, CHAR_INPUT_SIZE)
          || !ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)
-         || !isSsnAllDigits(ssnStr)){
+         || !isSsnAllDigits(ssnStr)
+         || isValidStudent(ssnStr)){
         badInputFlag = 1;
+        free(toAddStudent);
+        free(toAddStudentNode);
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
+        copyCharArray(toAddStudent->first, first, CHAR_INPUT_SIZE);
+        copyCharArray(toAddStudent->last, last, CHAR_INPUT_SIZE);
+        copyCharArray(toAddStudent->ssn, ssnStr, SSN_INPUT_SIZE);
+        toAddStudentNode->student = toAddStudent;
+        addStudentList(toAddStudentNode);
+        writeStudentList();
         printf("entered add student\n%c%c%c\n", first[0], last[0], ssnStr[0]);
       }
-      
     }else{
       printf("invalid custom command\n");
     }
@@ -547,8 +557,7 @@ void toFakeEnv(void){
 
   }else if(isThisCcliCmnd(CCLI_VIEW_STUDENTS)){
     if(spaces == CCLI_VIEW_STUDENTS_SPACE){
-      //todo: implement
-      printf("entered view students\n");
+      printStudents();
     }else{
       printf("invalid custom command\n");
     }
