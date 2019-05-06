@@ -627,14 +627,25 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_EDIT_ASSIGNMENT)){
     if(spaces == CCLI_EDIT_ASSIGNMENT_SPACE){
-      //todo: implement functionality
-      printf("entered edit assignment\n");
+      disposeToSpace(2);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextInt(&assignment_id)
+         || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
+         || !ccliGetNextInt(&pts_total)
+         || !isValidCourseID(course_id)
+         || (tempAssign = assignExists(course_id, assignment_id)) == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        copyCharArray(tempAssign->assignment_title, assignTitle, CHAR_INPUT_SIZE);
+        tempAssign->pts_total = pts_total;
+        writeAssignmentList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_DELETE_STUDENT)){
     if(spaces == CCLI_DELETE_STUDENT_SPACE){
       //todo: implement
