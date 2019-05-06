@@ -722,7 +722,7 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_DELETE_GRADE)){
     if(spaces == CCLI_DELETE_GRADE_SPACE){
-      disposeToSpace(1);
+      disposeToSpace(2);
       if(!ccliGetNextInt(&course_id)
          || !ccliGetNextInt(&assignment_id)
          || !ccliGetNextWord(&ssnStr[0], SSN_INPUT_SIZE)
@@ -760,14 +760,26 @@ void toFakeEnv(void){
      **/
   }else if(isThisCcliCmnd(CCLI_VIEW_ASSIGNMENTS)){
     if(spaces == CCLI_VIEW_ASSIGNMENTS_SPACE){
-      //todo: implement
-      printf("entered view assignments\n");
+      disposeToSpace(2);
+      tempAssignNode = assignmentSentinel->next;
+      if(!ccliGetNextInt(&course_id)
+         || !isValidCourseID(course_id)
+         || tempAssignNode == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        while(tempAssignNode != assignmentSentinel){
+          if(tempAssignNode->assignment->course_id == course_id){
+            printAssignmentNode(tempAssignNode);
+          }
+          tempAssignNode = tempAssignNode->next;
+        }
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_VIEW_GRADES)){
     if(spaces == CCLI_VIEW_GRADES_SPACE){
       //todo: implement
@@ -780,14 +792,34 @@ void toFakeEnv(void){
      **/
   }else if(isThisCcliCmnd(CCLI_VIEW_AVG_GRADE)){
     if(spaces == CCLI_VIEW_AVG_GRADE_SPACE){
-      //todo: implement
-      printf("entered view avg grade\n");
+      disposeToSpace(3);
+      tempGradeNode = gradeSentinel->next;
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextInt(&assignment_id)
+         || !isValidCourseID(course_id)
+         || (tempAssignNode = assignNodeExists(course_id, assignment_id)) == NULL
+         || tempGradeNode == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        pts_total = 0;
+        pts_received = 0;
+        while(tempGradeNode != gradeSentinel){
+          if(tempGradeNode->grade->assignment_id == assignment_id){
+            pts_total += tempAssignNode->assignment->pts_total;
+            pts_received += tempGradeNode->grade->pts_received;
+          }
+          tempGradeNode = tempGradeNode->next;
+        }
+        printf("Class ID: %d; Assignment ID: %d; Average: %d\n"
+               ,tempAssignNode->assignment->course_id
+               ,tempAssignNode->assignment->assignment_id
+               ,(100*pts_received)/pts_total);
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
   }else if(isThisCcliCmnd(CCLI_EXIT)){
     return;
   }else{
