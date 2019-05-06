@@ -361,6 +361,8 @@ void removeInputC(Input_c *toRemove);
 int getNumberOfInputSpaces(void);
 void disposeToSpace(int spaceNumber);
 int ccliGetNextWord(char* wordStorage, const int input_size);
+int ccliGetNextInt(int* iPtr);
+int isSsnAllDigits(char* ssn);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -427,7 +429,8 @@ void toFakeEnv(void){
       disposeToSpace(2);
       if(!ccliGetNextWord(first, CHAR_INPUT_SIZE)
          || !ccliGetNextWord(last, CHAR_INPUT_SIZE)
-         || !ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)){
+         || !ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)
+         || !isSsnAllDigits(ssnStr)){
         badInputFlag = 1;
         printf("invalid custom command\n");
       }
@@ -588,6 +591,19 @@ void toFakeEnv(void){
     printf("Error: unknown command\n");
   }
   toFakeEnv();
+}
+
+/**
+ A function to check the ssn input from CCLI for validity. Assumes correct length.
+ **/
+int isSsnAllDigits(char* ssn){
+  int i = 0;
+  for(i=0; i<SSN_INPUT_SIZE; i++){
+    if(ssn[i] < '0' || ssn[i] > '9'){
+      return 0;
+    }
+  }
+  return 1;
 }
 
 /**
