@@ -722,14 +722,24 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_DELETE_GRADE)){
     if(spaces == CCLI_DELETE_GRADE_SPACE){
-      //todo: implement
-      printf("entered delete grade\n");
+      disposeToSpace(1);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextInt(&assignment_id)
+         || !ccliGetNextWord(&ssnStr[0], SSN_INPUT_SIZE)
+         || !isValidCourseID(course_id)
+         || !isValidAssignID(assignment_id, course_id)
+         || (tempGradeNode = gradeNodeExists(assignment_id, ssnStr)) == NULL){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        deleteAGrade(tempGradeNode);
+        writeGradesList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_VIEW_STUDENTS)){
     if(spaces == CCLI_VIEW_STUDENTS_SPACE){
       printStudents();
