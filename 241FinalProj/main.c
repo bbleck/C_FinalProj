@@ -225,7 +225,6 @@ typedef struct assignment_node{
 } Assignment_Node;
 
 typedef struct grade{
-//  int course_id;  // ******* TODO ****** REMOVE COURSE_ID FROM GRADE//
   int assignment_id;
   char ssn[SSN_INPUT_SIZE];
   int pts_received;
@@ -360,6 +359,8 @@ void toFakeEnv(void);
 int isThisCcliCmnd(const char* ccliCmnd);
 void removeInputC(Input_c *toRemove);
 int getNumberOfInputSpaces(void);
+void disposeToSpace(int spaceNumber);
+int ccliGetNextWord(char* wordStorage, const int input_size);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -406,6 +407,16 @@ int main(int argc, const char * argv[]) {
  **/
 void toFakeEnv(void){
   int spaces = 0;
+  int badInputFlag = 0;
+  char first[CHAR_INPUT_SIZE] = {0};
+  char last[CHAR_INPUT_SIZE] = {0};
+  char ssnStr[SSN_INPUT_SIZE] = {0};
+  char assignTitle[CHAR_INPUT_SIZE] = {0};
+  char courseTitle[CHAR_INPUT_SIZE] = {0};
+  int course_id = 0;
+  int assignment_id = 0;
+  int pts_total = 0;
+  int pts_received = 0;
   printf("CCLI: ");
   clearLine();
   grabLine();
@@ -413,7 +424,17 @@ void toFakeEnv(void){
   if(isThisCcliCmnd(CCLI_ADD_STUDENT)){
     if(spaces == CCLI_ADD_STUDENT_SPACE){
       //todo: implement functionality
-      printf("entered add student\n");
+      disposeToSpace(2);
+      if(!ccliGetNextWord(first, CHAR_INPUT_SIZE)
+         || !ccliGetNextWord(last, CHAR_INPUT_SIZE)
+         || !ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        printf("entered add student\n%c%c%c\n", first[0], last[0], ssnStr[0]);
+      }
+      
     }else{
       printf("invalid custom command\n");
     }
@@ -567,6 +588,59 @@ void toFakeEnv(void){
     printf("Error: unknown command\n");
   }
   toFakeEnv();
+}
+
+/**
+ Function that takes a pointer to an int and fills the value of that address with
+ the value of the input, converted into an int
+ **/
+int ccliGetNextInt(int* iPtr){
+  *iPtr = 0;
+  Input_c *tempInput = inputSentinel->next;
+  if(tempInput == NULL){
+    return 0;
+  }
+  *iPtr += atoi(&tempInput->value);
+  while(tempInput != inputSentinel
+        && tempInput->value != ' '){
+    *iPtr *= 10;
+    *iPtr += atoi(&tempInput->value);
+    tempInput = tempInput->next;
+  }
+  disposeToSpace(1);
+  return 1;
+}
+
+/**
+ Function that takes a pointer to a char string and stores the next set of characters in it,
+ delimited by a space.  Then calls dispose on the input linked list to advance to next word.
+ Returns 0 if unsuccessful.
+ **/
+int ccliGetNextWord(char* wordStorage, const int input_size){
+  int counter = 0;
+  int i = 0;
+  Input_c *tempInput = inputSentinel->next;
+  if(tempInput == NULL){
+    return 0;
+  }
+  while(counter < input_size
+        && tempInput->value != ' '
+        && tempInput!=inputSentinel){
+    wordStorage[counter] = tempInput->value;
+    counter++;
+    tempInput = tempInput->next;
+  }
+  if((counter != SSN_INPUT_SIZE && input_size == SSN_INPUT_SIZE)
+     || (input_size == SSN_INPUT_SIZE
+         && (tempInput != inputSentinel
+             && tempInput->value != ' '))){
+    return 0;
+  }
+  for(i = counter; i<input_size; i++){
+    wordStorage[i] = '\0';
+  }
+  disposeToSpace(1);
+  return 1;
 }
 
 /**
