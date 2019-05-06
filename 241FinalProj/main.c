@@ -782,8 +782,50 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_VIEW_GRADES)){
     if(spaces == CCLI_VIEW_GRADES_SPACE){
-      //todo: implement
-      printf("entered view grades\n");
+      disposeToSpace(2);
+      tempGradeNode = gradeSentinel->next;
+      tempAssignNode = assignmentSentinel->next;
+      if(ccliGetNextWord(&ssnStr[0], SSN_INPUT_SIZE)){
+        if(!ccliGetNextInt(&course_id)
+           || !isSsnAllDigits(ssnStr)
+           || !isValidStudent(ssnStr)
+           || tempGradeNode == NULL
+           || tempAssignNode == NULL
+           || !isValidCourseID(course_id)){
+          badInputFlag = 1;
+          printf("invalid custom command\n");
+        }
+        if(!badInputFlag){
+          while(tempAssignNode != assignmentSentinel){
+            if(tempAssignNode->assignment->course_id == course_id){
+              while(tempGradeNode != gradeSentinel){
+                if(ssnsAreEqual(tempGradeNode->grade->ssn, ssnStr)
+                   && tempGradeNode->grade->assignment_id == tempAssignNode->assignment->assignment_id){
+                  printGradeNode(tempGradeNode);
+                }
+                tempGradeNode = tempGradeNode->next;
+              }
+            }
+            tempAssignNode = tempAssignNode->next;
+          }
+        }
+      }else if(ccliGetNextInt(&course_id)){
+        if(!ccliGetNextInt(&assignment_id)
+           || !isValidCourseID(course_id)
+           || !isValidAssignID(assignment_id, course_id)
+           || tempGradeNode == NULL){
+          badInputFlag = 1;
+          printf("invalid custom command\n");
+        }
+        if(!badInputFlag){
+          while(tempGradeNode != gradeSentinel){
+            if(assignment_id == tempGradeNode->grade->assignment_id){
+              printGradeNode(tempGradeNode);
+            }
+            tempGradeNode = tempGradeNode->next;
+          }
+        }
+      }
     }else{
       printf("invalid custom command\n");
     }
