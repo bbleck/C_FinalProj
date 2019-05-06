@@ -566,11 +566,12 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_EDIT_STUDENT)){
     if(spaces == CCLI_EDIT_STUDENT_SPACE){
+      disposeToSpace(2);
       if(!ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)
          || !ccliGetNextWord(first, CHAR_INPUT_SIZE)
          || !ccliGetNextWord(last, CHAR_INPUT_SIZE)
          || !isSsnAllDigits(ssnStr)
-         || isValidStudent(ssnStr)){
+         || !isValidStudent(ssnStr)){
         badInputFlag = 1;
         printf("invalid custom command\n");
       }
@@ -586,14 +587,27 @@ void toFakeEnv(void){
     
   }else if(isThisCcliCmnd(CCLI_EDIT_GRADE)){
     if(spaces == CCLI_EDIT_GRADE_SPACE){
-      //todo: implement functionality
-      printf("entered edit grade\n");
+      disposeToSpace(2);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextInt(&assignment_id)
+         || !ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)
+         || !ccliGetNextInt(&pts_received)
+         || !isSsnAllDigits(ssnStr)
+         || !isValidStudent(ssnStr)
+         || !isValidCourseID(course_id)
+         || !isValidAssignID(assignment_id, course_id)
+         || ((tempGrade = gradeExists(assignment_id, ssnStr))==NULL)){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        tempGrade->pts_received = pts_received;
+        writeGradesList();
+      }
     }else{
       printf("invalid custom command\n");
     }
-    /**
-     
-     **/
+    
   }else if(isThisCcliCmnd(CCLI_EDIT_CLASS)){
     if(spaces == CCLI_EDIT_CLASS_SPACE){
       //todo: implement functionality
