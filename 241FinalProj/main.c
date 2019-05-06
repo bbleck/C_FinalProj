@@ -423,6 +423,8 @@ void toFakeEnv(void){
   Student_Node *toAddStudentNode = NULL;
   Course *courseAdd = NULL;
   Course_Node *courseNodeAdd = NULL;
+  Grade *gradeAdd = NULL;
+  Grade_Node *gradeNodeAdd = NULL;
   printf("CCLI: ");
   clearLine();
   grabLine();
@@ -455,7 +457,6 @@ void toFakeEnv(void){
   
   }else if(isThisCcliCmnd(CCLI_ADD_CLASS)){
     if(spaces == CCLI_ADD_CLASS_SPACE){
-      //todo: implement functionality
       disposeToSpace(2);
       if(!ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)){
         badInputFlag = 1;
@@ -477,8 +478,30 @@ void toFakeEnv(void){
 
   }else if(isThisCcliCmnd(CCLI_ADD_GRADE)){
     if(spaces == CCLI_ADD_GRADE_SPACE){
-      //todo: implement functionality
-      printf("entered add grade\n");
+      disposeToSpace(2);
+      if(!ccliGetNextInt(&course_id)
+         || !ccliGetNextInt(&assignment_id)
+         || !ccliGetNextWord(ssnStr, SSN_INPUT_SIZE)
+         || !ccliGetNextInt(&pts_received)
+         || !isSsnAllDigits(ssnStr)
+         || !isValidStudent(ssnStr)
+         || !isValidCourseID(course_id)
+         || !isValidAssignID(assignment_id, course_id)
+         || !isStudentEnrolled(ssnStr, course_id)
+         || studentAssignGradeExists(ssnStr, assignment_id)){
+        badInputFlag = 1;
+        printf("invalid custom command\n");
+      }
+      if(!badInputFlag){
+        gradeAdd = malloc(sizeof(Grade));
+        gradeNodeAdd = malloc(sizeof(Grade_Node));
+        gradeAdd->assignment_id = assignment_id;
+        gradeAdd->pts_received = pts_received;
+        copyCharArray(gradeAdd->ssn, ssnStr, SSN_INPUT_SIZE);
+        gradeNodeAdd->grade = gradeAdd;
+        addGradeList(gradeNodeAdd);
+        writeGradesList();
+      }
     }else{
       printf("invalid custom command\n");
     }
@@ -490,7 +513,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+/**
+ 
+ **/
   }else if(isThisCcliCmnd(CCLI_ADD_ASSIGNMENT)){
     if(spaces == CCLI_ADD_ASSIGNMENT_SPACE){
       //todo:implement functionality
@@ -498,7 +523,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_EDIT_STUDENT)){
     if(spaces == CCLI_EDIT_STUDENT_SPACE){
       //todo: implement functionality
@@ -506,7 +533,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_EDIT_GRADE)){
     if(spaces == CCLI_EDIT_GRADE_SPACE){
       //todo: implement functionality
@@ -514,7 +543,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_EDIT_CLASS)){
     if(spaces == CCLI_EDIT_CLASS_SPACE){
       //todo: implement functionality
@@ -522,7 +553,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_EDIT_ASSIGNMENT)){
     if(spaces == CCLI_EDIT_ASSIGNMENT_SPACE){
       //todo: implement functionality
@@ -530,7 +563,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_DELETE_STUDENT)){
     if(spaces == CCLI_DELETE_STUDENT_SPACE){
       //todo: implement
@@ -538,7 +573,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_DELETE_COURSE)){
     if(spaces == CCLI_DELETE_COURSE_SPACE){
       //todo: implement
@@ -546,7 +583,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_DELETE_ASSIGNMENT)){
     if(spaces == CCLI_DELETE_ASSIGNMENT_SPACE){
       //todo: implement
@@ -554,7 +593,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_DELETE_ENROLL)){
     if(spaces == CCLI_DELETE_ENROLL_SPACE){
       //todo: implement
@@ -562,7 +603,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_DELETE_GRADE)){
     if(spaces == CCLI_DELETE_GRADE_SPACE){
       //todo: implement
@@ -570,21 +613,27 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_VIEW_STUDENTS)){
     if(spaces == CCLI_VIEW_STUDENTS_SPACE){
       printStudents();
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_VIEW_COURSES)){
     if(spaces == CCLI_VIEW_COURSES_SPACE){
       printCourses();
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_VIEW_ASSIGNMENTS)){
     if(spaces == CCLI_VIEW_ASSIGNMENTS_SPACE){
       //todo: implement
@@ -592,7 +641,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_VIEW_GRADES)){
     if(spaces == CCLI_VIEW_GRADES_SPACE){
       //todo: implement
@@ -600,7 +651,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_VIEW_AVG_GRADE)){
     if(spaces == CCLI_VIEW_AVG_GRADE_SPACE){
       //todo: implement
@@ -608,7 +661,9 @@ void toFakeEnv(void){
     }else{
       printf("invalid custom command\n");
     }
-
+    /**
+     
+     **/
   }else if(isThisCcliCmnd(CCLI_EXIT)){
     return;
   }else{
