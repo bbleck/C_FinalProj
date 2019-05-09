@@ -746,6 +746,24 @@ int handleCLI(int argc, const char * argv[]){
       writeGradesList();
       writeEnrollList();
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_DELETE_CLASS)
+            && argc == CLI_DELETE_CLASS_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_DELETE_CLASS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }
+    }
+    if((tempCourse = courseExists(course_id)) == NULL){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      deleteACourse(tempCourseNode);
+      writeCourseList();
+      writeGradesList();
+      writeAssignmentList();
+      writeEnrollList();
+    }
   }
   
   return 0;
