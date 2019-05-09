@@ -725,6 +725,27 @@ int handleCLI(int argc, const char * argv[]){
       tempGrade->pts_received = pts_received;
       writeGradesList();
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_DELETE_STUDENT)
+            && argc == CLI_DELETE_STUDENT_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_DELETE_STUDENT_ARGS; i++ ) {
+      if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isSsnAllDigits(ssnStr)
+       || (tempStudentNode = studentNodeExists(ssnStr)) == NULL){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      deleteAStudent(tempStudentNode);
+      writeStudentList();
+      writeGradesList();
+      writeEnrollList();
+    }
   }
   
   return 0;
