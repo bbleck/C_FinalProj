@@ -809,6 +809,30 @@ int handleCLI(int argc, const char * argv[]){
       deleteAGrade(tempGradeNode);
       writeGradesList();
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_DELETE_ENROLL)
+            && argc == CLI_DELETE_ENROLL_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_DELETE_ENROLL_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || !isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)
+       || (tempEnrollNode = enrollNodeExists(course_id, ssnStr)) == NULL){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      deleteEnrollment(tempEnrollNode);
+      writeEnrollList();
+      writeGradesList();
+    }
   }
   
   return 0;
