@@ -753,7 +753,7 @@ int handleCLI(int argc, const char * argv[]){
         course_id = atoi(argv[i+1]);
       }
     }
-    if((tempCourse = courseExists(course_id)) == NULL){
+    if((tempCourseNode = courseNodeExists(course_id)) == NULL){
       printf("bad input\n");
       badInputFlag = 1;
     }
@@ -763,6 +763,25 @@ int handleCLI(int argc, const char * argv[]){
       writeGradesList();
       writeAssignmentList();
       writeEnrollList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_DELETE_ASSIGNMENT)
+            && argc == CLI_DELETE_ASSIGNMENT_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_DELETE_ASSIGNMENT_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || (tempAssignNode = assignNodeExists(course_id, assignment_id)) == NULL){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      deleteAnAssignment(tempAssignNode);
+      writeAssignmentList();
+      writeGradesList();
     }
   }
   
