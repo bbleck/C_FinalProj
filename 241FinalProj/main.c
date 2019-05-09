@@ -833,6 +833,33 @@ int handleCLI(int argc, const char * argv[]){
       writeEnrollList();
       writeGradesList();
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_VIEW_STUDENTS)
+            && argc == CLI_VIEW_STUDENTS_ARGS){
+    printStudents();
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_VIEW_CLASSES)
+            && argc == CLI_VIEW_CLASSES_ARGS){
+    printCourses();
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_VIEW_ASSIGNMENTS)
+            && argc == CLI_VIEW_ASSIGNMENTS_ARGS){
+    tempAssignNode = assignmentSentinel->next;
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || tempAssignNode == NULL){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      while(tempAssignNode != assignmentSentinel){
+        if(tempAssignNode->assignment->course_id == course_id){
+          printAssignmentNode(tempAssignNode);
+        }
+        tempAssignNode = tempAssignNode->next;
+      }
+    }
   }
   
   return 0;
