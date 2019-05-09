@@ -615,6 +615,8 @@ void toFakeEnv(void){
          || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
          || (tempCourse = courseExists(course_id)) == NULL){
         badInputFlag = 1;
+        printf("course id: %d", course_id);
+
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
@@ -893,7 +895,8 @@ int ccliGetNextInt(int* iPtr){
   if(tempInput == NULL){
     return 0;
   }
-  *iPtr += atoi(&tempInput->value);
+//  *iPtr += atoi(&tempInput->value);
+//  tempInput = tempInput->next;
   while(tempInput != inputSentinel
         && tempInput->value != ' '){
     *iPtr *= 10;
