@@ -539,14 +539,11 @@ void toFakeEnv(void){
     if(spaces == CCLI_ADD_ASSIGNMENT_SPACE){
       disposeToSpace(2);
       if(!ccliGetNextInt(&course_id)
-         || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
+         || !ccliGetNextWord(assignTitle, CHAR_INPUT_SIZE)
          || !ccliGetNextInt(&pts_total)
-         || !isValidCourseID(course_id)
-         || !isSsnAllDigits(ssnStr)
-         || !isValidStudent(ssnStr)
-         || isStudentEnrolled(ssnStr, course_id)){
+         || !isValidCourseID(course_id)){
         badInputFlag = 1;
-        printf("invalid custom command\n");
+        printf("input error\n");
       }
       if(!badInputFlag){
         tempAssign = malloc(sizeof(Assignment));
@@ -615,8 +612,6 @@ void toFakeEnv(void){
          || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
          || (tempCourse = courseExists(course_id)) == NULL){
         badInputFlag = 1;
-        printf("course id: %d", course_id);
-
         printf("invalid custom command\n");
       }
       if(!badInputFlag){
@@ -632,7 +627,7 @@ void toFakeEnv(void){
       disposeToSpace(2);
       if(!ccliGetNextInt(&course_id)
          || !ccliGetNextInt(&assignment_id)
-         || !ccliGetNextWord(courseTitle, CHAR_INPUT_SIZE)
+         || !ccliGetNextWord(assignTitle, CHAR_INPUT_SIZE)
          || !ccliGetNextInt(&pts_total)
          || !isValidCourseID(course_id)
          || (tempAssign = assignExists(course_id, assignment_id)) == NULL){
@@ -807,6 +802,7 @@ void toFakeEnv(void){
                 }
                 tempGradeNode = tempGradeNode->next;
               }
+              tempGradeNode = gradeSentinel->next;
             }
             tempAssignNode = tempAssignNode->next;
           }
