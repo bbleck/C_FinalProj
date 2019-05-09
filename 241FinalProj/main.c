@@ -697,6 +697,34 @@ int handleCLI(int argc, const char * argv[]){
       tempAssign->pts_total = pts_total;
       writeAssignmentList();
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_EDIT_GRADE)
+            && argc == CLI_EDIT_GRADE_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_EDIT_GRADE_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-p")){
+        pts_received = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || !isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)
+       || !isValidAssignID(assignment_id, course_id)
+       || ((tempGrade = gradeExists(assignment_id, ssnStr))==NULL)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      tempGrade->pts_received = pts_received;
+      writeGradesList();
+    }
   }
   
   return 0;
