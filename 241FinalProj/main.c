@@ -2041,7 +2041,7 @@ void toViewStudentAverage(void){
           tempAssign = assignmentSentinel->next;
           printCourseNode(tempCourse);
           if(total_poss<=0){
-            printf("Student Grade error, total points <= 0");
+            printf("Student Grade error, total points <= 0\n\n");
           }else{
             printf("Student grade: %d\n\n", (100*sum_received)/(total_poss));
           }
