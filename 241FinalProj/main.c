@@ -646,13 +646,9 @@ int handleCLI(int argc, const char * argv[]){
       badInputFlag = 1;
     }
     if(!badInputFlag){
-      tempStudent = malloc(sizeof(Student));
-      tempStudentNode = malloc(sizeof(Student_Node));
+      tempStudent = studentExists(&ssnStr[0]);
       copyCharArray(tempStudent->first, first, CHAR_INPUT_SIZE);
       copyCharArray(tempStudent->last, last, CHAR_INPUT_SIZE);
-      copyCharArray(tempStudent->ssn, ssnStr, SSN_INPUT_SIZE);
-      tempStudentNode->student = tempStudent;
-      addStudentList(tempStudentNode);
       writeStudentList();
     }
   }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_EDIT_CLASS)
@@ -667,19 +663,39 @@ int handleCLI(int argc, const char * argv[]){
         course_id = atoi(argv[i+1]);
       }
     }
-    if(!isValidCourseID(course_id)){
+    if((tempCourse = courseExists(course_id)) == NULL){
       printf("bad input\n");
       badInputFlag = 1;
     }
     if(!badInputFlag){
-      course_id = ++highestCourseID;
-      tempCourse = malloc(sizeof(Course));
-      tempCourseNode = malloc(sizeof(Course_Node));
-      tempCourse->course_id = course_id;
       copyCharArray(tempCourse->course_title, courseTitle, CHAR_INPUT_SIZE);
-      tempCourseNode->course = tempCourse;
-      addCourseList(tempCourseNode);
       writeCourseList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_EDIT_ASSIGNMENT)
+            && argc == CLI_EDIT_ASSIGNMENT_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_EDIT_ASSIGNMENT_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-t")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(assignTitle, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-p")){
+        pts_total = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || (tempAssign = assignExists(course_id, assignment_id)) == NULL){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      copyCharArray(tempAssign->assignment_title, assignTitle, CHAR_INPUT_SIZE);
+      tempAssign->pts_total = pts_total;
+      writeAssignmentList();
     }
   }
   
