@@ -157,6 +157,46 @@ const char CCLI_VIEW_AVG_GRADE[] = "view average grade";
 const int CCLI_VIEW_AVG_GRADE_SPACE = 4;
 const char CCLI_EXIT[] = "exit";
 
+const char CLI_ADD_STUDENT[] = "-add-student";
+const int CLI_ADD_STUDENT_ARGS = 8;
+const char CLI_ADD_CLASS[] = "-add-class";
+const int CLI_ADD_CLASS_ARGS = 4;
+const char CLI_ADD_ASSIGNMENT[] = "-add-assignment";
+const int CLI_ADD_ASSIGNMENT_ARGS = 8;
+const char CLI_ADD_GRADE[] = "-add-grade";
+const int CLI_ADD_GRADE_ARGS = 10;
+const char CLI_ADD_ENROLL[] = "-enroll";
+const int CLI_ADD_ENROLL_ARGS = 6;
+const char CLI_EDIT_STUDENT[] = "-edit-student";
+const int CLI_EDIT_STUDENT_ARGS = 8;
+const char CLI_EDIT_CLASS[] = "-edit-class";
+const int CLI_EDIT_CLASS_ARGS = 6;
+const char CLI_EDIT_ASSIGNMENT[] = "-edit-assignment";
+const int CLI_EDIT_ASSIGNMENT_ARGS = 10;
+const char CLI_EDIT_GRADE[] = "-edit-grade";
+const int CLI_EDIT_GRADE_ARGS = 10;
+const char CLI_DELETE_STUDENT[] = "-delete-student";
+const int CLI_DELETE_STUDENT_ARGS = 4;
+const char CLI_DELETE_CLASS[] = "-delete-class";
+const int CLI_DELETE_CLASS_ARGS = 4;
+const char CLI_DELETE_ASSIGNMENT[] = "-delete-assignment";
+const int CLI_DELETE_ASSIGNMENT_ARGS = 6;
+const char CLI_DELETE_GRADE[] = "-delete-grade";
+const int CLI_DELETE_GRADE_ARGS = 8;
+const char CLI_DELETE_ENROLL[] = "-drop";
+const int CLI_DELETE_ENROLL_ARGS = 6;
+const char CLI_VIEW_STUDENTS[] = "-view-s";
+const int CLI_VIEW_STUDENTS_ARGS = 2;
+const char CLI_VIEW_CLASSES[] = "-view-c";
+const int CLI_VIEW_CLASSES_ARGS = 2;
+const char CLI_VIEW_ASSIGNMENTS[] = "-view-a";
+const int CLI_VIEW_ASSIGNMENTS_ARGS = 4;
+const char CLI_VIEW_GRADES[] = "-view-g";
+const int CLI_VIEW_GRADES_ARGS = 6;
+const char CLI_VIEW_AVG[] = "-view-g-avg";
+const int CLI_VIEW_AVG_ARGS = 6;
+
+
 /**  Define Macros ***************** **/
 #define CHAR_INPUT_SIZE 30
 #define SSN_INPUT_SIZE 9
@@ -169,6 +209,7 @@ const char CCLI_EXIT[] = "exit";
 #define PASSWORD_SIZE 64
 #define ROLE_SIZE 8
 #define USERNAME_SIZE 20
+#define BEGIN_CMD_ARGS 2
 
 /**  Struct typedefs *************** **/
 typedef struct InputChar{
@@ -363,6 +404,7 @@ void disposeToSpace(int spaceNumber);
 int ccliGetNextWord(char* wordStorage, const int input_size);
 int ccliGetNextInt(int* iPtr);
 int isSsnAllDigits(char* ssn);
+int handleCLI(int argc, const char * argv[]);
 
 /**  Variable Declarations ********* **/
 Input_c *inputSentinel;
@@ -390,19 +432,26 @@ int highestAssignmentID;
  **/
 int main(int argc, const char * argv[]) {
   srand((unsigned int)time(0));
-//  FILE *fp;
-//  fopen(STUDENTS_DB, "w");
   
   setUpLists();
-  if(argc > 1){
-    //todo implement cli
-    printf("greater than 1 argc");
-    return -1;
+  if(argc >= BEGIN_CMD_ARGS){
+    printf("greater than 2 argc");
+    return handleCLI(argc, argv);
+  }else{
+    toMainMenu();
   }
-  toMainMenu();
   tearDownLists();
   return 0;
 }
+
+/**
+ A function to run the program once according to CLI
+ **/
+int handleCLI(int argc, const char * argv[]){
+  
+  return 0;
+}
+
 
 /**
  A function that handle the fake environment loop. Returns go back to menu system.
