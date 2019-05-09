@@ -783,6 +783,32 @@ int handleCLI(int argc, const char * argv[]){
       writeAssignmentList();
       writeGradesList();
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_DELETE_GRADE)
+            && argc == CLI_DELETE_GRADE_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_DELETE_GRADE_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || !isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)
+       || !isValidAssignID(assignment_id, course_id)
+       || ((tempGrade = gradeExists(assignment_id, ssnStr))==NULL)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      deleteAGrade(tempGradeNode);
+      writeGradesList();
+    }
   }
   
   return 0;
