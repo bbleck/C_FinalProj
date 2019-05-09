@@ -1,14 +1,15 @@
-//
+/**
 //  main.c
 //  241FinalProj
 //
 //  Created by Brian on 4/13/19.
 //  Copyright © 2019 Brian Bleck. All rights reserved.
-//
+ **/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 const char STUDENTS_DB[] = "students.db";
 const char CLASSES_DB[] = "classes.db";
@@ -193,8 +194,8 @@ const char CLI_VIEW_ASSIGNMENTS[] = "-view-a";
 const int CLI_VIEW_ASSIGNMENTS_ARGS = 4;
 const char CLI_VIEW_GRADES[] = "-view-g";
 const int CLI_VIEW_GRADES_ARGS = 6;
-const char CLI_VIEW_AVG[] = "-view-g-avg";
-const int CLI_VIEW_AVG_ARGS = 6;
+const char CLI_VIEW_AVG[] = "-view-g";
+const int CLI_VIEW_AVG_ARGS = 7;
 
 
 /**  Define Macros ***************** **/
@@ -209,7 +210,7 @@ const int CLI_VIEW_AVG_ARGS = 6;
 #define PASSWORD_SIZE 64
 #define ROLE_SIZE 8
 #define USERNAME_SIZE 20
-#define BEGIN_CMD_ARGS 2
+#define BEGIN_CMD_ARGS 1 /** 0 is for ./a.out, 1 is first command in argv **/
 
 /**  Struct typedefs *************** **/
 typedef struct InputChar{
@@ -434,8 +435,8 @@ int main(int argc, const char * argv[]) {
   srand((unsigned int)time(0));
   
   setUpLists();
-  if(argc >= BEGIN_CMD_ARGS){
-    printf("greater than 2 argc");
+  if(argc > 1){
+    printf("handling command line input\n");
     return handleCLI(argc, argv);
   }else{
     toMainMenu();
@@ -448,6 +449,239 @@ int main(int argc, const char * argv[]) {
  A function to run the program once according to CLI
  **/
 int handleCLI(int argc, const char * argv[]){
+  int i = BEGIN_CMD_ARGS;
+  int badInputFlag = 0;
+  char first[CHAR_INPUT_SIZE] = {0};
+  char last[CHAR_INPUT_SIZE] = {0};
+  char ssnStr[SSN_INPUT_SIZE] = {0};
+  char assignTitle[CHAR_INPUT_SIZE] = {0};
+  char courseTitle[CHAR_INPUT_SIZE] = {0};
+  int course_id = 0;
+  int assignment_id = 0;
+  int pts_total = 0;
+  int pts_received = 0;
+  int sizeToCopy = 0;
+  Student *tempStudent = NULL;
+  Student_Node *tempStudentNode = NULL;
+  Course *tempCourse = NULL;
+  Course_Node *tempCourseNode = NULL;
+  Grade *tempGrade = NULL;
+  Grade_Node *tempGradeNode = NULL;
+  Enrollment *tempEnroll = NULL;
+  Enrollment_Node *tempEnrollNode = NULL;
+  Assignment *tempAssign = NULL;
+  Assignment_Node *tempAssignNode = NULL;
+  if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_ADD_STUDENT)
+      && argc == CLI_ADD_STUDENT_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_ADD_STUDENT_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-f")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(first, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-l")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(last, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isSsnAllDigits(ssnStr)
+       || isValidStudent(ssnStr)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      tempStudent = malloc(sizeof(Student));
+      tempStudentNode = malloc(sizeof(Student_Node));
+      copyCharArray(tempStudent->first, first, CHAR_INPUT_SIZE);
+      copyCharArray(tempStudent->last, last, CHAR_INPUT_SIZE);
+      copyCharArray(tempStudent->ssn, ssnStr, SSN_INPUT_SIZE);
+      tempStudentNode->student = tempStudent;
+      addStudentList(tempStudentNode);
+      writeStudentList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_ADD_CLASS)
+            && argc == CLI_ADD_CLASS_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_ADD_CLASS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-t")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(courseTitle, argv[i+1], sizeToCopy);
+      }
+    }
+    badInputFlag = 0;
+    if(!badInputFlag){
+      course_id = ++highestCourseID;
+      tempCourse = malloc(sizeof(Course));
+      tempCourseNode = malloc(sizeof(Course_Node));
+      tempCourse->course_id = course_id;
+      copyCharArray(tempCourse->course_title, courseTitle, CHAR_INPUT_SIZE);
+      tempCourseNode->course = tempCourse;
+      addCourseList(tempCourseNode);
+      writeCourseList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_ADD_ASSIGNMENT)
+            && argc == CLI_ADD_ASSIGNMENT_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_ADD_ASSIGNMENT_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-t")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(assignTitle, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-p")){
+        pts_total = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      tempAssign = malloc(sizeof(Assignment));
+      tempAssignNode = malloc(sizeof(Assignment_Node));
+      assignment_id = ++highestAssignmentID;
+      tempAssign->assignment_id = assignment_id;
+      tempAssign->course_id = course_id;
+      tempAssign->pts_total = pts_total;
+      copyCharArray(tempAssign->assignment_title, assignTitle, CHAR_INPUT_SIZE);
+      tempAssignNode->assignment = tempAssign;
+      addAssignmentList(tempAssignNode);
+      writeAssignmentList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_ADD_GRADE)
+            && argc == CLI_ADD_GRADE_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_ADD_GRADE_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-p")){
+        pts_received = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || !isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)
+       || !isValidAssignID(assignment_id, course_id)
+       || !isStudentEnrolled(ssnStr, course_id)
+       || studentAssignGradeExists(ssnStr, assignment_id)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      tempGrade = malloc(sizeof(Grade));
+      tempGradeNode = malloc(sizeof(Grade_Node));
+      tempGrade->assignment_id = assignment_id;
+      tempGrade->pts_received = pts_received;
+      copyCharArray(tempGrade->ssn, ssnStr, SSN_INPUT_SIZE);
+      tempGradeNode->grade = tempGrade;
+      addGradeList(tempGradeNode);
+      writeGradesList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_ADD_ENROLL)
+            && argc == CLI_ADD_ENROLL_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_ADD_ENROLL_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || !isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)
+       || isStudentEnrolled(ssnStr, course_id)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      tempEnroll = malloc(sizeof(Enrollment));
+      tempEnrollNode = malloc(sizeof(Enrollment_Node));
+      tempEnroll->course_id = course_id;
+      copyCharArray(tempEnroll->ssn, ssnStr, SSN_INPUT_SIZE);
+      tempEnrollNode->enrollment = tempEnroll;
+      addEnrollList(tempEnrollNode);
+      writeEnrollList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_EDIT_STUDENT)
+            && argc == CLI_EDIT_STUDENT_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_EDIT_STUDENT_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-f")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(first, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-l")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(last, argv[i+1], sizeToCopy);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      tempStudent = malloc(sizeof(Student));
+      tempStudentNode = malloc(sizeof(Student_Node));
+      copyCharArray(tempStudent->first, first, CHAR_INPUT_SIZE);
+      copyCharArray(tempStudent->last, last, CHAR_INPUT_SIZE);
+      copyCharArray(tempStudent->ssn, ssnStr, SSN_INPUT_SIZE);
+      tempStudentNode->student = tempStudent;
+      addStudentList(tempStudentNode);
+      writeStudentList();
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_EDIT_CLASS)
+            && argc == CLI_EDIT_CLASS_ARGS){
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_EDIT_CLASS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-t")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > CHAR_INPUT_SIZE){
+          sizeToCopy = CHAR_INPUT_SIZE;
+        }
+        memcpy(courseTitle, argv[i+1], sizeToCopy);
+      }else if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)){
+      printf("bad input\n");
+      badInputFlag = 1;
+    }
+    if(!badInputFlag){
+      course_id = ++highestCourseID;
+      tempCourse = malloc(sizeof(Course));
+      tempCourseNode = malloc(sizeof(Course_Node));
+      tempCourse->course_id = course_id;
+      copyCharArray(tempCourse->course_title, courseTitle, CHAR_INPUT_SIZE);
+      tempCourseNode->course = tempCourse;
+      addCourseList(tempCourseNode);
+      writeCourseList();
+    }
+  }
   
   return 0;
 }
@@ -935,13 +1169,11 @@ int isSsnAllDigits(char* ssn){
  the value of the input, converted into an int
  **/
 int ccliGetNextInt(int* iPtr){
-  *iPtr = 0;
   Input_c *tempInput = inputSentinel->next;
+  *iPtr = 0;
   if(tempInput == NULL){
     return 0;
   }
-//  *iPtr += atoi(&tempInput->value);
-//  tempInput = tempInput->next;
   while(tempInput != inputSentinel
         && tempInput->value != ' '){
     *iPtr *= 10;
@@ -1065,7 +1297,7 @@ void setUpLists(void){
   fillAssignmentList();
   fillGradeList();
   fillEnrollList();
-  //todo: make sure all sentinels are called and lists filled
+  /**todo: make sure all sentinels are called and lists filled**/
 }
 
 /**
@@ -1120,8 +1352,8 @@ void retrieveSSN(char* name){
  Assumes validation has already been made.
  **/
 void retrieveInt(int* iPtr){
-  *iPtr = 0;
   Input_c *tempNode = inputSentinel->next;
+  *iPtr = 0;
   *iPtr += atoi(&tempNode->value);
   tempNode = tempNode->next;
   while(tempNode != inputSentinel){
@@ -1223,15 +1455,10 @@ int storeSSNInput(char* ssnStorage){
  A function that takes a string pointer and adds a valid name into it.
  **/
 int storeNameInput (char* nameStorage){
-//  int i = 0;
   clearLine();
   grabLine();
   if(inputSize != 0){
     retrieveName(nameStorage);
-//    for(i=0; i<30; i++){
-//      printf("%c", nameStorage[i]);
-//    }
-//    printf("\n");
     return 1;
   }else{
     return 0;
@@ -1323,9 +1550,7 @@ int isValidIntInput(void){
     return 0;
   }
   while(temp != inputSentinel){
-    //todo: handle the -1 case for displaying values
     if(temp->value < '0' || temp->value > '9'){
-//      printf("input is: %c\n", temp->value);
       return 0;
     }
     temp = temp->next;
@@ -1338,14 +1563,9 @@ int isValidIntInput(void){
  retrieval until successful.
  **/
 void getName(const char* prompt, char* name){
-//  int i =0;
   while(1){
     printf("%s", prompt);
     if(storeNameInput(name)){
-//      for(i=0; i<30; i++){
-//        printf("%c", name[i]);
-//      }
-//      printf("\n");
       break;
     }
   }
@@ -1370,7 +1590,7 @@ int getInt(const char* prompt, int* id){
  A function that prints a prompt to get a course ID and delegates ID
  retrieval until successful.
  **/
-void getCourseInt(const char* prompt, int* id){//TODO: CHANGE TO RETURN INT, BREAK OUT IF BAD INPUT
+void getCourseInt(const char* prompt, int* id){/**TODO: CHANGE TO RETURN INT, BREAK OUT IF BAD INPUT**/
   while(1){
     printf("%s", prompt);
     if(storeCourseIntInput(id)){
@@ -1383,7 +1603,7 @@ void getCourseInt(const char* prompt, int* id){//TODO: CHANGE TO RETURN INT, BRE
  A function that prints a prompt to get a assignment ID and delegates ID
  retrieval until successful.
  **/
-void getAssignInt(const char* prompt, int* id, int courseID){ //TODO: CHANGE TO RETURN INT, BREAK OUT IF BAD INPUT
+void getAssignInt(const char* prompt, int* id, int courseID){ /**TODO: CHANGE TO RETURN INT, BREAK OUT IF BAD INPUT**/
   while(1){
     printf("%s", prompt);
     if(storeAssignIntInput(id, courseID)){
@@ -1617,7 +1837,7 @@ void toAddAssignment(void){
   Assignment *assignAdd = malloc(sizeof(Assignment));
   Assignment_Node *assignNodeAdd = malloc(sizeof(Assignment_Node));
   printf("Add Assignment\n");
-  getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);//TODO: BAD INPUT RETURN
+  getCourseInt(ADD_ASSIGNMENT_PROMPTS[0], course_id);/**TODO: BAD INPUT RETURN**/
   if(!isValidCourseID(courseID)){
     highestAssignmentID--;
     printf("Ivalid class ID\n");
@@ -1730,7 +1950,6 @@ void toEditStudent(void){
   if(flag){
     writeStudentList();
   }
-//  printf("%c %c %c\n", studentSentinel->next->student->first[0], studentSentinel->next->student->last[0], studentSentinel->next->student->ssn[0]);
 }
 
 /**
@@ -1985,8 +2204,6 @@ void toViewEnrollment(void){
  **/
 void toViewClassAverage(void){
   int course_id = 0;
-//  int assignment_id = 0;
-//  int max_assignm_pts = 0;
   int total_poss_pts = 0;
   int sum_grades = 0;
   Assignment_Node *tempAssign = assignmentSentinel->next;
@@ -2005,12 +2222,9 @@ void toViewClassAverage(void){
     return;
   }
   while(tempAssign!=assignmentSentinel){
-//    max_assignm_pts = tempAssign->assignment->pts_total;
     if(tempAssign->assignment->course_id == course_id){
       while(tempGrade!=gradeSentinel){
         if(tempGrade->grade->assignment_id == tempAssign->assignment->assignment_id){
-//          printf("grade found: %d points out of %d\n", tempGrade->grade->pts_received,
-//                 tempAssign->assignment->pts_total);
           total_poss_pts += tempAssign->assignment->pts_total;
           sum_grades += tempGrade->grade->pts_received;
         }
@@ -2115,7 +2329,6 @@ void toViewStudentAverage(void){
  **/
 void toViewClassAssignmentAvgGrades(void){
   int course_id = 0;
-//  int assignment_id = 0;
   int max_assignm_pts = 0;
   int count_grades = 0;
   int sum_grades = 0;
@@ -2149,7 +2362,7 @@ void toViewClassAssignmentAvgGrades(void){
       continue;
     }
     if(count_grades <= 0 || max_assignm_pts <= 0){
-      printf("Assignment ID #%d Error - No grades for assignment\n"//TODO: bug getting all no grades
+      printf("Assignment ID #%d Error - No grades for assignment\n"
              ,tempAssign->assignment->assignment_id);
       count_grades = 0;
       sum_grades = 0;
@@ -2491,7 +2704,7 @@ int ssnsAreEqual(char* ssn1, char* ssn2){
  A function to test whether class title is valid.
  **/
 int isValidClassTitle(void){
-  //todo: implement validation
+  /**todo: implement validation**/
   return 1;
 }
 
@@ -2499,7 +2712,7 @@ int isValidClassTitle(void){
  tests input to see if it is a valid name
  **/
 int isValidNameInput(void){
-  //todo: implement validation
+  /**todo: implement validation**/
   return 1;
 }
 
@@ -2676,6 +2889,7 @@ int isMenuSelectionValid(char upperBound, char selection){
  A function to print the contents of the linked list for input.
  **/
 void printInput(void){
+  Input_c *toPrint = inputSentinel->next;
   if(inputSize == 0){
     printf("Input size is 0.\n");
     if(inputSentinel->next != NULL || inputSentinel->previous != NULL){
@@ -2685,7 +2899,6 @@ void printInput(void){
     }
     return;
   }
-  Input_c *toPrint = inputSentinel->next;
   while(toPrint != inputSentinel){
     printf("%c", toPrint->value);
     toPrint = toPrint->next;
@@ -2729,12 +2942,15 @@ void removeInputC(Input_c *toRemove){
  and to free the memory of the linked list nodes.
  **/
 int clearLine(void){
+  Input_c *toClear;
+  Input_c *nextClear;
   if(inputSize == 0){
     return 1;
   }
-  Input_c *toClear = inputSentinel->previous;
+  toClear = inputSentinel->previous;
+  nextClear = NULL;
   while(toClear != inputSentinel){
-    Input_c *nextClear = toClear->previous;
+    nextClear = toClear->previous;
     free(toClear);
     toClear = nextClear;
   }
@@ -3107,7 +3323,7 @@ void writeEnrollList(void){
 void fillStudentList(void){
   FILE *fp;
   if((fp = fopen(STUDENTS_DB, "r")) != NULL){
-    //file exists, fill student list
+    /**file exists, fill student list**/
     fseek(fp, 0, SEEK_SET);
     while(!feof(fp)){
       Student *studentAdd = malloc(sizeof(Student));
@@ -3132,7 +3348,7 @@ void fillStudentList(void){
 void fillCourseList(void){
   FILE *fp;
   if((fp = fopen(CLASSES_DB, "r")) != NULL){
-    //file exists, fill course list
+    /**file exists, fill course list**/
     fseek(fp, 0, SEEK_SET);
     while(!feof(fp)){
       Course *courseAdd = malloc(sizeof(Course));
@@ -3163,7 +3379,7 @@ void fillCourseList(void){
 void fillAssignmentList(void){
   FILE *fp;
   if((fp = fopen(ASSIGNMENTS_DB, "r")) != NULL){
-    //file exists, fill course list
+    /**file exists, fill course list**/
     fseek(fp, 0, SEEK_SET);
     while(!feof(fp)){
       Assignment *assignAdd = malloc(sizeof(Assignment));
@@ -3194,7 +3410,7 @@ void fillAssignmentList(void){
 void fillGradeList(void){
   FILE *fp;
   if((fp = fopen(GRADES_DB, "r")) != NULL){
-    //file exists, fill course list
+    /**file exists, fill course list**/
     fseek(fp, 0, SEEK_SET);
     while(!feof(fp)){
       Grade *gradeAdd = malloc(sizeof(Grade));
@@ -3219,7 +3435,7 @@ void fillGradeList(void){
 void fillEnrollList(void){
   FILE *fp;
   if((fp = fopen(ENROLLMENT_DB, "r")) != NULL){
-    //file exists, fill course list
+    /**file exists, fill course list**/
     fseek(fp, 0, SEEK_SET);
     while(!feof(fp)){
       Enrollment *enrollAdd = malloc(sizeof(Enrollment));
@@ -3241,10 +3457,10 @@ void fillEnrollList(void){
  A function to clear the student list.
  **/
 int clearStudentList(void){
+  Student_Node *toClear = studentSentinel->previous;
   if(studentSize==0){
     return 1;
   }
-  Student_Node *toClear = studentSentinel->previous;
   while(toClear != studentSentinel){
     Student_Node *nextClear = toClear->previous;
     if(toClear->student != NULL){
@@ -3263,10 +3479,10 @@ int clearStudentList(void){
  A function to clear the course list.
  **/
 int clearCourseList(void){
+  Course_Node *toClear = courseSentinel->previous;
   if(courseSize == 0){
     return 1;
   }
-  Course_Node *toClear = courseSentinel->previous;
   while(toClear != courseSentinel){
     Course_Node *nextClear = toClear->previous;
     if(toClear->course != NULL){
@@ -3285,10 +3501,10 @@ int clearCourseList(void){
  A function to clear the assignment linked list.
  **/
 int clearAssignList(void){
+  Assignment_Node *toClear = assignmentSentinel->previous;
   if(assignmentSize == 0){
     return 1;
   }
-  Assignment_Node *toClear = assignmentSentinel->previous;
   while(toClear != assignmentSentinel){
     Assignment_Node *nextClear = toClear->previous;
     if(toClear->assignment != NULL){
@@ -3307,10 +3523,10 @@ int clearAssignList(void){
  A function to clear the grade linked list.
  **/
 int clearGradeList(void){
+  Grade_Node *toClear = gradeSentinel->previous;
   if(gradeSize == 0){
     return 1;
   }
-  Grade_Node *toClear = gradeSentinel->previous;
   while(toClear != gradeSentinel){
     Grade_Node *nextClear = toClear->previous;
     if(toClear->grade != NULL){
@@ -3329,10 +3545,10 @@ int clearGradeList(void){
  A function to clear the enroll linked list.
  **/
 int clearEnrollList(void){
+  Enrollment_Node *toClear = enrollSentinel->previous;
   if(enrollSize == 0){
     return 1;
   }
-  Enrollment_Node *toClear = enrollSentinel->previous;
   while(toClear != enrollSentinel){
     Enrollment_Node *nextClear = toClear->previous;
     if(toClear->enrollment != NULL){
