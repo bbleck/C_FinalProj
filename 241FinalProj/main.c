@@ -860,6 +860,101 @@ int handleCLI(int argc, const char * argv[]){
         tempAssignNode = tempAssignNode->next;
       }
     }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_VIEW_GRADES)
+            && argc == CLI_VIEW_GRADES_ARGS
+            && (!strcmp(argv[2], "-s")||(!strcmp(argv[4], "-s")))){
+    tempGradeNode = gradeSentinel->next;
+    tempAssignNode = assignmentSentinel->next;
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if (!strcmp(argv[i], "-s")){
+        if((sizeToCopy = (int)strlen(argv[i+1])) > SSN_INPUT_SIZE){
+          sizeToCopy = SSN_INPUT_SIZE;
+        }
+        memcpy(ssnStr, argv[i+1], sizeToCopy);
+      }
+    }
+    if(!isSsnAllDigits(ssnStr)
+       || !isValidStudent(ssnStr)
+       || tempGradeNode == NULL
+       || tempAssignNode == NULL
+       || !isValidCourseID(course_id)){
+      badInputFlag = 1;
+      printf("bad input\n");
+    }
+    if(!badInputFlag){
+      while(tempAssignNode != assignmentSentinel){
+        if(tempAssignNode->assignment->course_id == course_id){
+          while(tempGradeNode != gradeSentinel){
+            if(ssnsAreEqual(tempGradeNode->grade->ssn, ssnStr)
+               && tempGradeNode->grade->assignment_id == tempAssignNode->assignment->assignment_id){
+              printGradeNode(tempGradeNode);
+            }
+            tempGradeNode = tempGradeNode->next;
+          }
+          tempGradeNode = gradeSentinel->next;
+        }
+        tempAssignNode = tempAssignNode->next;
+      }
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_VIEW_GRADES)
+            && argc == CLI_VIEW_GRADES_ARGS){
+    tempGradeNode = gradeSentinel->next;
+    tempAssignNode = assignmentSentinel->next;
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || !isValidAssignID(assignment_id, course_id)
+       || tempGradeNode == NULL){
+      badInputFlag = 1;
+      printf("invalid custom command\n");
+    }
+    if(!badInputFlag){
+      while(tempGradeNode != gradeSentinel){
+        if(assignment_id == tempGradeNode->grade->assignment_id){
+          printGradeNode(tempGradeNode);
+        }
+        tempGradeNode = tempGradeNode->next;
+      }
+    }
+  }else if ( !strcmp(argv[BEGIN_CMD_ARGS], CLI_VIEW_AVG)
+            && argc == CLI_VIEW_AVG_ARGS){
+    tempGradeNode = gradeSentinel->next;
+    tempAssignNode = assignmentSentinel->next;
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+      if(!strcmp(argv[i], "-cid")){
+        course_id = atoi(argv[i+1]);
+      }else if(!strcmp(argv[i], "-aid")){
+        assignment_id = atoi(argv[i+1]);
+      }
+    }
+    if(!isValidCourseID(course_id)
+       || (tempAssignNode = assignNodeExists(course_id, assignment_id)) == NULL
+       || tempGradeNode == NULL){
+      badInputFlag = 1;
+      printf("bad input\n");
+    }
+    if(!badInputFlag){
+      pts_total = 0;
+      pts_received = 0;
+      while(tempGradeNode != gradeSentinel){
+        if(tempGradeNode->grade->assignment_id == assignment_id){
+          pts_total += tempAssignNode->assignment->pts_total;
+          pts_received += tempGradeNode->grade->pts_received;
+        }
+        tempGradeNode = tempGradeNode->next;
+      }
+      printf("Class ID: %d; Assignment ID: %d; Average: %d\n"
+             ,tempAssignNode->assignment->course_id
+             ,tempAssignNode->assignment->assignment_id
+             ,(100*pts_received)/pts_total);
+    }
   }
   
   return 0;
