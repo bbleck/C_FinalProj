@@ -865,7 +865,7 @@ int handleCLI(int argc, const char * argv[]){
             && (!strcmp(argv[2], "-s")||(!strcmp(argv[4], "-s")))){
     tempGradeNode = gradeSentinel->next;
     tempAssignNode = assignmentSentinel->next;
-    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_GRADES_ARGS; i++ ) {
       if(!strcmp(argv[i], "-cid")){
         course_id = atoi(argv[i+1]);
       }else if (!strcmp(argv[i], "-s")){
@@ -902,7 +902,7 @@ int handleCLI(int argc, const char * argv[]){
             && argc == CLI_VIEW_GRADES_ARGS){
     tempGradeNode = gradeSentinel->next;
     tempAssignNode = assignmentSentinel->next;
-    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_GRADES_ARGS; i++ ) {
       if(!strcmp(argv[i], "-cid")){
         course_id = atoi(argv[i+1]);
       }else if(!strcmp(argv[i], "-aid")){
@@ -927,7 +927,7 @@ int handleCLI(int argc, const char * argv[]){
             && argc == CLI_VIEW_AVG_ARGS){
     tempGradeNode = gradeSentinel->next;
     tempAssignNode = assignmentSentinel->next;
-    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_ASSIGNMENTS_ARGS; i++ ) {
+    for(i = BEGIN_CMD_ARGS+1; i < CLI_VIEW_AVG_ARGS; i++ ) {
       if(!strcmp(argv[i], "-cid")){
         course_id = atoi(argv[i+1]);
       }else if(!strcmp(argv[i], "-aid")){
