@@ -1,4 +1,4 @@
-# 241FinalProj
+# FinalProj
 A school data application in C: using a flat file database for students, classes, grades, assignments, and enrollment.
 
 The project is fully functional at this time.
